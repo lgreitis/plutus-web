@@ -1,6 +1,6 @@
 import { Bars3Icon } from "@heroicons/react/24/outline";
-import { useTheme } from "next-themes";
 import { useState } from "react";
+import ThemeSwitcher from "../themeSwitcher";
 import NavbarMobile from "./navbarMobile";
 
 const navigation = [
@@ -12,7 +12,6 @@ const navigation = [
 
 const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { theme, setTheme } = useTheme();
 
   return (
     <div className="px-6 pt-6 lg:px-8">
@@ -25,7 +24,8 @@ const Navbar = () => {
             Plutus
           </a>
         </div>
-        <div className="flex lg:hidden">
+        <div className="flex gap-4 lg:hidden">
+          <ThemeSwitcher />
           <button
             type="button"
             className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700 dark:text-gray-50"
@@ -46,7 +46,8 @@ const Navbar = () => {
             </a>
           ))}
         </div>
-        <div className="hidden lg:flex lg:flex-1 lg:justify-end">
+        <div className="hidden lg:flex lg:flex-1 lg:content-center lg:justify-end lg:gap-4">
+          <ThemeSwitcher />
           <a
             href="#"
             className="text-sm font-semibold leading-6 text-gray-900 dark:text-gray-50"
