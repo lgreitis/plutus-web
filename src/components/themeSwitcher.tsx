@@ -50,7 +50,6 @@ const ThemeSwitcher = () => {
             <Transition
               show={open}
               as={Fragment}
-              leave="transition ease-in duration-100"
               leaveFrom="opacity-100"
               leaveTo="opacity-0"
             >
