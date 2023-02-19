@@ -38,7 +38,7 @@ const ThemeSwitcher = () => {
     <Listbox value={theme} onChange={setTheme}>
       {({ open }) => (
         <>
-          <div className="relative">
+          <div className="relative h-6">
             <Listbox.Button className="h-6 w-6 rounded-md p-1 hover:bg-gray-400/10">
               {theme === "light" && <SunIcon className="h-4 w-4" />}
               {theme === "system" && (
