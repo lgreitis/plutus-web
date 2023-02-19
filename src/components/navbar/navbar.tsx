@@ -1,4 +1,6 @@
 import { Bars3Icon } from "@heroicons/react/24/outline";
+import { signOut, useSession } from "next-auth/react";
+import Link from "next/link";
 import { useState } from "react";
 import ThemeSwitcher from "../themeSwitcher";
 import NavbarMobile from "./navbarMobile";
@@ -11,6 +13,7 @@ const navigation = [
 ];
 
 const Navbar = () => {
+  const { data: sessionData } = useSession();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
@@ -48,12 +51,22 @@ const Navbar = () => {
         </div>
         <div className="hidden lg:flex lg:flex-1 lg:content-center lg:justify-end lg:gap-4">
           <ThemeSwitcher />
-          <a
-            href="#"
-            className="text-sm font-semibold leading-6 text-gray-900 dark:text-gray-50"
-          >
-            Log in <span aria-hidden="true">&rarr;</span>
-          </a>
+          {sessionData ? (
+            <button
+              type="button"
+              className="text-sm font-semibold leading-6 text-gray-900 dark:text-gray-50"
+              onClick={() => void signOut()}
+            >
+              Sign out
+            </button>
+          ) : (
+            <Link
+              href="/login"
+              className="text-sm font-semibold leading-6 text-gray-900 dark:text-gray-50"
+            >
+              Log in <span aria-hidden="true">&rarr;</span>
+            </Link>
+          )}
         </div>
       </nav>
       <NavbarMobile
