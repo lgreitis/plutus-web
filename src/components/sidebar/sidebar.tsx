@@ -58,7 +58,7 @@ const Sidebar = (props: Props) => {
   const { data: sessionData } = useSession();
 
   return (
-    <div className="hidden border-r  border-neutral-200 dark:border-neutral-800  md:fixed md:inset-y-0 md:flex md:w-64 md:flex-col">
+    <div className="hidden border-r  border-neutral-200 dark:border-neutral-800 md:fixed md:inset-y-0 md:flex md:w-64 md:flex-col">
       <div className="flex flex-1 flex-col p-6">
         <div className="flex items-center">
           <div className="flex-1 font-semibold">Plutus</div>
@@ -74,8 +74,8 @@ const Sidebar = (props: Props) => {
               className={clsx(
                 "flex items-center gap-3 text-xs font-medium ",
                 router.pathname === el.link
-                  ? "text-neutral-200"
-                  : "text-neutral-500 hover:text-neutral-200"
+                  ? "dark:text-neutral-200"
+                  : "text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-200"
               )}
             >
               {el.icon}

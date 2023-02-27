@@ -91,8 +91,8 @@ const ThemeSwitcher = ({
               className={({ active }) =>
                 classNames(
                   active
-                    ? "bg-gray-900 text-gray-50 dark:bg-slate-200  dark:text-gray-900"
-                    : "text-gray-900 dark:text-gray-50  ",
+                    ? "bg-gray-900 text-white dark:bg-slate-200  dark:text-gray-900"
+                    : "text-gray-900 dark:text-white  ",
                   "cursor-default select-none p-2 text-sm "
                 )
               }

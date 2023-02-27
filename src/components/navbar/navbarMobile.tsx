@@ -26,7 +26,7 @@ const NavbarMobile = (props: Props) => {
         <div className="flex items-center justify-between">
           <a
             href="#"
-            className="-m-1.5 p-1.5 font-semibold text-gray-900 dark:text-gray-50"
+            className="-m-1.5 p-1.5 font-semibold text-gray-900 dark:text-white"
           >
             <span>Plutus</span>
           </a>
@@ -37,7 +37,7 @@ const NavbarMobile = (props: Props) => {
           >
             <span className="sr-only">Close menu</span>
             <XMarkIcon
-              className="h-6 w-6 text-gray-900 dark:text-gray-50"
+              className="h-6 w-6 text-gray-900 dark:text-white"
               aria-hidden="true"
             />
           </button>
@@ -49,7 +49,7 @@ const NavbarMobile = (props: Props) => {
                 <a
                   key={item.name}
                   href={item.href}
-                  className="-mx-3 block rounded-lg py-2 px-3 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-400/10 dark:text-gray-50"
+                  className="-mx-3 block rounded-lg py-2 px-3 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-400/10 dark:text-white"
                 >
                   {item.name}
                 </a>
@@ -59,7 +59,7 @@ const NavbarMobile = (props: Props) => {
               {sessionData ? (
                 <button
                   type="button"
-                  className="-mx-3 block w-full rounded-lg py-2.5 px-3 text-left text-base font-semibold leading-6 text-gray-900 hover:bg-gray-400/10 dark:text-gray-50"
+                  className="-mx-3 block w-full rounded-lg py-2.5 px-3 text-left text-base font-semibold leading-6 text-gray-900 hover:bg-gray-400/10 dark:text-white"
                   onClick={() => void signOut()}
                 >
                   Sign out
@@ -67,7 +67,7 @@ const NavbarMobile = (props: Props) => {
               ) : (
                 <Link
                   href="/login"
-                  className="-mx-3 block rounded-lg py-2.5 px-3 text-base font-semibold leading-6 text-gray-900 hover:bg-gray-400/10 dark:text-gray-50"
+                  className="-mx-3 block rounded-lg py-2.5 px-3 text-base font-semibold leading-6 text-gray-900 hover:bg-gray-400/10 dark:text-white"
                 >
                   Log in
                 </Link>

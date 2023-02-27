@@ -48,6 +48,7 @@ interface InitialState {
 
 interface Props {
   data: DataType[];
+  onZoom?: (dateMin: Date, dateMax: Date) => void;
 }
 
 const InventoryValueChart = (props: Props) => {
@@ -65,6 +66,12 @@ const InventoryValueChart = (props: Props) => {
     let { refAreaLeft, refAreaRight } = zoomGraph;
 
     if (refAreaLeft === refAreaRight || !refAreaRight) {
+      if (props.onZoom) {
+        props.onZoom(
+          new Date(props.data[0]?.date || ""),
+          new Date(props.data[props.data.length - 1]?.date || "")
+        );
+      }
       setZoomGraph({
         ...initialState,
         data: props.data.slice(),
@@ -74,6 +81,13 @@ const InventoryValueChart = (props: Props) => {
 
     if (refAreaLeft && refAreaRight && refAreaLeft > refAreaRight)
       [refAreaLeft, refAreaRight] = [refAreaRight, refAreaLeft];
+
+    if (props.onZoom) {
+      props.onZoom(
+        new Date(refAreaLeft || props.data[0]?.date || ""),
+        new Date(refAreaRight || props.data[props.data.length - 1]?.date || "")
+      );
+    }
 
     setZoomGraph({
       data: props.data.slice(),
@@ -174,7 +188,7 @@ const TooltipComponent = (props: TooltipProps<ValueType, NameType>) => {
         {new Date(parseInt(String(props.label))).toLocaleString()}
       </span>
       <span key={props.payload[0]?.value}>
-        Price: {props.payload[0]?.value}
+        Price: {parseFloat(props.payload[0]?.value || "0").toFixed(2)}$
       </span>
     </div>
   );

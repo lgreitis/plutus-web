@@ -1,6 +1,17 @@
-const Loader = () => {
+import clsx from "clsx";
+
+interface Props {
+  className?: string;
+}
+
+const Loader = (props: Props) => {
   return (
-    <div className="flex items-center justify-center gap-1">
+    <div
+      className={clsx(
+        "flex items-center justify-center gap-1",
+        props.className
+      )}
+    >
       <div className="h-1 w-1 animate-loading-blink rounded-full opacity-100 dark:bg-white"></div>
       <div
         style={{ animationDelay: "0.2s" }}

@@ -22,7 +22,7 @@ const Navbar = () => {
         <div className="flex lg:flex-1">
           <a
             href="#"
-            className="-m-1.5 p-1.5 font-semibold text-gray-900 dark:text-gray-50"
+            className="-m-1.5 p-1.5 font-semibold text-gray-900 dark:text-white"
           >
             Plutus
           </a>
@@ -31,7 +31,7 @@ const Navbar = () => {
           <ThemeSwitcher />
           <button
             type="button"
-            className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700 dark:text-gray-50"
+            className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700 dark:text-white"
             onClick={() => setMobileMenuOpen(true)}
           >
             <span className="sr-only">Open main menu</span>
@@ -43,7 +43,7 @@ const Navbar = () => {
             <a
               key={item.name}
               href={item.href}
-              className="text-sm font-semibold leading-6 text-gray-900 dark:text-gray-50"
+              className="text-sm font-semibold leading-6 text-gray-900 dark:text-white"
             >
               {item.name}
             </a>
@@ -54,7 +54,7 @@ const Navbar = () => {
           {sessionData ? (
             <button
               type="button"
-              className="text-sm font-semibold leading-6 text-gray-900 dark:text-gray-50"
+              className="text-sm font-semibold leading-6 text-gray-900 dark:text-white"
               onClick={() => void signOut()}
             >
               Sign out
@@ -62,7 +62,7 @@ const Navbar = () => {
           ) : (
             <Link
               href="/login"
-              className="text-sm font-semibold leading-6 text-gray-900 dark:text-gray-50"
+              className="text-sm font-semibold leading-6 text-gray-900 dark:text-white"
             >
               Log in <span aria-hidden="true">&rarr;</span>
             </Link>

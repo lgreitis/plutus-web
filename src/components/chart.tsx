@@ -6,6 +6,7 @@ import {
   Line,
   ReferenceArea,
   ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
 } from "recharts";
@@ -33,6 +34,8 @@ interface InitialState {
 interface Props {
   data: DataType[];
 }
+
+// TODO: TEMP FILE, REMOVE THIS
 
 const Chart = (props: Props) => {
   const getAxisYDomain = (
@@ -171,6 +174,7 @@ const Chart = (props: Props) => {
             type="number"
           />
           <YAxis
+            hide
             allowDataOverflow
             domain={[bottom, top]}
             type="number"
@@ -181,10 +185,10 @@ const Chart = (props: Props) => {
             hide
             orientation="left"
             allowDataOverflow
-            domain={["dataMin", top2]}
+            domain={["dataMin", initialState.top2]}
             type="number"
           />
-          {/* <Tooltip /> */}
+          <Tooltip content={<TooltipComponent />} />
           <Line
             yAxisId="1"
             type="natural"
@@ -219,11 +223,13 @@ const TooltipComponent = (props: TooltipProps<ValueType, NameType>) => {
   }
 
   return (
-    <div className="flex w-32 flex-col border border-neutral-800 backdrop-blur-sm ">
-      <span>{props.label}</span>
+    <div className="flex w-48 flex-col gap-1 rounded-lg border border-neutral-200 p-2 backdrop-blur-xl backdrop-brightness-110 dark:border-neutral-800 dark:backdrop-brightness-50">
+      <span className="text-sm font-semibold text-neutral-500">
+        {new Date(parseInt(String(props.label))).toLocaleString()}
+      </span>
       {props.payload?.map((el) => (
         <span key={el.value}>
-          {el.name}: {el.value}
+          {String(el.name)}: {el.value}
         </span>
       ))}
     </div>

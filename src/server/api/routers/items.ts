@@ -14,8 +14,6 @@ export const itemsRouter = createTRPCRouter({
         throw new TRPCError({ code: "NOT_FOUND" });
       }
 
-      await new Promise((r) => setTimeout(r, 2000));
-
       return (
         await ctx.prisma.officialItemPricing.findMany({
           where: {
@@ -27,4 +25,24 @@ export const itemsRouter = createTRPCRouter({
         return { ...el, name: el.date.getTime() };
       });
     }),
+
+  getItems: publicProcedure.query(async ({ ctx }) => {
+    return (
+      await ctx.prisma.item.findMany({
+        include: {
+          OfficialItemPricing: {
+            orderBy: { date: "desc" },
+            take: 1,
+            select: { price: true },
+          },
+        },
+        take: 100,
+      })
+    ).map((el) => {
+      return {
+        name: el.marketHashName,
+        price: el.OfficialItemPricing[0]?.price || 0,
+      };
+    });
+  }),
 });

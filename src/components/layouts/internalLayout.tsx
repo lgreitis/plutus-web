@@ -10,7 +10,7 @@ const InternalLayout = (props: Props) => {
   const { children, headerText, showFilterCategories } = props;
 
   return (
-    <div className="max-h-screen min-h-screen  bg-white dark:bg-bg-dark">
+    <div className="min-h-screen  bg-white dark:bg-bg-dark">
       <Sidebar showFilterCategories={showFilterCategories} />
       <main className="flex flex-1 flex-col md:pl-64">
         <div className="flex flex-col gap-6 px-9 py-7">
