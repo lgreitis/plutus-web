@@ -24,9 +24,9 @@ const config = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "tailwindui.com",
+        hostname: "cdn.discordapp.com",
         port: "",
-        pathname: "/img/**",
+        pathname: "/avatars/**",
       },
     ],
   },

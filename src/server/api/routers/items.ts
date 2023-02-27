@@ -1,6 +1,6 @@
 import { TRPCError } from "@trpc/server";
+import { createTRPCRouter, publicProcedure } from "src/server/api/trpc";
 import { z } from "zod";
-import { createTRPCRouter, publicProcedure } from "../trpc";
 
 export const itemsRouter = createTRPCRouter({
   getItemStatistics: publicProcedure
@@ -14,8 +14,17 @@ export const itemsRouter = createTRPCRouter({
         throw new TRPCError({ code: "NOT_FOUND" });
       }
 
-      return ctx.prisma.officialItemPricing.findMany({
-        where: { itemId: item.id },
+      await new Promise((r) => setTimeout(r, 2000));
+
+      return (
+        await ctx.prisma.officialItemPricing.findMany({
+          where: {
+            itemId: item.id,
+            date: { lt: new Date("2022-12-01"), gt: new Date("2021-01-01") },
+          },
+        })
+      ).map((el) => {
+        return { ...el, name: el.date.getTime() };
       });
     }),
 });

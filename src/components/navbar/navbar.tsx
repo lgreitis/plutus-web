@@ -2,8 +2,8 @@ import { Bars3Icon } from "@heroicons/react/24/outline";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { useState } from "react";
-import ThemeSwitcher from "../themeSwitcher";
-import NavbarMobile from "./navbarMobile";
+import NavbarMobile from "src/components/navbar/navbarMobile";
+import ThemeSwitcher from "src/components/themeSwitcher";
 
 const navigation = [
   { name: "Nav1", href: "#" },
@@ -50,7 +50,7 @@ const Navbar = () => {
           ))}
         </div>
         <div className="hidden lg:flex lg:flex-1 lg:content-center lg:justify-end lg:gap-4">
-          <ThemeSwitcher />
+          <ThemeSwitcher sizing="sm" />
           {sessionData ? (
             <button
               type="button"

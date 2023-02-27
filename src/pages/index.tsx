@@ -1,7 +1,25 @@
+import type { GetServerSideProps } from "next";
 import { type NextPage } from "next";
-import Hero from "../components/hero/hero";
-import LandingLayout from "../components/landingLayout";
-import Navbar from "../components/navbar/navbar";
+import Hero from "src/components/hero/hero";
+import LandingLayout from "src/components/layouts/landingLayout";
+import Navbar from "src/components/navbar/navbar";
+import { getServerAuthSession } from "src/server/auth";
+
+// We redirect authed users straight to the dashboard
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const session = await getServerAuthSession(context);
+
+  if (session) {
+    return {
+      redirect: {
+        destination: "/overview",
+        permanent: false,
+      },
+    };
+  }
+
+  return { props: {} };
+};
 
 const Home: NextPage = () => {
   return (
