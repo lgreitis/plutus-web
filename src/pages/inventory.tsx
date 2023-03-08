@@ -91,7 +91,7 @@ const columns = [
 const Inventory = () => {
   const { data, isLoading } = api.items.getItems.useQuery();
   // const [data, setData] = useState(() => [...defaultData]);
-  console.log(data);
+  console.log(data, Date.now());
   const table = useReactTable({
     data: data?.items || [],
     columns,
