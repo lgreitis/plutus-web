@@ -93,7 +93,7 @@ const Inventory = () => {
   // const [data, setData] = useState(() => [...defaultData]);
   console.log(data);
   const table = useReactTable({
-    data: data || [],
+    data: data?.items || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
