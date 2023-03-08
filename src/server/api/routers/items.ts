@@ -15,7 +15,7 @@ export const itemsRouter = createTRPCRouter({
       }
 
       return (
-        await ctx.prisma.officialItemPricing.findMany({
+        await ctx.prisma.officialPricingHistory.findMany({
           where: {
             itemId: item.id,
             date: { lt: new Date("2022-12-01"), gt: new Date("2021-01-01") },
@@ -30,7 +30,7 @@ export const itemsRouter = createTRPCRouter({
     return (
       await ctx.prisma.item.findMany({
         include: {
-          OfficialItemPricing: {
+          OfficialPricingHistory: {
             orderBy: { date: "desc" },
             take: 1,
             select: { price: true },
@@ -41,7 +41,7 @@ export const itemsRouter = createTRPCRouter({
     ).map((el) => {
       return {
         name: el.marketHashName,
-        price: el.OfficialItemPricing[0]?.price || 0,
+        price: el.OfficialPricingHistory[0]?.price || 0,
       };
     });
   }),

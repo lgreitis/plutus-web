@@ -34,82 +34,122 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String     @id @default(cuid())
   name          String?
-  email         String?   @unique
+  email         String?    @unique
   emailVerified DateTime?
   image         String?
   accounts      Account[]
   sessions      Session[]
+  UserItem      UserItem[]
+}
+
+model UserItem {
+  id        String   @id @default(uuid())
+  dateAdded DateTime @default(now())
+  buyPrice  Float?
+  quantity  Int
+  notes     String?
+
+  item   Item   @relation(fields: [itemId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
+  itemId String
+  userId String
+
+  @@index([userId])
 }
 
 model Item {
-  id                   String                @id @default(uuid())
-  nameId               BigInt                @unique
-  marketName           String
-  marketHashName       String                @unique
-  first_seen           DateTime?
-  rarityColorId        Int?
-  image                String?
-  image_large          String?
-  itemTypeId           Int?
-  official_update_time DateTime?
-  type                 ItemType?             @relation(fields: [itemTypeId], references: [id])
-  rarityColor          RarityColor?          @relation(fields: [rarityColorId], references: [id])
-  ItemPrice            ItemPrice[]
-  OfficialItemPricing  OfficialItemPricing[]
+  id             String     @id @default(uuid())
+  marketName     String
+  marketHashName String     @unique
+  lastPrice      Float?
+  rarity         ItemRarity
+  type           ItemType
+  icon           String
+  icon_small     String
+
+  OfficialPricingHistory OfficialPricingHistory[]
+  ApiItemPrice           ApiPricingHistory[]
+  UserItem               UserItem[]
 }
 
-model RarityColor {
-  id    Int    @id @default(autoincrement())
-  color String @unique
-  Item  Item[]
+model OfficialPricingHistory {
+  id String @id @default(uuid())
+
+  item   Item   @relation(fields: [itemId], references: [id])
+  itemId String
+
+  date   DateTime
+  price  Float
+  volume Int
+
+  @@index([date])
+  @@index([itemId])
 }
 
-model ItemType {
-  id   Int    @id @default(autoincrement())
-  type String @unique
-  Item Item[]
-}
+model ApiPricingHistory {
+  id     String @id @default(uuid())
+  item   Item   @relation(fields: [itemId], references: [id])
+  itemId String
 
-model ItemPrice {
-  id               String          @id @default(uuid())
-  itemId           String
-  current          Float
-  min              Float
-  avg              Float
-  max              Float
-  median           Float?
-  safe             Float
-  soldLast24h      Float
-  soldLast7d       Float
-  avgDailyVolume   Float?
-  unstable         Boolean
-  unstableReasonId Int?
-  updateTime       DateTime
-  fetchTime        DateTime        @default(now())
-  item             Item            @relation(fields: [itemId], references: [id])
-  unstableReason   UnstableReason? @relation(fields: [unstableReasonId], references: [id])
+  current        Float
+  min            Float
+  avg            Float
+  max            Float
+  median         Float?
+  safe           Float
+  soldLast24h    Float
+  soldLast7d     Float
+  avgDailyVolume Float?
+
+  unstable       Boolean
+  unstableReason ItemUnstableReason?
+
+  updateTime DateTime
+  fetchTime  DateTime @default(now())
 
   @@index([updateTime])
   @@index([current])
   @@index([itemId])
 }
 
-model OfficialItemPricing {
-  id     String   @id @default(uuid())
-  itemId String
-  date   DateTime
-  price  Float
-  volume Int
-  item   Item     @relation(fields: [itemId], references: [id])
-
-  @@unique([itemId, date])
-  @@index([itemId])
+enum ItemRarity {
+  Exceptional
+  Master
+  Superior
+  BaseGrade
+  Distinguished
+  Covert
+  IndustrialGrade
+  MilSpecGrade
+  Restricted
+  Classified
+  ConsumerGrade
+  Exotic
+  Extraordinary
+  HighGrade
+  Remarkable
+  Contraband
 }
 
-model UnstableReason {
-  id             Int         @id @default(autoincrement())
-  unstableReason String
-  ItemPrice      ItemPrice[]
+enum ItemType {
+  Container
+  Agent
+  Patch
+  MusicKit
+  Skin
+  Sticker
+  Tool
+}
+
+enum ItemUnstableReason {
+  NO_SALES_WEEK
+  NO_SALES_MONTH
+  NO_SALES_3PLUS_MONTHS
+  NO_SALES_OVERALL
+  LOW_SALES_WEEK
+  LOW_SALES_MONTH
+  LOW_SALES_3PLUS_MONTHS
+  LOW_SALES_OVERALL
 }

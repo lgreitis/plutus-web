@@ -18,12 +18,12 @@ const Overview = () => {
     <InternalLayout headerText="Overview">
       <div className="flex rounded-md bg-zinc-100 p-5 dark:bg-zinc-900">
         <div className="flex flex-1 flex-col">
-          <span className="text-sm">Total value</span>
-          <span className="text-2xl font-semibold">1100,01$</span>
+          <span className="text-sm">Invested</span>
+          <span className="text-2xl font-semibold">953,57$</span>
         </div>
         <div className="flex flex-1 flex-col border-l border-zinc-200 pl-2 dark:border-zinc-800">
-          <span className="text-sm">Initial value</span>
-          <span className="text-2xl font-semibold">953,57$</span>
+          <span className="text-sm">Total value</span>
+          <span className="text-2xl font-semibold">1100,01$</span>
         </div>
         <div className="flex flex-1 flex-col border-l border-zinc-200 pl-2 dark:border-zinc-800">
           <span className="text-sm">Profit</span>
