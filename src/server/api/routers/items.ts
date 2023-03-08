@@ -28,25 +28,28 @@ export const itemsRouter = createTRPCRouter({
 
   getItems: publicProcedure.query(async ({ ctx }) => {
     const timeStart = Date.now();
-    return {
-      timeStart,
-      items: (
-        await ctx.prisma.item.findMany({
-          include: {
-            OfficialPricingHistory: {
-              orderBy: { date: "desc" },
-              take: 1,
-              select: { price: true },
-            },
+
+    const items = (
+      await ctx.prisma.item.findMany({
+        include: {
+          OfficialPricingHistory: {
+            orderBy: { date: "desc" },
+            take: 1,
+            select: { price: true },
           },
-          take: 100,
-        })
-      ).map((el) => {
-        return {
-          name: el.marketHashName,
-          price: el.OfficialPricingHistory[0]?.price || 0,
-        };
-      }),
+        },
+        take: 100,
+      })
+    ).map((el) => {
+      return {
+        name: el.marketHashName,
+        price: el.OfficialPricingHistory[0]?.price || 0,
+      };
+    });
+
+    return {
+      timeStart: timeStart - Date.now(),
+      items,
     };
   }),
 });
