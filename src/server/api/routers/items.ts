@@ -20,6 +20,7 @@ export const itemsRouter = createTRPCRouter({
             itemId: item.id,
             date: { lt: new Date("2022-12-01"), gt: new Date("2021-01-01") },
           },
+          orderBy: { date: "asc" },
         })
       ).map((el) => {
         return { ...el, name: el.date.getTime() };
@@ -27,7 +28,9 @@ export const itemsRouter = createTRPCRouter({
     }),
 
   getItems: publicProcedure.query(async ({ ctx }) => {
-    return (
+    const timeStart = Date.now();
+
+    const items = (
       await ctx.prisma.item.findMany({
         include: {
           OfficialPricingHistory: {
@@ -44,5 +47,10 @@ export const itemsRouter = createTRPCRouter({
         price: el.OfficialPricingHistory[0]?.price || 0,
       };
     });
+
+    return {
+      timeStart: timeStart - Date.now(),
+      items,
+    };
   }),
 });

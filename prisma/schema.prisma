@@ -60,18 +60,20 @@ model UserItem {
 }
 
 model Item {
-  id             String     @id @default(uuid())
-  marketName     String
-  marketHashName String     @unique
-  lastPrice      Float?
-  rarity         ItemRarity
-  type           ItemType
-  icon           String
-  icon_small     String
+  id                               String     @id @default(uuid())
+  marketName                       String
+  marketHashName                   String     @unique
+  lastPrice                        Float?
+  rarity                           ItemRarity
+  type                             ItemType
+  icon                             String
+  icon_small                       String
+  officialPricingHistoryUpdateTime DateTime?
 
-  OfficialPricingHistory OfficialPricingHistory[]
-  ApiItemPrice           ApiPricingHistory[]
-  UserItem               UserItem[]
+  OfficialPricingHistory   OfficialPricingHistory[]
+  ApiItemPrice             ApiPricingHistory[]
+  UserItem                 UserItem[]
+  OfficialPricingFetchTime OfficialPricingFetchTime[]
 }
 
 model OfficialPricingHistory {
@@ -112,6 +114,17 @@ model ApiPricingHistory {
   @@index([updateTime])
   @@index([current])
   @@index([itemId])
+}
+
+model OfficialPricingFetchTime {
+  id           String   @id @default(uuid())
+  item         Item     @relation(fields: [itemId], references: [id])
+  duration     Int
+  proxyCountry String
+  proxyIp      String
+  proxyPort    String
+  itemId       String
+  fetchDate    DateTime @default(now())
 }
 
 enum ItemRarity {

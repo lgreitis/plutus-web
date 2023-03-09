@@ -2,6 +2,7 @@ import { Bars3Icon } from "@heroicons/react/24/outline";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { useState } from "react";
+import Logo from "src/components/logo";
 import NavbarMobile from "src/components/navbar/navbarMobile";
 import ThemeSwitcher from "src/components/themeSwitcher";
 
@@ -19,10 +20,11 @@ const Navbar = () => {
   return (
     <div className="px-6 pt-6 lg:px-8">
       <nav className="flex items-center justify-between" aria-label="Global">
-        <div className="flex lg:flex-1">
+        <div className="flex gap-2 align-middle lg:flex-1">
+          <Logo className="-mt-2 h-8 w-8 dark:fill-white" />
           <a
             href="#"
-            className="-m-1.5 p-1.5 font-semibold text-gray-900 dark:text-white"
+            className="font-semibold leading-6  text-gray-900 dark:text-white"
           >
             Plutus
           </a>
