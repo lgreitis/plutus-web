@@ -20,6 +20,7 @@ export const itemsRouter = createTRPCRouter({
             itemId: item.id,
             date: { lt: new Date("2022-12-01"), gt: new Date("2021-01-01") },
           },
+          orderBy: { date: "asc" },
         })
       ).map((el) => {
         return { ...el, name: el.date.getTime() };
