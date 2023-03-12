@@ -2,7 +2,7 @@ import {
   createColumnHelper,
   flexRender,
   getCoreRowModel,
-  useReactTable,
+  useReactTable
 } from "@tanstack/react-table";
 import InternalLayout from "src/components/layouts/internalLayout";
 import Loader from "src/components/loader";
