@@ -8,7 +8,7 @@ import { api } from "src/utils/api";
 
 const Overview = () => {
   const response = api.items.getItemStatistics.useQuery({
-    itemId: "a2f50081-31d5-4b5a-853e-cb38fecb33a2",
+    itemId: "29feed90-347b-40cb-aaa1-1bc492e08938",
   });
   const [axisData, setAxisData] = useState<
     { dateMin: Date; dateMax: Date } | undefined
