@@ -1,4 +1,5 @@
 import { TRPCError } from "@trpc/server";
+import axios from "axios";
 import { subDays } from "date-fns";
 import { createTRPCRouter, publicProcedure } from "src/server/api/trpc";
 import { z } from "zod";
@@ -10,6 +11,10 @@ export const itemsRouter = createTRPCRouter({
       const item = await ctx.prisma.item.findUnique({
         where: { id: input.itemId },
       });
+
+      const response = await axios.get<{ ip: string }>(
+        "https://api.ipify.org?format=json"
+      );
 
       if (!item) {
         throw new TRPCError({ code: "NOT_FOUND" });
@@ -24,7 +29,7 @@ export const itemsRouter = createTRPCRouter({
           orderBy: { date: "asc" },
         })
       ).map((el) => {
-        return { ...el, name: el.date.getTime() };
+        return { ...el, name: el.date.getTime(), ip: response.data.ip };
       });
     }),
 
