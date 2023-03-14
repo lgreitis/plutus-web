@@ -58,7 +58,7 @@ const Sidebar = (props: Props) => {
   const { data: sessionData } = useSession();
 
   return (
-    <div className="hidden border-r  border-neutral-200 dark:border-neutral-800 md:fixed md:inset-y-0 md:flex md:w-64 md:flex-col">
+    <div className="hidden border-r border-neutral-200 dark:border-neutral-800 md:fixed md:inset-y-0 md:flex md:w-64 md:flex-col">
       <div className="flex flex-1 flex-col p-6">
         <div className="flex items-center">
           <div className="flex-1 font-semibold">Plutus</div>

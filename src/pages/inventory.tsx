@@ -2,11 +2,13 @@ import {
   createColumnHelper,
   flexRender,
   getCoreRowModel,
-  useReactTable
+  useReactTable,
 } from "@tanstack/react-table";
 import InternalLayout from "src/components/layouts/internalLayout";
 import Loader from "src/components/loader";
 import { api } from "src/utils/api";
+
+// https://github.com/swkeever/headless-ui-combobox-demo/blob/main/pages/index.tsx for future research
 
 // type Person = {
 //   firstName: string;
@@ -45,18 +47,23 @@ import { api } from "src/utils/api";
 // ];
 
 const columnHelper = createColumnHelper<{
-  name: string;
+  marketHashName: string;
   price: number;
+  trend7d: number;
 }>();
 
 const columns = [
-  columnHelper.accessor("name", {
+  columnHelper.accessor("marketHashName", {
     cell: (info) => info.getValue(),
     header: () => <span>Name</span>,
   }),
   columnHelper.accessor("price", {
     cell: (info) => <span>{info.getValue().toFixed(2)}$</span>,
     header: () => <span>Price</span>,
+  }),
+  columnHelper.accessor("trend7d", {
+    cell: (info) => <span>{info.getValue().toFixed(2)}$</span>,
+    header: () => <span>Trend</span>,
   }),
 
   // columnHelper.accessor("firstName", {
@@ -90,8 +97,7 @@ const columns = [
 
 const Inventory = () => {
   const { data, isLoading } = api.items.getItems.useQuery();
-  // const [data, setData] = useState(() => [...defaultData]);
-  console.log(data, Date.now());
+
   const table = useReactTable({
     data: data?.items || [],
     columns,

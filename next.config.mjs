@@ -28,6 +28,18 @@ const config = {
         port: "",
         pathname: "/avatars/**",
       },
+      {
+        protocol: "https",
+        hostname: "community.akamai.steamstatic.com",
+        port: "",
+        pathname: "/economy/image/**",
+      },
+      {
+        protocol: "https",
+        hostname: "avatars.akamai.steamstatic.com",
+        port: "",
+        pathname: "/**",
+      },
     ],
   },
 };

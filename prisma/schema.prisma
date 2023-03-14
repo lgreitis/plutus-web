@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["orderByNulls", "fullTextSearch"]
 }
 
 datasource db {
@@ -15,6 +16,7 @@ model Account {
   providerAccountId String
   refresh_token     String?
   access_token      String?
+  steamid           String?
   expires_at        Int?
   token_type        String?
   scope             String?
@@ -77,16 +79,15 @@ model Item {
 }
 
 model OfficialPricingHistory {
-  id String @id @default(uuid())
-
-  item   Item   @relation(fields: [itemId], references: [id])
-  itemId String
-
+  id     String   @id @default(uuid())
   date   DateTime
   price  Float
   volume Int
+  item   Item     @relation(fields: [itemId], references: [id])
+  itemId String
 
   @@unique([itemId, date])
+  @@index([itemId, date(sort: Desc)])
   @@index([date])
   @@index([itemId])
 }
