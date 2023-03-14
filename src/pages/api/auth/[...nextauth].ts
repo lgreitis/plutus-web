@@ -9,13 +9,12 @@ import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import type { NextApiRequest, NextApiResponse } from "next";
 import NextAuth from "next-auth";
 import DiscordProvider from "next-auth/providers/discord";
+import { TokenSet } from "openid-client";
 import { env } from "src/env.mjs";
 import { prisma } from "src/server/db";
 import { v4 as uuid } from "uuid";
 
-import { TokenSet } from "openid-client";
-
-const HOST_NAME = "http://localhost:3000";
+const HOST_NAME = "https://plutus.lukasgreicius.com";
 const STEAM_API = "2A0740936E6F7F6A30CB64BDD1533A92";
 
 interface TokenParams {
