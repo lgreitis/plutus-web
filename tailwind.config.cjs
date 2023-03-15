@@ -1,5 +1,7 @@
 /** @type {import('tailwindcss').Config} */
+/** @type {import('tailwindcss/defaultTheme')} */
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const defaultTheme = require("tailwindcss/defaultTheme");
 
 module.exports = {
@@ -19,7 +21,7 @@ module.exports = {
         "loading-blink": `loading-blink 1.4s infinite both`,
       },
       fontFamily: {
-        'sans': ["San Francisco", ...defaultTheme.fontFamily.sans],
+        sans: ["San Francisco", ...defaultTheme.fontFamily.sans],
       },
     },
   },
