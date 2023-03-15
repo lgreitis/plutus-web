@@ -1,5 +1,6 @@
 import { faDiscord, faSteam } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { ArrowSmallLeftIcon } from "@heroicons/react/24/outline";
 import type { NextPage } from "next";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
@@ -31,9 +32,9 @@ const Login: NextPage = () => {
           </button>
           <Link
             href="/"
-            className="flex w-fit justify-center gap-2 pt-4 hover:cursor-pointer"
+            className="flex w-fit items-center justify-center gap-2 pt-4 hover:cursor-pointer"
           >
-            <span aria-hidden="true">&larr;</span>
+            <ArrowSmallLeftIcon className="h-4 w-4 [&>path]:stroke-[2.5]" />
             Back
           </Link>
         </div>

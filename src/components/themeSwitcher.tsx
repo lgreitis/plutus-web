@@ -30,6 +30,7 @@ const sizingConstants = {
     iconSizing: "h-5 w-5",
   },
 };
+
 interface Props {
   placement?: Placement;
   color?: string;

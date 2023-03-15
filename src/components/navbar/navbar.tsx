@@ -1,4 +1,4 @@
-import { Bars3Icon } from "@heroicons/react/24/outline";
+import { ArrowSmallRightIcon, Bars3Icon } from "@heroicons/react/24/outline";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { useState } from "react";
@@ -20,17 +20,11 @@ const Navbar = () => {
   return (
     <div className="px-6 pt-6 lg:px-8">
       <nav className="flex items-center justify-between" aria-label="Global">
-        <div className="flex gap-2 align-middle lg:flex-1">
-          <Logo className="-mt-2 h-8 w-8 dark:fill-white" />
-          <a
-            href="#"
-            className="font-semibold leading-6  text-gray-900 dark:text-white"
-          >
-            Plutus
-          </a>
+        <div className="lg:flex-1">
+          <Logo />
         </div>
         <div className="flex gap-4 lg:hidden">
-          <ThemeSwitcher />
+          <ThemeSwitcher sizing="sm" />
           <button
             type="button"
             className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700 dark:text-white"
@@ -64,9 +58,10 @@ const Navbar = () => {
           ) : (
             <Link
               href="/login"
-              className="text-sm font-semibold leading-6 text-gray-900 dark:text-white"
+              className="flex items-center gap-1 text-sm font-semibold leading-6 text-gray-900 dark:text-white"
             >
-              Log in <span aria-hidden="true">&rarr;</span>
+              Log in{" "}
+              <ArrowSmallRightIcon className="h-4 w-4 [&>path]:stroke-[2.5]" />
             </Link>
           )}
         </div>

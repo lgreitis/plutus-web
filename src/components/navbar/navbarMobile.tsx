@@ -2,6 +2,7 @@ import { Dialog } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
+import Logo from "src/components/logo";
 
 interface Props {
   mobileMenuOpen: boolean;
@@ -24,12 +25,9 @@ const NavbarMobile = (props: Props) => {
     <Dialog as="div" open={mobileMenuOpen} onClose={setMobileMenuOpen}>
       <Dialog.Panel className="fixed inset-0 z-10 overflow-y-auto bg-white px-6 py-6 dark:bg-bg-dark  lg:hidden">
         <div className="flex items-center justify-between">
-          <a
-            href="#"
-            className="-m-1.5 p-1.5 font-semibold text-gray-900 dark:text-white"
-          >
-            <span>Plutus</span>
-          </a>
+          <div className="-m-1.5 p-1.5">
+            <Logo />
+          </div>
           <button
             type="button"
             className="-m-2.5 rounded-md p-2.5 text-gray-700"
