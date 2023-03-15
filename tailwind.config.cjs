@@ -1,4 +1,7 @@
 /** @type {import('tailwindcss').Config} */
+
+const defaultTheme = require("tailwindcss/defaultTheme");
+
 module.exports = {
   content: ["./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
@@ -14,6 +17,9 @@ module.exports = {
       },
       animation: {
         "loading-blink": `loading-blink 1.4s infinite both`,
+      },
+      fontFamily: {
+        'sans': ["San Francisco", ...defaultTheme.fontFamily.sans],
       },
     },
   },
