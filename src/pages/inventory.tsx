@@ -7,6 +7,9 @@ import {
 import InternalLayout from "src/components/layouts/internalLayout";
 import Loader from "src/components/loader";
 import { api } from "src/utils/api";
+import { serverSideRequireAuth } from "src/utils/serverSideRequireAuth";
+
+export const getServerSideProps = serverSideRequireAuth;
 
 // https://github.com/swkeever/headless-ui-combobox-demo/blob/main/pages/index.tsx for future research
 

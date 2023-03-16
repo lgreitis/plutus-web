@@ -2,6 +2,9 @@ import Image from "next/image";
 import InternalLayout from "src/components/layouts/internalLayout";
 import Loader from "src/components/loader";
 import { api } from "src/utils/api";
+import { serverSideRequireAuth } from "src/utils/serverSideRequireAuth";
+
+export const getServerSideProps = serverSideRequireAuth;
 
 const Search = () => {
   const { data, mutate, isLoading } = api.items.findItem.useMutation();

@@ -1,10 +1,10 @@
 import { TRPCError } from "@trpc/server";
 import { subDays } from "date-fns";
-import { createTRPCRouter, publicProcedure } from "src/server/api/trpc";
+import { createTRPCRouter, protectedProcedure } from "src/server/api/trpc";
 import { z } from "zod";
 
 export const itemsRouter = createTRPCRouter({
-  getItemStatistics: publicProcedure
+  getItemStatistics: protectedProcedure
     .input(z.object({ itemId: z.string() }))
     .query(async ({ input, ctx }) => {
       const item = await ctx.prisma.item.findUnique({
@@ -28,7 +28,7 @@ export const itemsRouter = createTRPCRouter({
       });
     }),
 
-  getItems: publicProcedure.query(async ({ ctx }) => {
+  getItems: protectedProcedure.query(async ({ ctx }) => {
     const items = await ctx.prisma.item.findMany({
       include: {
         OfficialPricingHistory: {
@@ -64,7 +64,7 @@ export const itemsRouter = createTRPCRouter({
     };
   }),
 
-  findItem: publicProcedure
+  findItem: protectedProcedure
     .input(z.object({ searchString: z.string() }))
     .mutation(async ({ input, ctx }) => {
       const items = await ctx.prisma.item.findMany({

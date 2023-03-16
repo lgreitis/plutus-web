@@ -5,6 +5,9 @@ import InventoryValueChart from "src/components/charts/inventoryValueChart";
 import InternalLayout from "src/components/layouts/internalLayout";
 import Loader from "src/components/loader";
 import { api } from "src/utils/api";
+import { serverSideRequireAuth } from "src/utils/serverSideRequireAuth";
+
+export const getServerSideProps = serverSideRequireAuth;
 
 const Overview = () => {
   const response = api.items.getItemStatistics.useQuery({

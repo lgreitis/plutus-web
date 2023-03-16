@@ -5,13 +5,11 @@ import {
   SunIcon,
 } from "@heroicons/react/24/outline";
 import type { Placement } from "@popperjs/core";
+import clsx from "clsx";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { usePopper } from "react-popper";
-
-function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(" ");
-}
+import DefaultTransition from "src/components/defaultTransition";
 
 const themes = [
   { name: "Light", value: "light", icon: <SunIcon className="h-5 w-5" /> },
@@ -79,34 +77,36 @@ const ThemeSwitcher = ({
           <MoonIcon className={sizingConstants[sizing].iconSizing} />
         )}
       </Listbox.Button>
-      <Listbox.Options
-        ref={setPopperElement}
-        className="w-32 divide-gray-200 overflow-hidden rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none dark:divide-zinc-900 dark:bg-bg-dark"
-        {...attributes.popper}
-        style={styles.popper}
-      >
-        {themes.map((el) => {
-          return (
-            <Listbox.Option
-              key={el.name}
-              className={({ active }) =>
-                classNames(
-                  active
-                    ? "bg-gray-900 text-white dark:bg-slate-200  dark:text-gray-900"
-                    : "text-gray-900 dark:text-white  ",
-                  "cursor-default select-none p-2 text-sm "
-                )
-              }
-              value={el.value}
-            >
-              <div className="flex gap-2">
-                {el.icon}
-                {el.name}
-              </div>
-            </Listbox.Option>
-          );
-        })}
-      </Listbox.Options>
+      <DefaultTransition>
+        <Listbox.Options
+          ref={setPopperElement}
+          className="w-32 divide-y divide-gray-200 overflow-hidden rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none dark:divide-zinc-900 dark:bg-bg-dark"
+          {...attributes.popper}
+          style={styles.popper}
+        >
+          {themes.map((el) => {
+            return (
+              <Listbox.Option
+                key={el.name}
+                className={({ active }) =>
+                  clsx(
+                    active
+                      ? "bg-gray-900 text-white dark:bg-slate-200  dark:text-gray-900"
+                      : "text-gray-900 dark:text-white",
+                    "cursor-default select-none p-2 text-sm "
+                  )
+                }
+                value={el.value}
+              >
+                <div className="flex gap-2">
+                  {el.icon}
+                  {el.name}
+                </div>
+              </Listbox.Option>
+            );
+          })}
+        </Listbox.Options>
+      </DefaultTransition>
     </Listbox>
   );
 };
