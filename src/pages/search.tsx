@@ -12,7 +12,7 @@ const Search = () => {
   return (
     <InternalLayout headerText="All items">
       <input
-        className="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 focus-visible:outline-none dark:bg-bg-dark dark:text-white dark:ring-neutral-800 sm:text-sm sm:leading-6"
+        className="block w-full rounded-md border-0 p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 focus-visible:outline-none dark:bg-bg-dark dark:text-white dark:ring-neutral-800 sm:text-sm sm:leading-6"
         placeholder="Search..."
         onChange={(e) => {
           mutate({ searchString: e.target.value.trim().replace(" ", " & ") });

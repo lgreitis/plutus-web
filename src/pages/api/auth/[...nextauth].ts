@@ -14,7 +14,7 @@ import { env } from "src/env.mjs";
 import { prisma } from "src/server/db";
 import { v4 as uuid } from "uuid";
 
-const HOST_NAME = "https://plutus.lukasgreicius.com";
+const HOST_NAME = "http://localhost:3000";
 const STEAM_API = "2A0740936E6F7F6A30CB64BDD1533A92";
 
 interface TokenParams {

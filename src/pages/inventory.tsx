@@ -1,53 +1,22 @@
+import type { SortingState } from "@tanstack/react-table";
 import {
   createColumnHelper,
   flexRender,
   getCoreRowModel,
+  getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import clsx from "clsx";
+import { useEffect, useState } from "react";
 import InternalLayout from "src/components/layouts/internalLayout";
 import Loader from "src/components/loader";
+import type { RouterOutputs } from "src/utils/api";
 import { api } from "src/utils/api";
 import { serverSideRequireAuth } from "src/utils/serverSideRequireAuth";
 
 export const getServerSideProps = serverSideRequireAuth;
 
 // https://github.com/swkeever/headless-ui-combobox-demo/blob/main/pages/index.tsx for future research
-
-// type Person = {
-//   firstName: string;
-//   lastName: string;
-//   age: number;
-//   visits: number;
-//   status: string;
-//   progress: number;
-// };
-
-// const defaultData: Person[] = [
-//   {
-//     firstName: "tanner",
-//     lastName: "linsley",
-//     age: 24,
-//     visits: 100,
-//     status: "In Relationship",
-//     progress: 50,
-//   },
-//   {
-//     firstName: "tandy",
-//     lastName: "miller",
-//     age: 40,
-//     visits: 40,
-//     status: "Single",
-//     progress: 80,
-//   },
-//   {
-//     firstName: "joe",
-//     lastName: "dirte",
-//     age: 45,
-//     visits: 20,
-//     status: "Complicated",
-//     progress: 10,
-//   },
-// ];
 
 const columnHelper = createColumnHelper<{
   marketHashName: string;
@@ -65,47 +34,34 @@ const columns = [
     header: () => <span>Price</span>,
   }),
   columnHelper.accessor("trend7d", {
-    cell: (info) => <span>{info.getValue().toFixed(2)}$</span>,
+    enableSorting: true,
+    cell: (info) => <span>{info.getValue().toFixed(2)}%</span>,
     header: () => <span>Trend</span>,
   }),
-
-  // columnHelper.accessor("firstName", {
-  //   cell: (info) => info.getValue(),
-  //   footer: (info) => info.column.id,
-  // }),
-  // columnHelper.accessor((row) => row.lastName, {
-  //   id: "lastName",
-  //   cell: (info) => <i>{info.getValue()}</i>,
-  //   header: () => <span>Last Name</span>,
-  //   footer: (info) => info.column.id,
-  // }),
-  // columnHelper.accessor("age", {
-  //   header: () => "Age",
-  //   cell: (info) => info.renderValue(),
-  //   footer: (info) => info.column.id,
-  // }),
-  // columnHelper.accessor("visits", {
-  //   header: () => <span>Visits</span>,
-  //   footer: (info) => info.column.id,
-  // }),
-  // columnHelper.accessor("status", {
-  //   header: "Status",
-  //   footer: (info) => info.column.id,
-  // }),
-  // columnHelper.accessor("progress", {
-  //   header: "Profile Progress",
-  //   footer: (info) => info.column.id,
-  // }),
 ];
+
+type TableData = RouterOutputs["items"]["getItems"]["items"];
 
 const Inventory = () => {
   const { data, isLoading } = api.items.getItems.useQuery();
 
+  const [sorting, setSorting] = useState<SortingState>([]);
+
   const table = useReactTable({
     data: data?.items || [],
     columns,
+    state: {
+      sorting,
+    },
+    onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    debugTable: true,
   });
+
+  useEffect(() => {
+    console.log(sorting);
+  }, [sorting]);
 
   return (
     <InternalLayout showFilterCategories headerText="Inventory">
@@ -114,13 +70,24 @@ const Inventory = () => {
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id} className="text-left">
               {headerGroup.headers.map((header) => (
-                <th key={header.id} className="pb-4">
+                <th
+                  key={header.id}
+                  className={clsx(
+                    "pb-4",
+                    header.column.getCanSort() && "cursor-pointer"
+                  )}
+                  onClick={header.column.getToggleSortingHandler()}
+                >
                   {header.isPlaceholder
                     ? null
                     : flexRender(
                         header.column.columnDef.header,
                         header.getContext()
                       )}
+                  {{
+                    asc: " 🔼",
+                    desc: " 🔽",
+                  }[header.column.getIsSorted() as string] ?? null}
                 </th>
               ))}
             </tr>

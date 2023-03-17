@@ -11,7 +11,7 @@ export const getServerSideProps = serverSideRequireAuth;
 
 const Overview = () => {
   const response = api.items.getItemStatistics.useQuery({
-    itemId: "29feed90-347b-40cb-aaa1-1bc492e08938",
+    itemId: "38e7f876-3ca9-4787-800e-5b3a1bd9e0f5",
   });
   const [axisData, setAxisData] = useState<
     { dateMin: Date; dateMax: Date } | undefined
