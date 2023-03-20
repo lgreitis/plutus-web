@@ -28,7 +28,7 @@ export const itemsRouter = createTRPCRouter({
       });
     }),
 
-  getItems: protectedProcedure.query(async ({ ctx }) => {
+  getTableData: protectedProcedure.query(async ({ ctx }) => {
     const items = await ctx.prisma.userItem.findMany({
       where: { Inventory: { userId: ctx.session.user.id } },
       include: {
@@ -57,6 +57,7 @@ export const itemsRouter = createTRPCRouter({
             marketHashName: el.marketHashName,
             price: el.Item.lastPrice || 0,
             trend7d: 0,
+            icon: el.Item.icon,
           };
         }
 
@@ -65,6 +66,7 @@ export const itemsRouter = createTRPCRouter({
           marketHashName: el.marketHashName,
           price: first.price || 0,
           trend7d,
+          icon: el.Item.icon,
         };
       }),
     };

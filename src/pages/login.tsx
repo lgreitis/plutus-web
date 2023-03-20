@@ -1,10 +1,39 @@
 import { faDiscord, faSteam } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ArrowSmallLeftIcon } from "@heroicons/react/24/outline";
-import type { NextPage } from "next";
+import type { GetServerSideProps, NextPage } from "next";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
 import LandingLayout from "src/components/layouts/landingLayout";
+import { getServerAuthSession } from "src/server/auth";
+import { prisma } from "src/server/db";
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const { query } = context;
+
+  const session = await getServerAuthSession(context);
+
+  // Handle when Steam user is already taken
+  if (query.error && query.error === "OAuthAccountNotLinked" && session) {
+    if (
+      await prisma.inventory.findUnique({ where: { userId: session.user.id } })
+    ) {
+      await prisma.inventory.delete({ where: { userId: session.user.id } });
+    }
+
+    await prisma.user.delete({
+      where: { id: session.user.id },
+    });
+    return {
+      redirect: {
+        destination: "/steam-user-exists",
+        permanent: false,
+      },
+    };
+  }
+
+  return { props: {} };
+};
 
 const Login: NextPage = () => {
   return (
