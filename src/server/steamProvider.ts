@@ -24,8 +24,8 @@ export const SteamProvider = (req: NextApiRequest): Provider => ({
     params: {
       "openid.ns": "http://specs.openid.net/auth/2.0",
       "openid.mode": "checkid_setup",
-      "openid.return_to": `${env.NEXTAUTH_URL}/api/auth/callback/steam`,
-      "openid.realm": `${env.NEXTAUTH_URL}`,
+      "openid.return_to": `https://plutus.lukasgreicius.com/api/auth/callback/steam`,
+      "openid.realm": `https://plutus.lukasgreicius.com`,
       "openid.identity": "http://specs.openid.net/auth/2.0/identifier_select",
       "openid.claimed_id": "http://specs.openid.net/auth/2.0/identifier_select",
     },
