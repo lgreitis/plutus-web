@@ -1,5 +1,6 @@
 // import localFont from "@next/font/local";
 import { Inter } from "@next/font/google";
+import { Analytics } from "@vercel/analytics/react";
 import { type Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
 import { ThemeProvider } from "next-themes";
@@ -46,6 +47,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
       <ThemeProvider enableSystem={true} attribute="class">
         <SessionProvider session={session}>
           <Component {...pageProps} />
+          <Analytics />
         </SessionProvider>
       </ThemeProvider>
     </>
