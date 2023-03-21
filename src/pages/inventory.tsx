@@ -133,10 +133,6 @@ const Inventory = () => {
                         />
                       )}
                     </div>
-                    {/* {{
-                      asc: <ArrowUpIcon className="inline-block h-4 w-4" />,
-                      desc: <ArrowDownIcon className="inline-block h-4 w-4" />,
-                    }[header.column.getIsSorted() as string] ?? null} */}
                   </th>
                 ))}
               </tr>
