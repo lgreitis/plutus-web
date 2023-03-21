@@ -25,15 +25,23 @@ const MyApp: AppType<{ session: Session | null }> = ({
         }
       `}</style>
       <Head>
-      <meta property="og:title" content="Plutus" />
+        <meta property="og:title" content="Plutus" />
+        <title>Plutus</title>
+        <meta property="og:site_name" content="Plutus"></meta>
         <meta
           property="og:description"
-          content="The ultimate tool for CS:GO players and investors"
+          content="The ultimate tool for CS:GO players and investors."
         />
         <meta
           property="og:image"
           content="https://plutus.lukasgreicius.com/plutus-banner.png"
         />
+        <meta property="og:image:width" content="1280"></meta>
+        <meta property="og:image:height" content="640"></meta>
+        <meta
+          name="description"
+          content="The ultimate tool for CS:GO players and investors."
+        ></meta>
       </Head>
       <ThemeProvider enableSystem={true} attribute="class">
         <SessionProvider session={session}>
