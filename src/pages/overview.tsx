@@ -1,11 +1,17 @@
 import { format } from "date-fns";
+import dynamic from "next/dynamic";
 import { useState } from "react";
-import Chart from "src/components/chart";
-import InventoryValueChart from "src/components/charts/inventoryValueChart";
 import InternalLayout from "src/components/layouts/internalLayout";
 import Loader from "src/components/loader";
 import { api } from "src/utils/api";
 import { serverSideRequireAuth } from "src/utils/serverSideRequireAuth";
+
+const InventoryValueChart = dynamic(
+  () => import("src/components/charts/inventoryValueChart"),
+  { ssr: false }
+);
+
+const Chart = dynamic(() => import("src/components/chart"), { ssr: false });
 
 export const getServerSideProps = serverSideRequireAuth;
 
