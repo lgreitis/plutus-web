@@ -26,7 +26,7 @@ const NavbarMobile = (props: Props) => {
       <Dialog.Panel className="fixed inset-0 z-10 overflow-y-auto bg-white px-6 py-6 dark:bg-bg-dark  lg:hidden">
         <div className="flex items-center justify-between">
           <div className="-m-1.5 p-1.5">
-            <Logo />
+            <Logo href="/" />
           </div>
           <button
             type="button"

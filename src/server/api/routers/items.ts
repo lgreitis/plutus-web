@@ -58,6 +58,7 @@ export const itemsRouter = createTRPCRouter({
             price: el.Item.lastPrice || 0,
             trend7d: 0,
             icon: el.Item.icon,
+            rarity: el.Item.rarity,
           };
         }
 
@@ -67,6 +68,7 @@ export const itemsRouter = createTRPCRouter({
           price: first.price || 0,
           trend7d,
           icon: el.Item.icon,
+          rarity: el.Item.rarity,
         };
       }),
     };

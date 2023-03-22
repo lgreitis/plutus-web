@@ -16,6 +16,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import DefaultTransition from "src/components/defaultTransition";
+import Logo from "src/components/logo";
 import ThemeSwitcher from "src/components/themeSwitcher";
 
 const NavCategories = [
@@ -58,13 +59,14 @@ interface Props {
 const Sidebar = (props: Props) => {
   const { showFilterCategories } = props;
   const router = useRouter();
-  const { data: sessionData } = useSession();
 
   return (
     <div className="hidden border-r border-neutral-200 dark:border-neutral-800 md:fixed md:inset-y-0 md:flex md:w-64 md:flex-col">
       <div className="flex flex-1 flex-col p-6">
         <div className="flex items-center">
-          <div className="flex-1 font-semibold">Plutus</div>
+          <div className="flex-1 font-semibold">
+            <Logo href="/overview" />
+          </div>
           <div>
             <MagnifyingGlassIcon className="h-5 w-5" />
           </div>

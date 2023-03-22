@@ -21,7 +21,7 @@ const Navbar = () => {
     <div className="px-6 pt-6 lg:px-8">
       <nav className="flex items-center justify-between" aria-label="Global">
         <div className="lg:flex-1">
-          <Logo />
+          <Logo href="/" />
         </div>
         <div className="flex gap-4 lg:hidden">
           <ThemeSwitcher sizing="sm" />

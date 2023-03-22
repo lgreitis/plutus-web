@@ -3,6 +3,7 @@ import dynamic from "next/dynamic";
 import { useState } from "react";
 import InternalLayout from "src/components/layouts/internalLayout";
 import Loader from "src/components/loader";
+import HeaderText from "src/components/text/headerText";
 import { api } from "src/utils/api";
 import { serverSideRequireAuth } from "src/utils/serverSideRequireAuth";
 
@@ -24,7 +25,8 @@ const Overview = () => {
   >();
 
   return (
-    <InternalLayout headerText="Overview">
+    <InternalLayout>
+      <HeaderText>Overview</HeaderText>
       <div className="flex rounded-md bg-zinc-100 p-5 dark:bg-zinc-900">
         <div className="flex flex-1 flex-col">
           <span className="text-sm">Invested</span>

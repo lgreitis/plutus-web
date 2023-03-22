@@ -7,18 +7,27 @@ import { getServerAuthSession } from "src/server/auth";
 
 // We redirect authed users straight to the dashboard
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const session = await getServerAuthSession(context);
+  try {
+    const session = await getServerAuthSession(context);
 
-  if (session) {
+    if (session) {
+      return {
+        redirect: {
+          destination: "/overview",
+          permanent: false,
+        },
+      };
+    }
+
+    return { props: {} };
+  } catch {
     return {
       redirect: {
-        destination: "/overview",
+        destination: "/offline",
         permanent: false,
       },
     };
   }
-
-  return { props: {} };
 };
 
 const Home: NextPage = () => {

@@ -1,4 +1,4 @@
-import { faSteam } from "@fortawesome/free-brands-svg-icons";
+import faSteam from "@fortawesome/free-brands-svg-icons/faSteam";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { signIn } from "next-auth/react";
 import LandingLayout from "src/components/layouts/landingLayout";

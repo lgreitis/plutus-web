@@ -90,40 +90,4 @@ export const inventoryRouter = createTRPCRouter({
       return defaultResult;
     }
   }),
-
-  // getFetchStatus: protectedProcedure.mutation(async ({ ctx }) => {
-  //   const user = await ctx.prisma.user.findUnique({
-  //     where: { id: ctx.session.user.id },
-  //   });
-
-  //   if (!user || !user.fetchJobId) {
-  //     throw new TRPCError({ code: "NOT_FOUND" });
-  //   }
-
-  //   const apiResult = await axios.post<InventoryFetchStatusResponse>(
-  //     `${env.WORKER_API_URL}/inventoryFetchStatus`,
-  //     {
-  //       jobId: user.fetchJobId,
-  //       secret: env.WORKER_SECRET_KEY,
-  //     }
-  //   );
-
-  //   if (apiResult.status === 400) {
-  //     await ctx.prisma.user.update({
-  //       where: { id: user.id },
-  //       data: { fetchJobId: null },
-  //     });
-
-  //     throw new TRPCError({ code: "NOT_FOUND" });
-  //   }
-
-  //   if (apiResult.data.isDone) {
-  //     await ctx.prisma.user.update({
-  //       where: { id: user.id },
-  //       data: { fetchJobId: null },
-  //     });
-  //   }
-
-  //   return apiResult.data;
-  // }),
 });

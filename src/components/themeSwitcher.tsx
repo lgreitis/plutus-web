@@ -65,7 +65,7 @@ const ThemeSwitcher = ({
     <Listbox value={theme} onChange={setTheme}>
       <Listbox.Button
         ref={setReferenceElement}
-        className={`rounded-md p-1 hover:bg-gray-400/10 ${color} ${sizingConstants[sizing].buttonSizing}`}
+        className={`rounded-md p-1 hover:bg-neutral-100 dark:hover:bg-neutral-800 ${color} ${sizingConstants[sizing].buttonSizing}`}
       >
         {theme === "light" && (
           <SunIcon className={sizingConstants[sizing].iconSizing} />
