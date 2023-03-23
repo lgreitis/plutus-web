@@ -1,22 +1,15 @@
-import { Menu } from "@headlessui/react";
 import {
   ArchiveBoxIcon,
-  ArrowLeftOnRectangleIcon,
-  ChevronDownIcon,
-  Cog8ToothIcon,
   HomeIcon,
   ListBulletIcon,
   MagnifyingGlassIcon,
   Square2StackIcon,
-  UserCircleIcon,
 } from "@heroicons/react/24/outline";
 import clsx from "clsx";
-import { signOut, useSession } from "next-auth/react";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import DefaultTransition from "src/components/defaultTransition";
 import Logo from "src/components/logo";
+import UserSection from "src/components/sidebar/userSection";
 import ThemeSwitcher from "src/components/themeSwitcher";
 
 const NavCategories = [
@@ -121,68 +114,6 @@ const Sidebar = (props: Props) => {
         </div>
       </div>
     </div>
-  );
-};
-
-const UserSection = () => {
-  const { data: sessionData } = useSession();
-
-  return (
-    <>
-      <Menu>
-        <div className="relative">
-          <div>
-            <Menu.Button as="div" className="flex items-center gap-1">
-              {sessionData && sessionData.user.image ? (
-                <Image
-                  className="inline-block h-9 w-9 rounded-full"
-                  src={sessionData?.user.image}
-                  alt=""
-                  height="36"
-                  width="36"
-                />
-              ) : (
-                <UserCircleIcon className="h-9 w-9 rounded-full  text-neutral-400" />
-              )}
-              <ChevronDownIcon className="h-3 w-3 text-neutral-400" />
-            </Menu.Button>
-          </div>
-          <DefaultTransition>
-            <Menu.Items className="absolute -top-2 left-0 w-32 origin-top-right -translate-y-full transform divide-y divide-gray-200 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none dark:divide-zinc-900 dark:bg-bg-dark">
-              <Menu.Item
-                as="div"
-                className={({ active }) =>
-                  clsx(
-                    active
-                      ? "bg-gray-900 text-white dark:bg-slate-200  dark:text-gray-900"
-                      : "text-gray-900 dark:text-white",
-                    "flex cursor-default select-none gap-3 rounded-t p-2 text-sm"
-                  )
-                }
-              >
-                <Cog8ToothIcon className="h-5 w-5" />
-                Settings
-              </Menu.Item>
-              <Menu.Item
-                as="div"
-                onClick={() => void signOut({ callbackUrl: "/" })}
-                className={({ active }) =>
-                  clsx(
-                    active
-                      ? "bg-gray-900 text-white dark:bg-slate-200  dark:text-gray-900"
-                      : "text-gray-900 dark:text-white",
-                    "flex cursor-default select-none gap-3 rounded-b p-2 text-sm"
-                  )
-                }
-              >
-                <ArrowLeftOnRectangleIcon className="h-5 w-5" />
-                Logout
-              </Menu.Item>
-            </Menu.Items>
-          </DefaultTransition>
-        </div>
-      </Menu>
-    </>
   );
 };
 
