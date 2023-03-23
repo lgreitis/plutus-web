@@ -8,7 +8,7 @@ const InventoryHeader = () => {
   const [modalOpen, setModalOpen] = useState(false);
 
   return (
-    <div className="flex">
+    <div className="flex items-end">
       <HeaderText className="flex-1">Inventory</HeaderText>
       <TooltipIconButton
         onClick={() => {

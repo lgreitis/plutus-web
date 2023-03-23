@@ -9,7 +9,7 @@ import {
 } from "@tanstack/react-table";
 import clsx from "clsx";
 import Image from "next/image";
-import { useState } from "react";
+import React, { useState } from "react";
 import Loader from "src/components/loader";
 import type { RouterOutputs } from "src/utils/api";
 import { api } from "src/utils/api";
@@ -17,6 +17,14 @@ import { api } from "src/utils/api";
 type TableData = RouterOutputs["items"]["getTableData"]["items"];
 
 const columnHelper = createColumnHelper<TableData[0]>();
+
+interface GenericHeaderProps {
+  children?: React.ReactNode;
+}
+
+const GenericHeader = (props: GenericHeaderProps) => {
+  return <span className="select-none" {...props}></span>;
+};
 
 const columns = [
   columnHelper.accessor("marketHashName", {
@@ -31,22 +39,22 @@ const columns = [
             alt=""
           />
         }
-        {info.row.original.marketHashName}{" "}
-        <span className="text-neutral-500">
-          {"\u00d7"}
-          {info.row.original.quantity}
-        </span>
+        {info.row.original.marketHashName}
       </div>
     ),
-    header: () => <span>Item</span>,
+    header: () => <GenericHeader>Item</GenericHeader>,
   }),
   columnHelper.accessor("price", {
     cell: (info) => <span>{info.getValue().toFixed(2)}$</span>,
-    header: () => <span>Price</span>,
+    header: () => <GenericHeader>Price</GenericHeader>,
+  }),
+  columnHelper.accessor("quantity", {
+    cell: (info) => <span>{info.getValue()}</span>,
+    header: () => <GenericHeader>Qty.</GenericHeader>,
   }),
   columnHelper.accessor("worth", {
     cell: (info) => <span>{info.getValue().toFixed(2)}$</span>,
-    header: () => <span>Worth</span>,
+    header: () => <GenericHeader>Worth</GenericHeader>,
   }),
   columnHelper.accessor("trend7d", {
     cell: (info) => (
@@ -59,7 +67,7 @@ const columns = [
         {info.getValue().toFixed(2)}%
       </span>
     ),
-    header: () => <span>Trend</span>,
+    header: () => <GenericHeader>Trend</GenericHeader>,
   }),
 ];
 
@@ -71,7 +79,7 @@ const emptyArray: TableData = [];
 const InventoryTable = () => {
   const { data, isLoading } = api.items.getTableData.useQuery();
   const [sorting, setSorting] = useState<SortingState>([
-    { desc: true, id: "price" },
+    { desc: true, id: "worth" },
   ]);
 
   const table = useReactTable({
