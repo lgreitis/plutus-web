@@ -36,6 +36,10 @@ const columns = [
     ),
     header: () => <span>Item</span>,
   }),
+  columnHelper.accessor("quantity", {
+    cell: (info) => <span>{info.getValue()}</span>,
+    header: () => <span>Quantity</span>,
+  }),
   columnHelper.accessor("price", {
     cell: (info) => <span>{info.getValue().toFixed(2)}$</span>,
     header: () => <span>Price</span>,

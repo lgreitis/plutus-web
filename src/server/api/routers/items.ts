@@ -55,7 +55,8 @@ export const itemsRouter = createTRPCRouter({
         if (!first || !last) {
           return {
             marketHashName: el.marketHashName,
-            price: el.Item.lastPrice || 0,
+            price: (el.Item.lastPrice || 0) * el.quantity,
+            quantity: el.quantity,
             trend7d: 0,
             icon: el.Item.icon,
             rarity: el.Item.rarity,
@@ -65,47 +66,14 @@ export const itemsRouter = createTRPCRouter({
         const trend7d = ((first.price - last.price) / last.price) * 100;
         return {
           marketHashName: el.marketHashName,
-          price: first.price || 0,
+          price: (first.price || 0) * el.quantity,
+          quantity: el.quantity,
           trend7d,
           icon: el.Item.icon,
           rarity: el.Item.rarity,
         };
       }),
     };
-
-    // const items = await ctx.prisma.item.findMany({
-    //   include: {
-    //     OfficialPricingHistory: {
-    //       orderBy: { date: "desc" },
-    //       where: { date: { gte: subDays(new Date(), 7) } },
-    //       select: { price: true, date: true },
-    //     },
-    //   },
-    //   take: 100,
-    // });
-
-    // return {
-    //   items: items.map((el) => {
-    //     const first = el.OfficialPricingHistory[0];
-    //     const last =
-    //       el.OfficialPricingHistory[el.OfficialPricingHistory.length - 1];
-
-    //     if (!first || !last) {
-    //       return {
-    //         marketHashName: el.marketHashName,
-    //         price: el.lastPrice || 0,
-    //         trend7d: 0,
-    //       };
-    //     }
-
-    //     const trend7d = ((first.price - last.price) / last.price) * 100;
-    //     return {
-    //       marketHashName: el.marketHashName,
-    //       price: first.price || 0,
-    //       trend7d,
-    //     };
-    //   }),
-    // };
   }),
 
   findItem: protectedProcedure
