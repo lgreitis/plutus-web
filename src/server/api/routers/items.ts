@@ -55,7 +55,8 @@ export const itemsRouter = createTRPCRouter({
         if (!first || !last) {
           return {
             marketHashName: el.marketHashName,
-            price: (el.Item.lastPrice || 0) * el.quantity,
+            price: el.Item.lastPrice || 0,
+            worth: (el.Item.lastPrice || 0) * el.quantity,
             quantity: el.quantity,
             trend7d: 0,
             icon: el.Item.icon,
@@ -66,7 +67,8 @@ export const itemsRouter = createTRPCRouter({
         const trend7d = ((first.price - last.price) / last.price) * 100;
         return {
           marketHashName: el.marketHashName,
-          price: (first.price || 0) * el.quantity,
+          price: first.price || 0,
+          worth: (first.price || 0) * el.quantity,
           quantity: el.quantity,
           trend7d,
           icon: el.Item.icon,

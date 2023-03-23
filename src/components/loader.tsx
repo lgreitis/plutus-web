@@ -12,14 +12,14 @@ const Loader = (props: Props) => {
         props.className
       )}
     >
-      <div className="h-1 w-1 animate-loading-blink rounded-full opacity-100 dark:bg-white"></div>
+      <div className="h-1 w-1 animate-loading-blink rounded-full bg-black opacity-100 dark:bg-white"></div>
       <div
         style={{ animationDelay: "0.2s" }}
-        className="h-1 w-1 animate-loading-blink rounded-full opacity-100 dark:bg-white"
+        className="h-1 w-1 animate-loading-blink rounded-full bg-black opacity-100 dark:bg-white"
       ></div>
       <div
         style={{ animationDelay: "0.4s" }}
-        className="h-1 w-1 animate-loading-blink rounded-full opacity-100 dark:bg-white"
+        className="h-1 w-1 animate-loading-blink rounded-full bg-black opacity-100 dark:bg-white"
       ></div>
     </div>
   );

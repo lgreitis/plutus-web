@@ -21,7 +21,7 @@ const columnHelper = createColumnHelper<TableData[0]>();
 const columns = [
   columnHelper.accessor("marketHashName", {
     cell: (info) => (
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-1 md:gap-3">
         {
           <Image
             src={`https://community.akamai.steamstatic.com/economy/image/${info.row.original.icon}/360fx360f`}
@@ -31,18 +31,22 @@ const columns = [
             alt=""
           />
         }
-        {info.row.original.marketHashName}
+        {info.row.original.marketHashName}{" "}
+        <span className="text-neutral-500">
+          {"\u00d7"}
+          {info.row.original.quantity}
+        </span>
       </div>
     ),
     header: () => <span>Item</span>,
   }),
-  columnHelper.accessor("quantity", {
-    cell: (info) => <span>{info.getValue()}</span>,
-    header: () => <span>Quantity</span>,
-  }),
   columnHelper.accessor("price", {
     cell: (info) => <span>{info.getValue().toFixed(2)}$</span>,
     header: () => <span>Price</span>,
+  }),
+  columnHelper.accessor("worth", {
+    cell: (info) => <span>{info.getValue().toFixed(2)}$</span>,
+    header: () => <span>Worth</span>,
   }),
   columnHelper.accessor("trend7d", {
     cell: (info) => (
@@ -104,8 +108,8 @@ const InventoryTable = () => {
                   className={clsx(
                     "flex items-center",
                     header.column.getCanSort() && !header.column.getIsSorted()
-                      ? "pr-5"
-                      : "gap-2"
+                      ? "pr-4"
+                      : "gap-1"
                   )}
                 >
                   {header.isPlaceholder
@@ -132,7 +136,7 @@ const InventoryTable = () => {
       </thead>
       <tbody>
         {table.getRowModel().rows.map((row) => (
-          <tr key={row.id} className="border-b border-neutral-800">
+          <tr key={row.id}>
             {row.getVisibleCells().map((cell) => (
               <td key={cell.id} className="py-2">
                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
