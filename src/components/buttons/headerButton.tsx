@@ -1,5 +1,6 @@
 interface Props {
   children?: React.ReactNode;
+  onClick?: () => void;
 }
 
 const HeaderButton = (props: Props) => {

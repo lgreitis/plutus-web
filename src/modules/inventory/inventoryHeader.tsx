@@ -10,7 +10,7 @@ const InventoryHeader = () => {
   return (
     <div className="flex items-end">
       <HeaderText className="flex-1">Inventory</HeaderText>
-      <HeaderButton>
+      <HeaderButton onClick={() => setModalOpen(true)}>
         <ArrowPathIcon className="h-5 w-5" /> Refresh
       </HeaderButton>
       {modalOpen && (
