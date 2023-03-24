@@ -9,8 +9,8 @@ import clsx from "clsx";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import Logo from "src/components/logo";
-import UserSection from "src/components/sidebar/userSection";
 import ThemeSwitcher from "src/components/themeSwitcher";
+import UserSection from "src/modules/sidebar/userSection";
 
 const NavCategories = [
   {

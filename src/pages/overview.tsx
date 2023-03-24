@@ -8,11 +8,9 @@ import { api } from "src/utils/api";
 import { serverSideRequireAuth } from "src/utils/serverSideRequireAuth";
 
 const InventoryValueChart = dynamic(
-  () => import("src/components/charts/inventoryValueChart"),
+  () => import("src/modules/charts/inventoryValueChart"),
   { ssr: false }
 );
-
-const Chart = dynamic(() => import("src/components/chart"), { ssr: false });
 
 export const getServerSideProps = serverSideRequireAuth;
 
@@ -54,21 +52,6 @@ const Overview = () => {
               />
             </div>
             <XAxis data={response.data} axisData={axisData} />
-          </>
-        ) : (
-          <div className="flex h-64 justify-center">
-            <Loader />
-          </div>
-        )}
-      </div>
-      <div className="flex  flex-col gap-4 rounded-md border border-neutral-200 p-4 dark:border-neutral-800">
-        <span className="text-sm font-semibold">Portfolio value</span>
-        {response.data ? (
-          <>
-            <div className="h-64">
-              <Chart data={response.data} />
-            </div>
-            <XAxis data={response.data} />
           </>
         ) : (
           <div className="flex h-64 justify-center">

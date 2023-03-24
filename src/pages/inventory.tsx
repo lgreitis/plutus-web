@@ -1,6 +1,6 @@
-import InventoryHeader from "src/components/inventory/inventoryHeader";
-import InventoryTable from "src/components/inventory/inventoryTable";
 import InternalLayout from "src/components/layouts/internalLayout";
+import InventoryHeader from "src/modules/inventory/inventoryHeader";
+import InventoryTable from "src/modules/inventory/inventoryTable";
 import { serverSideRequireAuth } from "src/utils/serverSideRequireAuth";
 
 export const getServerSideProps = serverSideRequireAuth;

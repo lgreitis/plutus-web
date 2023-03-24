@@ -1,5 +1,5 @@
 import Head from "next/head";
-import { CirclesBottom, CirclesTop } from "src/components/hero/circles";
+import { CirclesBottom, CirclesTop } from "src/modules/hero/circles";
 
 type Props = {
   children?: React.ReactNode;

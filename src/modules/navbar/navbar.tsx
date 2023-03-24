@@ -3,8 +3,8 @@ import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { useState } from "react";
 import Logo from "src/components/logo";
-import NavbarMobile from "src/components/navbar/navbarMobile";
 import ThemeSwitcher from "src/components/themeSwitcher";
+import NavbarMobile from "src/modules/navbar/navbarMobile";
 
 const navigation = [
   { name: "Nav1", href: "#" },

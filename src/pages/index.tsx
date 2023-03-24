@@ -1,8 +1,8 @@
 import type { GetServerSideProps } from "next";
 import { type NextPage } from "next";
-import Hero from "src/components/hero/hero";
 import LandingLayout from "src/components/layouts/landingLayout";
-import Navbar from "src/components/navbar/navbar";
+import Hero from "src/modules/hero/hero";
+import Navbar from "src/modules/navbar/navbar";
 import { getServerAuthSession } from "src/server/auth";
 
 // We redirect authed users straight to the dashboard

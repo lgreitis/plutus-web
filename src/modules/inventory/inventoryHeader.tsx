@@ -1,8 +1,8 @@
 import { ArrowPathIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
-import TooltipIconButton from "src/components/buttons/tooltipIconButton";
-import InventoryFetchModal from "src/components/modals/inventoryFetchModal";
+import HeaderButton from "src/components/buttons/headerButton";
 import HeaderText from "src/components/text/headerText";
+import InventoryFetchModal from "src/modules/modals/inventoryFetchModal";
 
 const InventoryHeader = () => {
   const [modalOpen, setModalOpen] = useState(false);
@@ -10,13 +10,9 @@ const InventoryHeader = () => {
   return (
     <div className="flex items-end">
       <HeaderText className="flex-1">Inventory</HeaderText>
-      <TooltipIconButton
-        onClick={() => {
-          setModalOpen(true);
-        }}
-        icon={<ArrowPathIcon />}
-        tooltipText="Refresh inventory"
-      />
+      <HeaderButton>
+        <ArrowPathIcon className="h-5 w-5" /> Refresh
+      </HeaderButton>
       {modalOpen && (
         <InventoryFetchModal
           open={modalOpen}
