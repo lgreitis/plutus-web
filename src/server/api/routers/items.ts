@@ -33,7 +33,20 @@ export const itemsRouter = createTRPCRouter({
         continue;
       }
 
-      worth += apiPrice.avg;
+      const latestPrice = getLatestPrice(
+        {
+          date: item.Item.officialPricingHistoryUpdateTime || new Date(0),
+          price: item.Item.lastPrice || 0,
+        },
+        item.Item.ApiItemPrice[0]
+          ? {
+              date: item.Item.ApiItemPrice[0].fetchTime,
+              price: item.Item.ApiItemPrice[0].current,
+            }
+          : undefined
+      );
+
+      worth += latestPrice;
     }
 
     return { worth: worth.toFixed(2) };
@@ -91,11 +104,24 @@ export const itemsRouter = createTRPCRouter({
             el.Item.OfficialPricingHistory.length - 1
           ];
 
+        const latestPrice = getLatestPrice(
+          {
+            date: el.Item.officialPricingHistoryUpdateTime || new Date(0),
+            price: el.Item.lastPrice || 0,
+          },
+          el.Item.ApiItemPrice[0]
+            ? {
+                date: el.Item.ApiItemPrice[0].fetchTime,
+                price: el.Item.ApiItemPrice[0].current,
+              }
+            : undefined
+        );
+
         if (!first || !last) {
           return {
             marketHashName: el.marketHashName,
-            price: el.Item.ApiItemPrice[0]?.avg || 0,
-            worth: (el.Item.lastPrice || 0) * el.quantity,
+            price: latestPrice || 0,
+            worth: latestPrice * el.quantity,
             quantity: el.quantity,
             trend7d: 0,
             icon: el.Item.icon,
@@ -106,8 +132,8 @@ export const itemsRouter = createTRPCRouter({
         const trend7d = ((first.price - last.price) / last.price) * 100;
         return {
           marketHashName: el.marketHashName,
-          price: el.Item.ApiItemPrice[0]?.avg || 0,
-          worth: (first.price || 0) * el.quantity,
+          price: latestPrice || 0,
+          worth: latestPrice * el.quantity,
           quantity: el.quantity,
           trend7d,
           icon: el.Item.icon,
@@ -137,3 +163,24 @@ export const itemsRouter = createTRPCRouter({
       return { items };
     }),
 });
+
+const getLatestPrice = (
+  first?: { date: Date; price: number },
+  second?: { date: Date; price: number }
+) => {
+  if (!first && second) {
+    return second.price;
+  }
+  if (!second && first) {
+    return first.price;
+  }
+  if (first && second) {
+    if (first.date > second.date) {
+      return first.price;
+    } else {
+      return second.price;
+    }
+  }
+
+  return 0;
+};
