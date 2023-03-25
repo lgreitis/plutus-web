@@ -18,6 +18,7 @@ const Overview = () => {
   const response = api.items.getItemStatistics.useQuery({
     itemId: "38e7f876-3ca9-4787-800e-5b3a1bd9e0f5",
   });
+  const worthResponse = api.items.getInventoryWorth.useQuery();
   const [axisData, setAxisData] = useState<
     { dateMin: Date; dateMax: Date } | undefined
   >();
@@ -28,15 +29,17 @@ const Overview = () => {
       <div className="flex rounded-md bg-zinc-100 p-5 dark:bg-zinc-900">
         <div className="flex flex-1 flex-col">
           <span className="text-sm">Invested</span>
-          <span className="text-2xl font-semibold">953,57$</span>
+          <span className="text-2xl font-semibold">0.00$</span>
         </div>
         <div className="flex flex-1 flex-col border-l border-zinc-200 pl-2 dark:border-zinc-800">
           <span className="text-sm">Total value</span>
-          <span className="text-2xl font-semibold">1100,01$</span>
+          <span className="text-2xl font-semibold">
+            {worthResponse.data?.worth || 0.0}$
+          </span>
         </div>
         <div className="flex flex-1 flex-col border-l border-zinc-200 pl-2 dark:border-zinc-800">
           <span className="text-sm">Profit</span>
-          <span className="text-2xl font-semibold text-green-400">146,44$</span>
+          <span className="text-2xl font-semibold text-green-400">0.00$</span>
         </div>
       </div>
       <div className="flex flex-col gap-4 rounded-md border border-neutral-200 p-4 dark:border-neutral-800">

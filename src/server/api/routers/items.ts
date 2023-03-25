@@ -4,6 +4,41 @@ import { createTRPCRouter, protectedProcedure } from "src/server/api/trpc";
 import { z } from "zod";
 
 export const itemsRouter = createTRPCRouter({
+  getInventoryWorth: protectedProcedure.query(async ({ ctx }) => {
+    const items = await ctx.prisma.userItem.findMany({
+      where: {
+        Inventory: { userId: ctx.session.user.id },
+      },
+      include: {
+        Item: {
+          include: {
+            ApiItemPrice: {
+              orderBy: { fetchTime: "desc" },
+              take: 1,
+            },
+          },
+        },
+      },
+    });
+
+    if (!items) {
+      throw new TRPCError({ code: "NOT_FOUND" });
+    }
+
+    let worth = 0;
+
+    for (const item of items) {
+      const apiPrice = item.Item.ApiItemPrice[0];
+      if (!apiPrice) {
+        continue;
+      }
+
+      worth += apiPrice.avg;
+    }
+
+    return { worth: worth.toFixed(2) };
+  }),
+
   getItemStatistics: protectedProcedure
     .input(z.object({ itemId: z.string() }))
     .query(async ({ input, ctx }) => {
@@ -39,6 +74,10 @@ export const itemsRouter = createTRPCRouter({
               where: { date: { gte: subDays(new Date(), 7) } },
               select: { price: true, date: true },
             },
+            ApiItemPrice: {
+              orderBy: { fetchTime: "desc" },
+              take: 1,
+            },
           },
         },
       },
@@ -55,7 +94,7 @@ export const itemsRouter = createTRPCRouter({
         if (!first || !last) {
           return {
             marketHashName: el.marketHashName,
-            price: el.Item.lastPrice || 0,
+            price: el.Item.ApiItemPrice[0]?.avg || 0,
             worth: (el.Item.lastPrice || 0) * el.quantity,
             quantity: el.quantity,
             trend7d: 0,
@@ -67,7 +106,7 @@ export const itemsRouter = createTRPCRouter({
         const trend7d = ((first.price - last.price) / last.price) * 100;
         return {
           marketHashName: el.marketHashName,
-          price: first.price || 0,
+          price: el.Item.ApiItemPrice[0]?.avg || 0,
           worth: (first.price || 0) * el.quantity,
           quantity: el.quantity,
           trend7d,
