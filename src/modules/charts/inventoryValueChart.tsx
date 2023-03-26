@@ -1,4 +1,4 @@
-import moment from "moment";
+import { addMonths, getTime, isBefore, startOfMonth } from "date-fns";
 import { useState } from "react";
 import type { TooltipProps } from "recharts";
 import {
@@ -20,13 +20,14 @@ function getMonthEpochs(fromDate?: Date, toDate?: Date): number[] {
     return [];
   }
 
-  const startOfMonth = moment(fromDate).startOf("month").subtract(0, "month");
-  const endOfMonth = moment(toDate).endOf("month").add(1, "month");
   const monthEpochs: number[] = [];
+  monthEpochs.push(getTime(fromDate));
+  let startMonth = startOfMonth(addMonths(fromDate, 1));
+  const endMonth = toDate;
 
-  while (startOfMonth.isSameOrBefore(endOfMonth)) {
-    monthEpochs.push(startOfMonth.valueOf());
-    startOfMonth.add(1, "month").startOf("month");
+  while (isBefore(startMonth, endMonth)) {
+    monthEpochs.push(getTime(startMonth));
+    startMonth = addMonths(startMonth, 1);
   }
 
   return monthEpochs;
@@ -42,6 +43,8 @@ interface InitialState {
   data: DataType[];
   left: string | number;
   right: string | number;
+  top: string | number;
+  bottom: string | number;
   refAreaLeft?: number;
   refAreaRight?: number;
 }
@@ -56,6 +59,8 @@ const InventoryValueChart = (props: Props) => {
     data: props.data,
     left: "dataMin",
     right: "dataMax",
+    top: "dataMax",
+    bottom: "dataMin",
     refAreaLeft: undefined,
     refAreaRight: undefined,
   };
@@ -82,6 +87,15 @@ const InventoryValueChart = (props: Props) => {
     if (refAreaLeft && refAreaRight && refAreaLeft > refAreaRight)
       [refAreaLeft, refAreaRight] = [refAreaRight, refAreaLeft];
 
+    let bottom: string | number = "dataMin";
+    let top: string | number = "dataMax";
+
+    if (refAreaLeft && refAreaRight) {
+      const res = getAxisYDomain(refAreaLeft, refAreaRight);
+      bottom = res[0] || 0;
+      top = res[1] || 0;
+    }
+
     if (props.onZoom) {
       props.onZoom(
         new Date(refAreaLeft || props.data[0]?.date || ""),
@@ -93,12 +107,52 @@ const InventoryValueChart = (props: Props) => {
       data: props.data.slice(),
       refAreaLeft: undefined,
       refAreaRight: undefined,
+      top,
+      bottom,
       left: refAreaLeft || initialState.left,
       right: refAreaRight || initialState.right,
     });
   };
 
-  const { data, left, right, refAreaLeft, refAreaRight } = zoomGraph;
+  // const getAxisYDomain = (from: number, to: number, ref: keyof DataType) => {
+  //   const refData: DataType[] = zoomGraph.data.filter(
+  //     (el) => el.name > from && el.name < to
+  //   );
+  //   if (!refData[0]) {
+  //     return [0, 0];
+  //   }
+  //   let [bottom, top] = [refData[0][ref], refData[0][ref]];
+
+  //   refData.forEach((d) => {
+  //     if (d[ref] > top) top = d[ref];
+  //     if (d[ref] < bottom) bottom = d[ref];
+  //   });
+
+  //   console.log(bottom, top);
+  //   return [bottom, top];
+  //   // return [(bottom | 0) - offset, (top | 0) + offset];
+  // };
+
+  const getAxisYDomain = (from: number, to: number) => {
+    const ref = "price" as const;
+    const refData: DataType[] = zoomGraph.data.filter(
+      (el) => el.name > from && el.name < to
+    );
+    if (!refData[0]) {
+      return [0, 0];
+    }
+    let [bottom, top] = [refData[0][ref], refData[0][ref]];
+
+    refData.forEach((d) => {
+      if (d[ref] > top) top = d[ref];
+      if (d[ref] < bottom) bottom = d[ref];
+    });
+
+    return [bottom, top];
+  };
+
+  const { data, left, right, top, bottom, refAreaLeft, refAreaRight } =
+    zoomGraph;
 
   return (
     <ResponsiveContainer width="100%">
@@ -153,7 +207,7 @@ const InventoryValueChart = (props: Props) => {
           wrapperStyle={{ outline: "none" }}
           content={<TooltipComponent />}
         />
-        <YAxis hide domain={["auto", "auto"]} type="number" />
+        <YAxis hide allowDataOverflow domain={[bottom, top]} type="number" />
         <Line
           stroke="url(#colorUvLine)"
           strokeWidth={3}

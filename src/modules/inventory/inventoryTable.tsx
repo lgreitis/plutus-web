@@ -9,6 +9,7 @@ import {
 } from "@tanstack/react-table";
 import clsx from "clsx";
 import Image from "next/image";
+import Link from "next/link";
 import React, { useState } from "react";
 import Loader from "src/components/loader";
 import type { RouterOutputs } from "src/utils/api";
@@ -35,11 +36,16 @@ const columns = [
             src={`https://community.akamai.steamstatic.com/economy/image/${info.row.original.icon}/360fx360f`}
             width={48}
             height={48}
-            className="h-12 w-12 rounded-xl border border-neutral-200 dark:border-neutral-800"
+            className="h-12 w-12 rounded-xl border"
+            style={{
+              borderColor: `#${info.row.original.borderColor || "D2D2D2"}`,
+            }}
             alt=""
           />
         }
-        {info.row.original.marketHashName}
+        <Link href={`/item/${info.row.original.marketHashName}`}>
+          {info.row.original.marketHashName}
+        </Link>
       </div>
     ),
     header: () => <GenericHeader>Item</GenericHeader>,

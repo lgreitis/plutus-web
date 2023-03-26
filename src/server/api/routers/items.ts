@@ -1,5 +1,5 @@
 import { TRPCError } from "@trpc/server";
-import { subDays } from "date-fns";
+import { subDays, subMonths } from "date-fns";
 import { createTRPCRouter, protectedProcedure } from "src/server/api/trpc";
 import { z } from "zod";
 
@@ -76,6 +76,30 @@ export const itemsRouter = createTRPCRouter({
       });
     }),
 
+  getItemStatisticsMHN: protectedProcedure
+    .input(z.object({ marketHashName: z.string() }))
+    .query(async ({ input, ctx }) => {
+      const item = await ctx.prisma.item.findUnique({
+        where: { marketHashName: input.marketHashName },
+      });
+
+      if (!item) {
+        throw new TRPCError({ code: "NOT_FOUND" });
+      }
+
+      return (
+        await ctx.prisma.officialPricingHistory.findMany({
+          where: {
+            itemId: item.id,
+            date: { gt: subMonths(new Date(), 1) },
+          },
+          orderBy: { date: "asc" },
+        })
+      ).map((el) => {
+        return { ...el, name: el.date.getTime() };
+      });
+    }),
+
   getTableData: protectedProcedure.query(async ({ ctx }) => {
     const items = await ctx.prisma.userItem.findMany({
       where: { Inventory: { userId: ctx.session.user.id } },
@@ -123,6 +147,7 @@ export const itemsRouter = createTRPCRouter({
             price: latestPrice || 0,
             worth: latestPrice * el.quantity,
             quantity: el.quantity,
+            borderColor: el.Item.borderColor,
             trend7d: 0,
             icon: el.Item.icon,
             rarity: el.Item.rarity,
@@ -135,6 +160,7 @@ export const itemsRouter = createTRPCRouter({
           price: latestPrice || 0,
           worth: latestPrice * el.quantity,
           quantity: el.quantity,
+          borderColor: el.Item.borderColor,
           trend7d,
           icon: el.Item.icon,
           rarity: el.Item.rarity,
