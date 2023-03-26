@@ -1,5 +1,5 @@
 import { TRPCError } from "@trpc/server";
-import { subDays, subMonths } from "date-fns";
+import { subDays, subMonths, subWeeks, subYears } from "date-fns";
 import { createTRPCRouter, protectedProcedure } from "src/server/api/trpc";
 import { z } from "zod";
 
@@ -77,7 +77,12 @@ export const itemsRouter = createTRPCRouter({
     }),
 
   getItemStatisticsMHN: protectedProcedure
-    .input(z.object({ marketHashName: z.string() }))
+    .input(
+      z.object({
+        marketHashName: z.string(),
+        range: z.enum(["week", "month", "year", "all"]),
+      })
+    )
     .query(async ({ input, ctx }) => {
       const item = await ctx.prisma.item.findUnique({
         where: { marketHashName: input.marketHashName },
@@ -87,11 +92,32 @@ export const itemsRouter = createTRPCRouter({
         throw new TRPCError({ code: "NOT_FOUND" });
       }
 
+      let date = new Date();
+
+      switch (input.range) {
+        case "week": {
+          date = subWeeks(new Date(), 1);
+          break;
+        }
+        case "year": {
+          date = subYears(new Date(), 1);
+          break;
+        }
+        case "month": {
+          date = subMonths(new Date(), 1);
+          break;
+        }
+        case "all": {
+          date = new Date(0);
+          break;
+        }
+      }
+
       return (
         await ctx.prisma.officialPricingHistory.findMany({
           where: {
             itemId: item.id,
-            date: { gt: subMonths(new Date(), 1) },
+            date: { gt: date },
           },
           orderBy: { date: "asc" },
         })
