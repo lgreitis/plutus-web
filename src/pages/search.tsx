@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import InternalLayout from "src/components/layouts/internalLayout";
 import Loader from "src/components/loader";
 import HeaderText from "src/components/text/headerText";
@@ -24,7 +25,8 @@ const Search = () => {
       <div className="flex flex-col gap-2">
         {data &&
           data.items.map((el) => (
-            <div
+            <Link
+              href={`/item/${el.marketHashName}`}
               key={el.id}
               className="flex w-full items-center gap-2 rounded-md border border-neutral-200 px-2 dark:border-neutral-800"
             >
@@ -34,8 +36,9 @@ const Search = () => {
                 height={48}
                 alt={el.marketHashName}
               />
-              <div>{el.marketHashName}</div>
-            </div>
+              <div className="flex-1">{el.marketHashName}</div>
+              <span>{el.latestPrice.toFixed(2)}$</span>
+            </Link>
           ))}
       </div>
     </InternalLayout>

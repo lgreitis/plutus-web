@@ -4,6 +4,20 @@ import { createTRPCRouter, protectedProcedure } from "src/server/api/trpc";
 import { z } from "zod";
 
 export const itemsRouter = createTRPCRouter({
+  getItem: protectedProcedure
+    .input(z.object({ marketHashName: z.string() }))
+    .query(async ({ input, ctx }) => {
+      const item = await ctx.prisma.item.findUnique({
+        where: { marketHashName: input.marketHashName },
+      });
+
+      if (!item) {
+        throw new TRPCError({ code: "NOT_FOUND" });
+      }
+
+      return item;
+    }),
+
   getInventoryWorth: protectedProcedure.query(async ({ ctx }) => {
     const items = await ctx.prisma.userItem.findMany({
       where: {
@@ -198,21 +212,56 @@ export const itemsRouter = createTRPCRouter({
   findItem: protectedProcedure
     .input(z.object({ searchString: z.string() }))
     .mutation(async ({ input, ctx }) => {
-      await ctx.prisma.userItem.findFirst({
-        where: { Inventory: { userId: ctx.session.user.id } },
-      });
+      // await ctx.prisma.userItem.findFirst({
+      //   where: { Inventory: { userId: ctx.session.user.id } },
+      // });
 
       const items = await ctx.prisma.item.findMany({
         where: { marketHashName: { search: input.searchString } },
-        select: {
-          id: true,
-          marketHashName: true,
-          icon: true,
+        // select: {
+        //   id: true,
+        //   marketHashName: true,
+        //   icon: true,
+
+        // },
+        include: {
+          OfficialPricingHistory: {
+            orderBy: { date: "desc" },
+            where: { date: { gte: subDays(new Date(), 7) } },
+            select: { price: true, date: true },
+          },
+          ApiItemPrice: {
+            orderBy: { fetchTime: "desc" },
+            take: 1,
+          },
         },
         take: 10,
       });
 
-      return { items };
+      // return { items };
+      const populatedItems = items.map((el) => {
+        const latestPrice = getLatestPrice(
+          {
+            date: el.officialPricingHistoryUpdateTime || new Date(0),
+            price: el.lastPrice || 0,
+          },
+          el.ApiItemPrice[0]
+            ? {
+                date: el.ApiItemPrice[0].fetchTime,
+                price: el.ApiItemPrice[0].current,
+              }
+            : undefined
+        );
+
+        return {
+          id: el.id,
+          marketHashName: el.marketHashName,
+          icon: el.icon,
+          latestPrice: latestPrice,
+        };
+      });
+
+      return { items: populatedItems };
     }),
 });
 

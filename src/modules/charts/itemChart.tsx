@@ -12,21 +12,14 @@ import {
   YAxis,
 } from "recharts";
 import type { NameType } from "recharts/types/component/DefaultTooltipContent";
-import { getMonthEpochs } from "src/utils/chartUtils";
+import { getEpochs } from "src/utils/chartUtils";
 import type { ValueType } from "tailwindcss/types/config";
-
-function getEpochs(fromDate?: Date, toDate?: Date): number[] {
-  if (!fromDate || !toDate) {
-    return [];
-  }
-
-  return getMonthEpochs(fromDate, toDate);
-}
 
 interface DataType {
   name: number;
   date: Date;
   price: number;
+  volume: number;
 }
 
 interface InitialState {
@@ -44,7 +37,7 @@ interface Props {
   onZoom?: (dateMin: Date, dateMax: Date) => void;
 }
 
-const InventoryValueChart = (props: Props) => {
+const ItemChart = (props: Props) => {
   const initialState: InitialState = {
     data: props.data,
     left: "dataMin",
@@ -81,7 +74,7 @@ const InventoryValueChart = (props: Props) => {
     let top: string | number = "dataMax";
 
     if (refAreaLeft && refAreaRight) {
-      const res = getAxisYDomain(refAreaLeft, refAreaRight);
+      const res = getAxisYDomain(refAreaLeft, refAreaRight, "price");
       bottom = res[0] || 0;
       top = res[1] || 0;
     }
@@ -104,8 +97,11 @@ const InventoryValueChart = (props: Props) => {
     });
   };
 
-  const getAxisYDomain = (from: number, to: number) => {
-    const ref = "price" as const;
+  const getAxisYDomain = (
+    from: number,
+    to: number,
+    ref: keyof Omit<DataType, "date">
+  ) => {
     const refData: DataType[] = zoomGraph.data.filter(
       (el) => el.name > from && el.name < to
     );
@@ -148,16 +144,6 @@ const InventoryValueChart = (props: Props) => {
         }
         onMouseUp={() => zoom()}
       >
-        <defs>
-          <linearGradient id="colorUvArea" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="10%" stopColor="#d23174" stopOpacity={0.5} />
-            <stop offset="90%" stopColor="#912d96" stopOpacity={0.5} />
-          </linearGradient>
-          <linearGradient id="colorUvLine" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="10%" stopColor="#d23174" />
-            <stop offset="90%" stopColor="#912d96" />
-          </linearGradient>
-        </defs>
         <CartesianGrid
           horizontal={false}
           strokeDasharray="3"
@@ -179,19 +165,29 @@ const InventoryValueChart = (props: Props) => {
           content={<TooltipComponent />}
         />
         <YAxis hide allowDataOverflow domain={[bottom, top]} type="number" />
-        <Line
-          stroke="url(#colorUvLine)"
-          strokeWidth={3}
-          type="monotone"
-          dataKey="price"
-          dot={false}
-          animationDuration={500}
+        <YAxis
+          yAxisId="2"
+          hide
+          orientation="left"
+          allowDataOverflow
+          domain={[0, (dataMax: number) => dataMax * 2]}
+          type="number"
         />
         <Area
-          type="monotone"
-          stroke="false"
+          stroke="#9333ea"
+          fill="#a855f7"
+          yAxisId="2"
+          type="step"
+          animationDuration={300}
+          opacity="50%"
+          dataKey="volume"
+        />
+        <Line
+          stroke="#14b8a6"
+          strokeWidth={3}
+          type="linear"
           dataKey="price"
-          fill="url(#colorUvArea)"
+          dot={false}
           animationDuration={500}
         />
         {refAreaLeft && refAreaRight && (
@@ -212,11 +208,14 @@ const TooltipComponent = (props: TooltipProps<ValueType, NameType>) => {
       <span className="text-sm font-semibold text-neutral-500">
         {new Date(parseInt(String(props.label))).toLocaleString()}
       </span>
-      <span key={props.payload[0]?.value}>
-        Price: {parseFloat(props.payload[0]?.value || "0").toFixed(2)}$
-      </span>
+      <div key={props.payload[0]?.value} className="flex flex-col gap-1">
+        <span>
+          Price: {parseFloat(props.payload[1]?.value || "0").toFixed(2)}$
+        </span>
+        <span>Volume: {parseFloat(props.payload[0]?.value || "0")}</span>
+      </div>
     </div>
   );
 };
 
-export default InventoryValueChart;
+export default ItemChart;

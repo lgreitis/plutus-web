@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import InternalLayout from "src/components/layouts/internalLayout";
 import Loader from "src/components/loader";
 import HeaderText from "src/components/text/headerText";
-import InventoryValueChart from "src/modules/charts/inventoryValueChart";
+import ItemChart from "src/modules/charts/itemChart";
 import { api } from "src/utils/api";
 
 const ranges = [
@@ -33,6 +33,9 @@ const ItemPage = () => {
   const [range, setRange] = useState<"month" | "week" | "year" | "all">(
     "month"
   );
+  const itemInfoQuery = api.items.getItem.useQuery({
+    marketHashName: marketHashName?.toString() || "",
+  });
   const query = api.items.getItemStatisticsMHN.useQuery({
     marketHashName: marketHashName?.toString() || "",
     range: range,
@@ -48,6 +51,18 @@ const ItemPage = () => {
   return (
     <InternalLayout>
       <HeaderText className="flex">
+        {/* {itemInfoQuery.data && (
+          <Image
+            src={`https://community.akamai.steamstatic.com/economy/image/${itemInfoQuery.data.icon}/360fx360f`}
+            width={48}
+            height={48}
+            className="h-12 w-12 rounded-xl border"
+            style={{
+              borderColor: `#${itemInfoQuery.data.borderColor || "D2D2D2"}`,
+            }}
+            alt=""
+          />
+        )} */}
         <span className="flex-1">{marketHashName}</span>
         <div className="flex w-1/4 justify-between divide-x divide-neutral-800 rounded border border-neutral-800">
           {ranges.map((el) => (
@@ -73,7 +88,7 @@ const ItemPage = () => {
           {query.data && !query.isFetching ? (
             <>
               <div className="h-64">
-                <InventoryValueChart
+                <ItemChart
                   data={query.data}
                   onZoom={(dateMin, dateMax) => {
                     setAxisData({ dateMin, dateMax });
