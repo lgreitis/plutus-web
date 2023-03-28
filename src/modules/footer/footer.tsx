@@ -11,12 +11,12 @@ import Link from "next/link";
 const Footer = () => {
   return (
     <footer className="bg-white dark:bg-bg-dark">
-      <div className="mx-auto flex w-full max-w-7xl justify-between py-6 px-6 lg:px-8">
+      <div className="mx-auto flex w-full max-w-7xl justify-between gap-2 py-6 px-6 lg:px-8">
         <div className="flex flex-col items-start">
           <p className="text-center text-xs leading-5 text-gray-500">
             &copy; 2023 Lukas Greičius. Powered by Steam.
           </p>
-          <p className="text-center text-xs leading-5 text-gray-500">
+          <p className="mx-auto text-center text-xs leading-5 text-gray-500 sm:mx-0">
             Support this project on{" "}
             <Link
               className="text-blacfaDiscordk dark:text-neutral-400"
