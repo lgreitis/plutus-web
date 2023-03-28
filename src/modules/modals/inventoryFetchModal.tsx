@@ -13,7 +13,7 @@ const InventoryFetchModal = (props: Props) => {
   const [started, setStarted] = useState(true);
   const [done, setDone] = useState(false);
   const { mutate, data, error, isError } =
-    api.inventory.startItemFetch.useMutation({
+    api.inventoryFetch.startItemFetch.useMutation({
       cacheTime: 0,
     });
 

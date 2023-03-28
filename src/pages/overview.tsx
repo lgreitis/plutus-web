@@ -16,9 +16,10 @@ export const getServerSideProps = serverSideRequireAuth;
 
 const Overview = () => {
   const response = api.items.getItemStatistics.useQuery({
-    itemId: "38e7f876-3ca9-4787-800e-5b3a1bd9e0f5",
+    marketHashName: "Howl Pin",
+    range: "year",
   });
-  const worthResponse = api.items.getInventoryWorth.useQuery();
+  const worthResponse = api.inventory.getInventoryWorth.useQuery();
   const [axisData, setAxisData] = useState<
     { dateMin: Date; dateMax: Date } | undefined
   >();

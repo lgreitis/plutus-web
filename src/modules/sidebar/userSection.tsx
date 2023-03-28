@@ -8,6 +8,7 @@ import {
 import clsx from "clsx";
 import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
+import Link from "next/link";
 import DefaultTransition from "src/components/defaultTransition";
 
 const UserSection = () => {
@@ -41,7 +42,8 @@ const UserSection = () => {
       <DefaultTransition>
         <Menu.Items className="absolute -top-2 left-0 w-32 origin-top-right -translate-y-full transform divide-y divide-gray-200 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none dark:divide-zinc-900 dark:bg-bg-dark">
           <Menu.Item
-            as="div"
+            as={Link}
+            href="/settings"
             className={({ active }) =>
               clsx(
                 active

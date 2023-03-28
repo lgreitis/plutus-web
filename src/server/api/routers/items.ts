@@ -1,7 +1,22 @@
+import type { OfficialPricingHistory } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
-import { subDays, subMonths, subWeeks, subYears } from "date-fns";
+import { startOfDay, subMonths, subWeeks, subYears } from "date-fns";
 import { createTRPCRouter, protectedProcedure } from "src/server/api/trpc";
 import { z } from "zod";
+
+interface StatisticsDataPoint {
+  price: number;
+  volume: number;
+  date: Date;
+  name: number;
+}
+
+interface DataGroup {
+  volume: number;
+  itemCount: number;
+  sumPrice: number;
+  price: number;
+}
 
 export const itemsRouter = createTRPCRouter({
   getItem: protectedProcedure
@@ -18,79 +33,7 @@ export const itemsRouter = createTRPCRouter({
       return item;
     }),
 
-  getInventoryWorth: protectedProcedure.query(async ({ ctx }) => {
-    const items = await ctx.prisma.userItem.findMany({
-      where: {
-        Inventory: { userId: ctx.session.user.id },
-      },
-      include: {
-        Item: {
-          include: {
-            ApiItemPrice: {
-              orderBy: { fetchTime: "desc" },
-              take: 1,
-            },
-          },
-        },
-      },
-    });
-
-    if (!items) {
-      throw new TRPCError({ code: "NOT_FOUND" });
-    }
-
-    let worth = 0;
-
-    for (const item of items) {
-      const apiPrice = item.Item.ApiItemPrice[0];
-      if (!apiPrice) {
-        continue;
-      }
-
-      const latestPrice = getLatestPrice(
-        {
-          date: item.Item.officialPricingHistoryUpdateTime || new Date(0),
-          price: item.Item.lastPrice || 0,
-        },
-        item.Item.ApiItemPrice[0]
-          ? {
-              date: item.Item.ApiItemPrice[0].fetchTime,
-              price: item.Item.ApiItemPrice[0].current,
-            }
-          : undefined
-      );
-
-      worth += latestPrice;
-    }
-
-    return { worth: worth.toFixed(2) };
-  }),
-
   getItemStatistics: protectedProcedure
-    .input(z.object({ itemId: z.string() }))
-    .query(async ({ input, ctx }) => {
-      const item = await ctx.prisma.item.findUnique({
-        where: { id: input.itemId },
-      });
-
-      if (!item) {
-        throw new TRPCError({ code: "NOT_FOUND" });
-      }
-
-      return (
-        await ctx.prisma.officialPricingHistory.findMany({
-          where: {
-            itemId: item.id,
-            date: { gt: new Date("2022-01-01") },
-          },
-          orderBy: { date: "asc" },
-        })
-      ).map((el) => {
-        return { ...el, name: el.date.getTime() };
-      });
-    }),
-
-  getItemStatisticsMHN: protectedProcedure
     .input(
       z.object({
         marketHashName: z.string(),
@@ -107,181 +50,94 @@ export const itemsRouter = createTRPCRouter({
       }
 
       let date = new Date();
+      let needToNormalizeData = false;
 
       switch (input.range) {
         case "week": {
           date = subWeeks(new Date(), 1);
           break;
         }
-        case "year": {
-          date = subYears(new Date(), 1);
-          break;
-        }
         case "month": {
           date = subMonths(new Date(), 1);
           break;
         }
+        case "year": {
+          needToNormalizeData = true;
+          date = subYears(new Date(), 1);
+          break;
+        }
         case "all": {
+          needToNormalizeData = true;
           date = new Date(0);
           break;
         }
       }
 
-      return (
-        await ctx.prisma.officialPricingHistory.findMany({
-          where: {
-            itemId: item.id,
-            date: { gt: date },
-          },
-          orderBy: { date: "asc" },
-        })
-      ).map((el) => {
-        return { ...el, name: el.date.getTime() };
-      });
-    }),
-
-  getTableData: protectedProcedure.query(async ({ ctx }) => {
-    const items = await ctx.prisma.userItem.findMany({
-      where: { Inventory: { userId: ctx.session.user.id } },
-      include: {
-        Item: {
-          include: {
-            OfficialPricingHistory: {
-              orderBy: { date: "desc" },
-              where: { date: { gte: subDays(new Date(), 7) } },
-              select: { price: true, date: true },
-            },
-            ApiItemPrice: {
-              orderBy: { fetchTime: "desc" },
-              take: 1,
-            },
-          },
+      const data = await ctx.prisma.officialPricingHistory.findMany({
+        where: {
+          itemId: item.id,
+          date: { gt: date },
         },
-      },
-    });
-
-    return {
-      items: items.map((el) => {
-        const first = el.Item.OfficialPricingHistory[0];
-        const last =
-          el.Item.OfficialPricingHistory[
-            el.Item.OfficialPricingHistory.length - 1
-          ];
-
-        const latestPrice = getLatestPrice(
-          {
-            date: el.Item.officialPricingHistoryUpdateTime || new Date(0),
-            price: el.Item.lastPrice || 0,
-          },
-          el.Item.ApiItemPrice[0]
-            ? {
-                date: el.Item.ApiItemPrice[0].fetchTime,
-                price: el.Item.ApiItemPrice[0].current,
-              }
-            : undefined
-        );
-
-        if (!first || !last) {
-          return {
-            marketHashName: el.marketHashName,
-            price: latestPrice || 0,
-            worth: latestPrice * el.quantity,
-            quantity: el.quantity,
-            borderColor: el.Item.borderColor,
-            trend7d: 0,
-            icon: el.Item.icon,
-            rarity: el.Item.rarity,
-          };
-        }
-
-        const trend7d = ((first.price - last.price) / last.price) * 100;
-        return {
-          marketHashName: el.marketHashName,
-          price: latestPrice || 0,
-          worth: latestPrice * el.quantity,
-          quantity: el.quantity,
-          borderColor: el.Item.borderColor,
-          trend7d,
-          icon: el.Item.icon,
-          rarity: el.Item.rarity,
-        };
-      }),
-    };
-  }),
-
-  findItem: protectedProcedure
-    .input(z.object({ searchString: z.string() }))
-    .mutation(async ({ input, ctx }) => {
-      // await ctx.prisma.userItem.findFirst({
-      //   where: { Inventory: { userId: ctx.session.user.id } },
-      // });
-
-      const items = await ctx.prisma.item.findMany({
-        where: { marketHashName: { search: input.searchString } },
-        // select: {
-        //   id: true,
-        //   marketHashName: true,
-        //   icon: true,
-
-        // },
-        include: {
-          OfficialPricingHistory: {
-            orderBy: { date: "desc" },
-            where: { date: { gte: subDays(new Date(), 7) } },
-            select: { price: true, date: true },
-          },
-          ApiItemPrice: {
-            orderBy: { fetchTime: "desc" },
-            take: 1,
-          },
-        },
-        take: 10,
+        orderBy: { date: "asc" },
       });
 
-      // return { items };
-      const populatedItems = items.map((el) => {
-        const latestPrice = getLatestPrice(
-          {
-            date: el.officialPricingHistoryUpdateTime || new Date(0),
-            price: el.lastPrice || 0,
-          },
-          el.ApiItemPrice[0]
-            ? {
-                date: el.ApiItemPrice[0].fetchTime,
-                price: el.ApiItemPrice[0].current,
-              }
-            : undefined
-        );
+      if (needToNormalizeData) {
+        const normalized = normalizeData(data);
+        const result: StatisticsDataPoint[] = [];
 
+        normalized.forEach((value, key) => {
+          result.push({
+            price: value.price,
+            volume: value.volume,
+            date: new Date(key),
+            name: key,
+          });
+        });
+
+        return result;
+      }
+
+      return data.map((el) => {
         return {
-          id: el.id,
-          marketHashName: el.marketHashName,
-          icon: el.icon,
-          latestPrice: latestPrice,
+          price: el.price,
+          volume: el.volume,
+          date: el.date,
+          name: el.date.getTime(),
         };
       });
-
-      return { items: populatedItems };
     }),
 });
 
-const getLatestPrice = (
-  first?: { date: Date; price: number },
-  second?: { date: Date; price: number }
-) => {
-  if (!first && second) {
-    return second.price;
-  }
-  if (!second && first) {
-    return first.price;
-  }
-  if (first && second) {
-    if (first.date > second.date) {
-      return first.price;
-    } else {
-      return second.price;
-    }
-  }
+const normalizeData = (
+  items: OfficialPricingHistory[]
+): Map<number, DataGroup> => {
+  const groupedData = new Map<number, DataGroup>();
 
-  return 0;
+  items.forEach((item) => {
+    const start = startOfDay(item.date).getTime();
+    if (groupedData.has(start)) {
+      const dataGroup = groupedData.get(start);
+
+      if (dataGroup) {
+        const combinedItemCount = dataGroup.itemCount + 1;
+        const combinedPrice = dataGroup.sumPrice + item.price;
+        const combinedVolume = dataGroup.volume + item.volume;
+        groupedData.set(start, {
+          itemCount: combinedItemCount,
+          sumPrice: combinedPrice,
+          volume: combinedVolume,
+          price: combinedPrice / combinedItemCount,
+        });
+      }
+    } else {
+      groupedData.set(start, {
+        itemCount: 1,
+        price: item.price,
+        sumPrice: item.price,
+        volume: item.volume,
+      });
+    }
+  });
+
+  return groupedData;
 };

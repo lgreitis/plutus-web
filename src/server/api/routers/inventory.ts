@@ -1,93 +1,124 @@
 import { TRPCError } from "@trpc/server";
-import axios, { isAxiosError } from "axios";
-import { env } from "src/env.mjs";
+import { subDays } from "date-fns";
 import { createTRPCRouter, protectedProcedure } from "src/server/api/trpc";
-
-interface InventoryFetchStartResponse {
-  success: boolean;
-  jobId: string;
-}
-
-interface InventoryFetchStatusResponse {
-  isDone: boolean;
-  jobFailed: boolean;
-  progress: number;
-  success: boolean;
-}
-
-const defaultResult: InventoryFetchStatusResponse = {
-  isDone: false,
-  jobFailed: false,
-  progress: 0,
-  success: true,
-};
+import { getLatestPrice } from "src/utils/priceUtils";
 
 export const inventoryRouter = createTRPCRouter({
-  startItemFetch: protectedProcedure.mutation(async ({ ctx }) => {
-    const userId = ctx.session.user.id;
-    const userAccount = await ctx.prisma.account.findFirst({
-      where: { userId, provider: "steam" },
-      include: { user: true },
+  getInventoryWorth: protectedProcedure.query(async ({ ctx }) => {
+    const items = await ctx.prisma.userItem.findMany({
+      where: {
+        Inventory: { userId: ctx.session.user.id },
+      },
+      include: {
+        Item: {
+          include: {
+            ApiItemPrice: {
+              orderBy: { fetchTime: "desc" },
+              take: 1,
+            },
+          },
+        },
+      },
     });
 
-    if (!userAccount) {
-      throw new TRPCError({ code: "BAD_REQUEST" });
+    if (!items) {
+      throw new TRPCError({ code: "NOT_FOUND" });
     }
 
-    const user = userAccount.user;
+    let worth = 0;
 
-    if (user.fetchJobId) {
-      const apiStatus = await axios
-        .post<InventoryFetchStatusResponse>(
-          `${env.WORKER_API_URL}/inventoryFetchStatus`,
-          {
-            jobId: user.fetchJobId,
-            secret: env.WORKER_SECRET_KEY,
-          }
-        )
-        .catch(async (error) => {
-          if (isAxiosError(error)) {
-            if (error.response?.status === 400) {
-              await ctx.prisma.user.update({
-                where: { id: user.id },
-                data: { fetchJobId: null },
-              });
-              throw new TRPCError({ code: "NOT_FOUND" });
-            }
-          }
-
-          throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
-        });
-
-      if (apiStatus && apiStatus.data.isDone) {
-        await ctx.prisma.user.update({
-          where: { id: user.id },
-          data: { fetchJobId: null },
-        });
-        return apiStatus.data;
-      } else {
-        return defaultResult;
+    for (const item of items) {
+      const apiPrice = item.Item.ApiItemPrice[0];
+      if (!apiPrice) {
+        continue;
       }
-    } else {
-      const apiResult = await axios.post<InventoryFetchStartResponse>(
-        `${env.WORKER_API_URL}/inventoryFetch`,
+
+      const latestPrice = getLatestPrice(
         {
-          steamId: userAccount.steamid,
-          userId,
-          secret: env.WORKER_SECRET_KEY,
-        }
+          date: item.Item.officialPricingHistoryUpdateTime || new Date(0),
+          price: item.Item.lastPrice || 0,
+        },
+        item.Item.ApiItemPrice[0]
+          ? {
+              date: item.Item.ApiItemPrice[0].fetchTime,
+              price: item.Item.ApiItemPrice[0].current,
+            }
+          : undefined
       );
 
-      if (!apiResult.data.success) {
-        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
-      }
-
-      await ctx.prisma.user.update({
-        where: { id: userId },
-        data: { fetchJobId: apiResult.data.jobId, lastFetch: new Date() },
-      });
-
-      return defaultResult;
+      worth += latestPrice;
     }
+
+    return { worth: worth.toFixed(2) };
+  }),
+
+  getTableData: protectedProcedure.query(async ({ ctx }) => {
+    const items = await ctx.prisma.userItem.findMany({
+      where: { Inventory: { userId: ctx.session.user.id } },
+      include: {
+        Item: {
+          include: {
+            OfficialPricingHistory: {
+              orderBy: { date: "desc" },
+              // TODO: this is wrong
+              where: { date: { gte: subDays(new Date(), 7) } },
+              select: { price: true, date: true },
+            },
+            ApiItemPrice: {
+              orderBy: { fetchTime: "desc" },
+              take: 1,
+            },
+          },
+        },
+      },
+    });
+
+    return {
+      items: items.map((el) => {
+        const first = el.Item.OfficialPricingHistory[0];
+        const last =
+          el.Item.OfficialPricingHistory[
+            el.Item.OfficialPricingHistory.length - 1
+          ];
+
+        const latestPrice = getLatestPrice(
+          {
+            date: el.Item.officialPricingHistoryUpdateTime || new Date(0),
+            price: el.Item.lastPrice || 0,
+          },
+          el.Item.ApiItemPrice[0]
+            ? {
+                date: el.Item.ApiItemPrice[0].fetchTime,
+                price: el.Item.ApiItemPrice[0].current,
+              }
+            : undefined
+        );
+
+        if (!first || !last) {
+          return {
+            marketHashName: el.marketHashName,
+            price: latestPrice || 0,
+            worth: latestPrice * el.quantity,
+            quantity: el.quantity,
+            borderColor: el.Item.borderColor,
+            trend7d: 0,
+            icon: el.Item.icon,
+            rarity: el.Item.rarity,
+          };
+        }
+
+        const trend7d = ((first.price - last.price) / last.price) * 100;
+        return {
+          marketHashName: el.marketHashName,
+          price: latestPrice || 0,
+          worth: latestPrice * el.quantity,
+          quantity: el.quantity,
+          borderColor: el.Item.borderColor,
+          trend7d,
+          icon: el.Item.icon,
+          rarity: el.Item.rarity,
+        };
+      }),
+    };
   }),
 });

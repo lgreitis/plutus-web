@@ -36,7 +36,7 @@ const ItemPage = () => {
   const itemInfoQuery = api.items.getItem.useQuery({
     marketHashName: marketHashName?.toString() || "",
   });
-  const query = api.items.getItemStatisticsMHN.useQuery({
+  const query = api.items.getItemStatistics.useQuery({
     marketHashName: marketHashName?.toString() || "",
     range: range,
   });

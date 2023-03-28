@@ -15,7 +15,7 @@ import Loader from "src/components/loader";
 import type { RouterOutputs } from "src/utils/api";
 import { api } from "src/utils/api";
 
-type TableData = RouterOutputs["items"]["getTableData"]["items"];
+type TableData = RouterOutputs["inventory"]["getTableData"]["items"];
 
 const columnHelper = createColumnHelper<TableData[0]>();
 
@@ -83,7 +83,7 @@ const columns = [
 const emptyArray: TableData = [];
 
 const InventoryTable = () => {
-  const { data, isLoading } = api.items.getTableData.useQuery();
+  const { data, isLoading } = api.inventory.getTableData.useQuery();
   const [sorting, setSorting] = useState<SortingState>([
     { desc: true, id: "worth" },
   ]);

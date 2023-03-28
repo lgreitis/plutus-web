@@ -9,7 +9,7 @@ import { serverSideRequireAuth } from "src/utils/serverSideRequireAuth";
 export const getServerSideProps = serverSideRequireAuth;
 
 const Search = () => {
-  const { data, mutate, isLoading } = api.items.findItem.useMutation();
+  const { data, mutate, isLoading } = api.search.findItem.useMutation();
 
   return (
     <InternalLayout>
