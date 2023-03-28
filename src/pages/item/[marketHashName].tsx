@@ -50,21 +50,9 @@ const ItemPage = () => {
 
   return (
     <InternalLayout>
-      <HeaderText className="flex">
-        {/* {itemInfoQuery.data && (
-          <Image
-            src={`https://community.akamai.steamstatic.com/economy/image/${itemInfoQuery.data.icon}/360fx360f`}
-            width={48}
-            height={48}
-            className="h-12 w-12 rounded-xl border"
-            style={{
-              borderColor: `#${itemInfoQuery.data.borderColor || "D2D2D2"}`,
-            }}
-            alt=""
-          />
-        )} */}
+      <HeaderText className="flex flex-col items-center gap-2 md:flex-row">
         <span className="flex-1">{marketHashName}</span>
-        <div className="flex w-1/4 justify-between divide-x divide-neutral-800 rounded border border-neutral-800">
+        <div className="flex w-1/4 min-w-max justify-between divide-x divide-neutral-800 rounded border border-neutral-800">
           {ranges.map((el) => (
             <button
               type="button"
@@ -75,7 +63,7 @@ const ItemPage = () => {
               className={clsx(
                 range === el.key &&
                   "bg-neutral-800 text-neutral-700 dark:text-neutral-200",
-                "w-full p-1 text-base text-neutral-500 transition-all hover:bg-neutral-900 hover:text-neutral-700 dark:hover:text-neutral-200"
+                "w-full p-1 text-sm text-neutral-500 transition-all hover:bg-neutral-900 hover:text-neutral-700 dark:hover:text-neutral-200"
               )}
             >
               {el.title}

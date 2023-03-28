@@ -1,5 +1,6 @@
 import { TRPCError } from "@trpc/server";
-import { subDays } from "date-fns";
+import { subDays, subYears } from "date-fns";
+import { normalizeDateWithFills } from "src/server/api/routers/items";
 import { createTRPCRouter, protectedProcedure } from "src/server/api/trpc";
 import { getLatestPrice } from "src/utils/priceUtils";
 
@@ -50,6 +51,61 @@ export const inventoryRouter = createTRPCRouter({
     }
 
     return { worth: worth.toFixed(2) };
+  }),
+
+  getOverviewGraph: protectedProcedure.query(async ({ ctx }) => {
+    const items = await ctx.prisma.userItem.findMany({
+      where: { Inventory: { userId: ctx.session.user.id } },
+      select: {
+        quantity: true,
+        Item: {
+          include: {
+            OfficialPricingHistory: {
+              orderBy: { date: "desc" },
+              where: { date: { gt: subYears(new Date(), 1) } },
+            },
+          },
+        },
+      },
+    });
+
+    const chartData = new Map<
+      number,
+      { price: number; quantity: number; hits: number }
+    >();
+
+    items.forEach((item) => {
+      const data = normalizeDateWithFills(item.Item.OfficialPricingHistory);
+      data.forEach((val) => {
+        const el = chartData.get(val.date.getTime());
+        if (el) {
+          chartData.set(val.date.getTime(), {
+            quantity: el.quantity,
+            price: el.price + val.price,
+            hits: el.hits + 1,
+          });
+        } else {
+          chartData.set(val.date.getTime(), {
+            price: val.price,
+            quantity: item.quantity,
+            hits: 1,
+          });
+        }
+      });
+    });
+
+    const res: { price: number; date: Date; name: number; hits: number }[] = [];
+
+    chartData.forEach((val, key) => {
+      res.push({
+        price: val.price * val.quantity,
+        date: new Date(key),
+        name: key,
+        hits: val.hits,
+      });
+    });
+
+    return res.sort((a, b) => (a.date > b.date ? -1 : 1));
   }),
 
   getTableData: protectedProcedure.query(async ({ ctx }) => {

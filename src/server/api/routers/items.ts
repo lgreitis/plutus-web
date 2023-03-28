@@ -1,6 +1,12 @@
 import type { OfficialPricingHistory } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
-import { startOfDay, subMonths, subWeeks, subYears } from "date-fns";
+import {
+  eachDayOfInterval,
+  startOfDay,
+  subMonths,
+  subWeeks,
+  subYears,
+} from "date-fns";
 import { createTRPCRouter, protectedProcedure } from "src/server/api/trpc";
 import { z } from "zod";
 
@@ -108,7 +114,7 @@ export const itemsRouter = createTRPCRouter({
     }),
 });
 
-const normalizeData = (
+export const normalizeData = (
   items: OfficialPricingHistory[]
 ): Map<number, DataGroup> => {
   const groupedData = new Map<number, DataGroup>();
@@ -140,4 +146,41 @@ const normalizeData = (
   });
 
   return groupedData;
+};
+
+export const normalizeDateWithFills = (items: OfficialPricingHistory[]) => {
+  const intervals = eachDayOfInterval({
+    start: subYears(new Date(), 1),
+    end: startOfDay(new Date()),
+  }).map((el) => ({ price: 0, date: el }));
+
+  let last: number | undefined;
+
+  const normalizedItems = normalizeData(items);
+
+  const result = intervals.map((el) => {
+    const item = normalizedItems.get(el.date.getTime());
+    if (item) {
+      last = item.price;
+      return { ...el, price: item.price };
+    } else if (last) {
+      return { ...el, price: last };
+    }
+    return { ...el };
+  });
+
+  return result;
+
+  // normalizedItems.forEach((value, key) => {
+  //   const index = result.findIndex((val) => val.date === new Date(key));
+  //   if (index) {
+  //     last = value.price;
+  //     result[index] = {
+  //       price: (result[index]?.price || 0) + value.price,
+  //       date: result[index]?.date || new Date(),
+  //     };
+  //   }else if (last) {
+
+  //   }
+  // });
 };

@@ -15,10 +15,7 @@ const InventoryValueChart = dynamic(
 export const getServerSideProps = serverSideRequireAuth;
 
 const Overview = () => {
-  const response = api.items.getItemStatistics.useQuery({
-    marketHashName: "Howl Pin",
-    range: "year",
-  });
+  const response = api.inventory.getOverviewGraph.useQuery();
   const worthResponse = api.inventory.getInventoryWorth.useQuery();
   const [axisData, setAxisData] = useState<
     { dateMin: Date; dateMax: Date } | undefined
