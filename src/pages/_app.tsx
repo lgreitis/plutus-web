@@ -43,6 +43,17 @@ const MyApp: AppType<{ session: Session | null }> = ({
           name="description"
           content="The ultimate tool for CS:GO players and investors."
         ></meta>
+        <link rel="icon" href="/favicon.ico" />
+        <meta
+          name="theme-color"
+          content="#ffffff"
+          media="(prefers-color-scheme: light)"
+        ></meta>
+        <meta
+          name="theme-color"
+          content="#101214"
+          media="(prefers-color-scheme: dark)"
+        ></meta>
       </Head>
       <ThemeProvider enableSystem={true} attribute="class">
         <SessionProvider session={session}>

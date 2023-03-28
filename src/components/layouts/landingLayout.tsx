@@ -1,4 +1,3 @@
-import Head from "next/head";
 import { CirclesBottom, CirclesTop } from "src/modules/hero/circles";
 
 type Props = {
@@ -8,12 +7,7 @@ type Props = {
 const LandingLayout = (props: Props) => {
   return (
     <>
-      <Head>
-        <title>Plutus</title>
-        {/* <meta name="description" content="Plutus" /> */}
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <div className="isolate h-screen min-h-screen dark:bg-bg-dark">
+      <div className="isolate h-screen min-h-screen bg-white dark:bg-bg-dark">
         <CirclesTop />
         <CirclesBottom />
         {props.children}
