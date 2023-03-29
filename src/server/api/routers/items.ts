@@ -158,8 +158,6 @@ export const fillEmptyDataPoints = (
     start: items[0]?.date || new Date(),
     end: items[items.length - 1]?.date || new Date(),
   }).map((el) => ({ price: 0, date: startOfDay(el).getTime() }));
-  // console.log(items[0]?.date);
-  // console.log(items[items.length - 1]?.date);
 
   let last: number | undefined;
 

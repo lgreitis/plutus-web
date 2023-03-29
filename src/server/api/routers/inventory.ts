@@ -47,7 +47,7 @@ export const inventoryRouter = createTRPCRouter({
           : undefined
       );
 
-      worth += latestPrice;
+      worth += latestPrice * item.quantity;
     }
 
     return { worth: worth.toFixed(2) };
@@ -69,7 +69,7 @@ export const inventoryRouter = createTRPCRouter({
       },
     });
 
-    const chartData = new Map<number, { price: number; quantity: number }>();
+    const chartData = new Map<number, { price: number }>();
 
     for (const item of items) {
       const data = fillEmptyDataPoints(
@@ -79,13 +79,11 @@ export const inventoryRouter = createTRPCRouter({
         const el = chartData.get(val.date);
         if (el) {
           chartData.set(val.date, {
-            quantity: el.quantity,
-            price: el.price + val.price,
+            price: el.price + val.price * item.quantity,
           });
         } else {
           chartData.set(val.date, {
-            price: val.price,
-            quantity: item.quantity,
+            price: val.price * item.quantity,
           });
         }
       });
@@ -95,7 +93,7 @@ export const inventoryRouter = createTRPCRouter({
 
     for (const [key, val] of chartData.entries()) {
       res.push({
-        price: val.price * val.quantity,
+        price: val.price,
         date: new Date(key),
         name: key,
       });
