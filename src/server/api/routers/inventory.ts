@@ -1,6 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import { subDays, subYears } from "date-fns";
-import { normalizeDateWithFills } from "src/server/api/routers/items";
+import { fillEmptyDataPoints } from "src/server/api/routers/items";
 import { createTRPCRouter, protectedProcedure } from "src/server/api/trpc";
 import { getLatestPrice } from "src/utils/priceUtils";
 
@@ -60,8 +60,8 @@ export const inventoryRouter = createTRPCRouter({
         quantity: true,
         Item: {
           include: {
-            OfficialPricingHistory: {
-              orderBy: { date: "desc" },
+            OfficialPricingHistoryOptimized: {
+              orderBy: { date: "asc" },
               where: { date: { gt: subYears(new Date(), 1) } },
             },
           },
@@ -69,43 +69,39 @@ export const inventoryRouter = createTRPCRouter({
       },
     });
 
-    const chartData = new Map<
-      number,
-      { price: number; quantity: number; hits: number }
-    >();
+    const chartData = new Map<number, { price: number; quantity: number }>();
 
-    items.forEach((item) => {
-      const data = normalizeDateWithFills(item.Item.OfficialPricingHistory);
+    for (const item of items) {
+      const data = fillEmptyDataPoints(
+        item.Item.OfficialPricingHistoryOptimized
+      );
       data.forEach((val) => {
-        const el = chartData.get(val.date.getTime());
+        const el = chartData.get(val.date);
         if (el) {
-          chartData.set(val.date.getTime(), {
+          chartData.set(val.date, {
             quantity: el.quantity,
             price: el.price + val.price,
-            hits: el.hits + 1,
           });
         } else {
-          chartData.set(val.date.getTime(), {
+          chartData.set(val.date, {
             price: val.price,
             quantity: item.quantity,
-            hits: 1,
           });
         }
       });
-    });
+    }
 
-    const res: { price: number; date: Date; name: number; hits: number }[] = [];
+    const res: { price: number; date: Date; name: number }[] = [];
 
-    chartData.forEach((val, key) => {
+    for (const [key, val] of chartData.entries()) {
       res.push({
         price: val.price * val.quantity,
         date: new Date(key),
         name: key,
-        hits: val.hits,
       });
-    });
+    }
 
-    return res.sort((a, b) => (a.date > b.date ? -1 : 1));
+    return res;
   }),
 
   getTableData: protectedProcedure.query(async ({ ctx }) => {

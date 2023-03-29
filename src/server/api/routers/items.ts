@@ -1,4 +1,7 @@
-import type { OfficialPricingHistory } from "@prisma/client";
+import type {
+  OfficialPricingHistory,
+  OfficialPricingHistoryOptimized,
+} from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import {
   eachDayOfInterval,
@@ -115,7 +118,7 @@ export const itemsRouter = createTRPCRouter({
 });
 
 export const normalizeData = (
-  items: OfficialPricingHistory[]
+  items: (OfficialPricingHistory | OfficialPricingHistoryOptimized)[]
 ): Map<number, DataGroup> => {
   const groupedData = new Map<number, DataGroup>();
 
@@ -148,18 +151,31 @@ export const normalizeData = (
   return groupedData;
 };
 
-export const normalizeDateWithFills = (items: OfficialPricingHistory[]) => {
+export const fillEmptyDataPoints = (
+  items: OfficialPricingHistoryOptimized[]
+) => {
   const intervals = eachDayOfInterval({
-    start: subYears(new Date(), 1),
-    end: startOfDay(new Date()),
-  }).map((el) => ({ price: 0, date: el }));
+    start: items[0]?.date || new Date(),
+    end: items[items.length - 1]?.date || new Date(),
+  }).map((el) => ({ price: 0, date: startOfDay(el).getTime() }));
+  // console.log(items[0]?.date);
+  // console.log(items[items.length - 1]?.date);
 
   let last: number | undefined;
 
-  const normalizedItems = normalizeData(items);
+  const itemMap = new Map<number, DataGroup>();
+
+  for (const item of items) {
+    itemMap.set(startOfDay(item.date).getTime(), {
+      itemCount: 1,
+      price: item.price,
+      sumPrice: item.price,
+      volume: item.volume,
+    });
+  }
 
   const result = intervals.map((el) => {
-    const item = normalizedItems.get(el.date.getTime());
+    const item = itemMap.get(el.date);
     if (item) {
       last = item.price;
       return { ...el, price: item.price };
@@ -170,17 +186,4 @@ export const normalizeDateWithFills = (items: OfficialPricingHistory[]) => {
   });
 
   return result;
-
-  // normalizedItems.forEach((value, key) => {
-  //   const index = result.findIndex((val) => val.date === new Date(key));
-  //   if (index) {
-  //     last = value.price;
-  //     result[index] = {
-  //       price: (result[index]?.price || 0) + value.price,
-  //       date: result[index]?.date || new Date(),
-  //     };
-  //   }else if (last) {
-
-  //   }
-  // });
 };
