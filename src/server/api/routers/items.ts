@@ -156,7 +156,7 @@ export const fillEmptyDataPoints = (
 ) => {
   const intervals = eachDayOfInterval({
     start: items[0]?.date || new Date(),
-    end: items[items.length - 1]?.date || new Date(),
+    end: new Date(),
   }).map((el) => ({ price: 0, date: startOfDay(el).getTime() }));
 
   let last: number | undefined;
