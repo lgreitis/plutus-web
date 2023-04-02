@@ -1,5 +1,5 @@
 import { Dialog, Transition } from "@headlessui/react";
-import { XMarkIcon } from "@heroicons/react/24/outline";
+import { CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Fragment, useEffect, useState } from "react";
 import { api } from "src/utils/api";
 
@@ -107,6 +107,31 @@ const InventoryFetchModal = (props: Props) => {
 interface DoneProps {
   onClick: () => void;
 }
+
+const SuccessContent = (props: DoneProps) => {
+  const { onClick } = props;
+
+  return (
+    <>
+      <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100 dark:bg-green-900">
+        <CheckIcon className="h-10 w-10 text-green-600" />
+      </div>
+      <Dialog.Title as="h3" className="pt-1 text-lg font-medium leading-6">
+        We&apos;re done!
+      </Dialog.Title>
+      <span className="text-neutral-500">
+        Your inventory is now up to date!
+      </span>
+      <button
+        type="button"
+        className="h-10 w-full rounded border border-black bg-black px-3 text-sm text-white transition-all duration-150 hover:bg-white hover:text-black dark:border-white  dark:bg-white dark:text-black hover:dark:bg-bg-dark hover:dark:text-white"
+        onClick={onClick}
+      >
+        Close
+      </button>
+    </>
+  );
+};
 
 const ErrorContent = (props: DoneProps) => {
   const { onClick } = props;
