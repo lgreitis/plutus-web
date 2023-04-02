@@ -99,7 +99,7 @@ export const inventoryRouter = createTRPCRouter({
       });
     }
 
-    return res;
+    return res.sort((a, b) => (a.date > b.date ? 1 : -1));
   }),
 
   getTableData: protectedProcedure.query(async ({ ctx }) => {
@@ -108,7 +108,7 @@ export const inventoryRouter = createTRPCRouter({
       include: {
         Item: {
           include: {
-            OfficialPricingHistory: {
+            OfficialPricingHistoryOptimized: {
               orderBy: { date: "desc" },
               // TODO: this is wrong
               where: { date: { gte: subDays(new Date(), 7) } },
@@ -125,10 +125,10 @@ export const inventoryRouter = createTRPCRouter({
 
     return {
       items: items.map((el) => {
-        const first = el.Item.OfficialPricingHistory[0];
+        const first = el.Item.OfficialPricingHistoryOptimized[0];
         const last =
-          el.Item.OfficialPricingHistory[
-            el.Item.OfficialPricingHistory.length - 1
+          el.Item.OfficialPricingHistoryOptimized[
+            el.Item.OfficialPricingHistoryOptimized.length - 1
           ];
 
         const latestPrice = getLatestPrice(
@@ -154,6 +154,7 @@ export const inventoryRouter = createTRPCRouter({
             trend7d: 0,
             icon: el.Item.icon,
             rarity: el.Item.rarity,
+            dateAdded: el.dateAdded,
           };
         }
 
@@ -167,6 +168,7 @@ export const inventoryRouter = createTRPCRouter({
           trend7d,
           icon: el.Item.icon,
           rarity: el.Item.rarity,
+          dateAdded: el.dateAdded,
         };
       }),
     };

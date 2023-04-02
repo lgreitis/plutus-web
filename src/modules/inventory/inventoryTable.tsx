@@ -50,6 +50,10 @@ const columns = [
     ),
     header: () => <GenericHeader>Item</GenericHeader>,
   }),
+  columnHelper.accessor("dateAdded", {
+    cell: (info) => <span>{info.getValue().toLocaleDateString()}</span>,
+    header: () => <GenericHeader>Date added</GenericHeader>,
+  }),
   columnHelper.accessor("price", {
     cell: (info) => <span>{info.getValue().toFixed(2)}$</span>,
     header: () => <GenericHeader>Price</GenericHeader>,

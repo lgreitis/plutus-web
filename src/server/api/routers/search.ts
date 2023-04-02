@@ -1,50 +1,32 @@
-import { subDays } from "date-fns";
+import type { Item } from "@prisma/client";
+import { TRPCError } from "@trpc/server";
+import axios from "axios";
+
+import { env } from "src/env.mjs";
 import { createTRPCRouter, protectedProcedure } from "src/server/api/trpc";
-import { getLatestPrice } from "src/utils/priceUtils";
 import { z } from "zod";
 
 export const searchRouter = createTRPCRouter({
   findItem: protectedProcedure
     .input(z.object({ searchString: z.string() }))
-    .mutation(async ({ input, ctx }) => {
-      const items = await ctx.prisma.item.findMany({
-        where: { marketHashName: { search: input.searchString } },
-        include: {
-          OfficialPricingHistory: {
-            orderBy: { date: "desc" },
-            where: { date: { gte: subDays(new Date(), 7) } },
-            select: { price: true, date: true },
+    .mutation(async ({ input }) => {
+      const response = await axios.get<{ result: Item[]; success: boolean }>(
+        `${env.WORKER_API_URL}/search`,
+        {
+          params: {
+            returnMatchData: false,
+            searchString: input.searchString,
           },
-          ApiItemPrice: {
-            orderBy: { fetchTime: "desc" },
-            take: 1,
+          headers: {
+            Authorization: env.WORKER_SECRET_KEY,
           },
-        },
-        take: 10,
-      });
+        }
+      );
 
-      const populatedItems = items.map((el) => {
-        const latestPrice = getLatestPrice(
-          {
-            date: el.officialPricingHistoryUpdateTime || new Date(0),
-            price: el.lastPrice || 0,
-          },
-          el.ApiItemPrice[0]
-            ? {
-                date: el.ApiItemPrice[0].fetchTime,
-                price: el.ApiItemPrice[0].current,
-              }
-            : undefined
-        );
+      if (!response.data.success || response.status !== 200) {
+        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+      }
 
-        return {
-          id: el.id,
-          marketHashName: el.marketHashName,
-          icon: el.icon,
-          latestPrice: latestPrice,
-        };
-      });
-
-      return { items: populatedItems };
+      return { items: response.data.result.slice(0, 10) };
     }),
 });

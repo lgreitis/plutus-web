@@ -8,8 +8,11 @@ import {
 import clsx from "clsx";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 import Logo from "src/components/logo";
 import ThemeSwitcher from "src/components/themeSwitcher";
+import useKeyPress from "src/hooks/useKeyPress";
+import CommandPalette from "src/modules/commandPalette/commandPalette";
 import UserSection from "src/modules/sidebar/userSection";
 
 const NavCategories = [
@@ -53,16 +56,31 @@ const Sidebar = (props: Props) => {
   const { showFilterCategories } = props;
   const router = useRouter();
 
+  const [commandOpen, setCommandOpen] = useState(false);
+  const keyPress = useKeyPress("Meta+k");
+
+  useEffect(() => {
+    console.log(keyPress);
+    if (keyPress) {
+      setCommandOpen(true);
+    }
+  }, [keyPress]);
+
   return (
     <div className="hidden border-r border-neutral-200 dark:border-neutral-800 md:fixed md:inset-y-0 md:flex md:w-64 md:flex-col">
+      <CommandPalette
+        open={commandOpen}
+        onClose={() => setCommandOpen(false)}
+      />
       <div className="flex flex-1 flex-col p-6">
         <div className="flex items-center">
           <div className="flex-1 font-semibold">
             <Logo href="/overview" />
           </div>
-          <div>
-            <MagnifyingGlassIcon className="h-5 w-5" />
-          </div>
+          <MagnifyingGlassIcon
+            className="h-5 w-5 cursor-pointer"
+            onClick={() => setCommandOpen(true)}
+          />
         </div>
         <div className="flex flex-1 flex-col gap-3 pt-5">
           {NavCategories.map((el) => (

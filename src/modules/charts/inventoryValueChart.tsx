@@ -209,8 +209,8 @@ const TooltipComponent = (props: TooltipProps<ValueType, NameType>) => {
 
   return (
     <div className="flex w-48 flex-col gap-1 rounded-lg border border-neutral-200 p-2 backdrop-blur-xl backdrop-brightness-110 dark:border-neutral-800 dark:backdrop-brightness-50">
-      <span className="text-sm font-semibold text-neutral-500">
-        {new Date(parseInt(String(props.label))).toLocaleString()}
+      <span className="text-sm font-semibold text-neutral-700 dark:text-neutral-500">
+        {new Date(parseInt(String(props.label))).toLocaleDateString()}
       </span>
       <span key={props.payload[0]?.value}>
         Price: {parseFloat(props.payload[0]?.value || "0").toFixed(2)}$

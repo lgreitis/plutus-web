@@ -174,16 +174,16 @@ const ItemChart = (props: Props) => {
           type="number"
         />
         <Area
-          stroke="#9333ea"
-          fill="#a855f7"
+          stroke="#4f46e5"
+          fill="#3730a3"
           yAxisId="2"
           type="step"
           animationDuration={300}
-          opacity="50%"
+          opacity="80%"
           dataKey="volume"
         />
         <Line
-          stroke="#14b8a6"
+          stroke="#db2777"
           strokeWidth={3}
           type="linear"
           dataKey="price"
@@ -205,7 +205,7 @@ const TooltipComponent = (props: TooltipProps<ValueType, NameType>) => {
 
   return (
     <div className="flex w-48 flex-col gap-1 rounded-lg border border-neutral-200 p-2 backdrop-blur-xl backdrop-brightness-110 dark:border-neutral-800 dark:backdrop-brightness-50">
-      <span className="text-sm font-semibold text-neutral-500">
+      <span className="text-sm font-semibold text-neutral-700 dark:text-neutral-500">
         {new Date(parseInt(String(props.label))).toLocaleString()}
       </span>
       <div key={props.payload[0]?.value} className="flex flex-col gap-1">

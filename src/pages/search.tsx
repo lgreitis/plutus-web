@@ -1,15 +1,23 @@
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import InternalLayout from "src/components/layouts/internalLayout";
 import Loader from "src/components/loader";
 import HeaderText from "src/components/text/headerText";
+import useDebounce from "src/hooks/useDebounce";
 import { api } from "src/utils/api";
 import { serverSideRequireAuth } from "src/utils/serverSideRequireAuth";
 
 export const getServerSideProps = serverSideRequireAuth;
 
 const Search = () => {
-  const { data, mutate, isLoading } = api.search.findItem.useMutation();
+  const { data, mutateAsync, isLoading } = api.search.findItem.useMutation();
+  const [searchString, setSearchString] = useState("");
+  const debounce = useDebounce(searchString, 250);
+
+  useEffect(() => {
+    void mutateAsync({ searchString: debounce.trim() });
+  }, [debounce, mutateAsync]);
 
   return (
     <InternalLayout>
@@ -18,12 +26,13 @@ const Search = () => {
         className="block w-full rounded-md border-0 p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 focus-visible:outline-none dark:bg-bg-dark dark:text-white dark:ring-neutral-800 sm:text-sm sm:leading-6"
         placeholder="Search..."
         onChange={(e) => {
-          mutate({ searchString: e.target.value.trim().replace(" ", " & ") });
+          setSearchString(e.target.value);
         }}
       />
       {isLoading && <Loader />}
       <div className="flex flex-col gap-2">
         {data &&
+          data.items &&
           data.items.map((el) => (
             <Link
               href={`/item/${el.marketHashName}`}
@@ -37,7 +46,8 @@ const Search = () => {
                 alt={el.marketHashName}
               />
               <div className="flex-1">{el.marketHashName}</div>
-              <span>{el.latestPrice.toFixed(2)}$</span>
+              {/* TODO: */}
+              {/* <span>{el.latestPrice.toFixed(2)}$</span> */}
             </Link>
           ))}
       </div>
