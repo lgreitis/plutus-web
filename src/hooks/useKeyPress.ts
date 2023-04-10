@@ -54,7 +54,6 @@ const useKeyCode = (
   useEffect(() => {
     if (keyCode !== null) {
       const downHandler = (event: KeyboardEvent) => {
-        console.log(event);
         modifierPressed.current =
           event.ctrlKey || event.metaKey || event.shiftKey;
 
