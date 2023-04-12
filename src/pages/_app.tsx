@@ -6,6 +6,7 @@ import { SessionProvider } from "next-auth/react";
 import { ThemeProvider } from "next-themes";
 import { type AppType } from "next/app";
 import Head from "next/head";
+import { Toaster } from "sonner";
 import "../styles/globals.css";
 import { api } from "../utils/api";
 
@@ -57,6 +58,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
       </Head>
       <ThemeProvider enableSystem={true} attribute="class">
         <SessionProvider session={session}>
+          <Toaster richColors />
           <Component {...pageProps} />
           <Analytics />
         </SessionProvider>

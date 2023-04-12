@@ -3,6 +3,7 @@ import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 import { atom, useAtom } from "jotai";
 import { Fragment, useEffect, useState } from "react";
+import { toast } from "sonner";
 import SubmitButton from "src/components/buttons/submitButton";
 import CardContainer from "src/components/card/cardContainer";
 import CardHeader from "src/components/card/cardHeader";
@@ -40,6 +41,7 @@ const CurrencyCard = () => {
               {
                 onSuccess: () => {
                   void apiUtils.settings.getCurrentCurrency.invalidate();
+                  toast.success("Your preferences have been saved.");
                 },
               }
             );
