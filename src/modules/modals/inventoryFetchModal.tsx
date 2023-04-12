@@ -14,6 +14,7 @@ const InventoryFetchModal = (props: Props) => {
   const [done, setDone] = useState(false);
   const { mutate, data, error, isError } =
     api.inventoryFetch.startItemFetch.useMutation();
+  const apiUtils = api.useContext();
 
   useEffect(() => {
     if (!started) {
@@ -25,8 +26,9 @@ const InventoryFetchModal = (props: Props) => {
   useEffect(() => {
     if (data && data.isDone) {
       setDone(true);
+      void apiUtils.inventory.invalidate();
     }
-  }, [data]);
+  }, [data, apiUtils]);
 
   useEffect(() => {
     if (error) {
