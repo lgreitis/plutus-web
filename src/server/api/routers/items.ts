@@ -11,6 +11,7 @@ import {
   subYears,
 } from "date-fns";
 import { createTRPCRouter, protectedProcedure } from "src/server/api/trpc";
+import { getLatestPrice } from "src/utils/priceUtils";
 import { z } from "zod";
 
 interface StatisticsDataPoint {
@@ -33,13 +34,41 @@ export const itemsRouter = createTRPCRouter({
     .query(async ({ input, ctx }) => {
       const item = await ctx.prisma.item.findUnique({
         where: { marketHashName: input.marketHashName },
+        include: {
+          OfficialPricingHistoryOptimized: {
+            orderBy: { date: "desc" },
+            take: 1,
+            select: { price: true, date: true },
+          },
+          ApiItemPrice: {
+            orderBy: { fetchTime: "desc" },
+            take: 1,
+          },
+        },
       });
 
       if (!item) {
         throw new TRPCError({ code: "NOT_FOUND" });
       }
 
-      return item;
+      const latestPrice = getLatestPrice(
+        {
+          date: item.officialPricingHistoryUpdateTime || new Date(0),
+          price: item.lastPrice || 0,
+        },
+        item.ApiItemPrice[0]
+          ? {
+              date: item.ApiItemPrice[0].fetchTime,
+              price: item.ApiItemPrice[0].current,
+            }
+          : undefined
+      );
+
+      if (!item) {
+        throw new TRPCError({ code: "NOT_FOUND" });
+      }
+
+      return { ...item, latestPrice };
     }),
 
   getItemStatistics: protectedProcedure

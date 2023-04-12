@@ -9,7 +9,7 @@ const Inventory = () => {
   return (
     <InternalLayout showFilterCategories>
       <InventoryHeader />
-      <div className="inline-block min-w-full overflow-y-scroll align-middle">
+      <div className="inline-block min-w-full overflow-y-auto align-middle">
         <InventoryTable />
       </div>
     </InternalLayout>

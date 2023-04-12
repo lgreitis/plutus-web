@@ -12,6 +12,7 @@ import {
   YAxis,
 } from "recharts";
 import type { NameType } from "recharts/types/component/DefaultTooltipContent";
+import CurrencyField from "src/components/currencyField";
 import { getMonthEpochs } from "src/utils/chartUtils";
 import type { ValueType } from "tailwindcss/types/config";
 
@@ -213,7 +214,8 @@ const TooltipComponent = (props: TooltipProps<ValueType, NameType>) => {
         {new Date(parseInt(String(props.label))).toLocaleDateString()}
       </span>
       <span key={props.payload[0]?.value}>
-        Price: {parseFloat(props.payload[0]?.value || "0").toFixed(2)}$
+        Price:{" "}
+        <CurrencyField value={parseFloat(props.payload[0]?.value || "0")} />
       </span>
     </div>
   );

@@ -57,10 +57,9 @@ const Sidebar = (props: Props) => {
   const router = useRouter();
 
   const [commandOpen, setCommandOpen] = useState(false);
-  const keyPress = useKeyPress("Meta+k");
+  const keyPress = useKeyPress(["Meta+k", "Control+k"]);
 
   useEffect(() => {
-    console.log(keyPress);
     if (keyPress) {
       setCommandOpen(true);
     }

@@ -1,4 +1,7 @@
-import { ArrowUpIcon } from "@heroicons/react/24/outline";
+import {
+  ArrowUpIcon,
+  ExclamationTriangleIcon,
+} from "@heroicons/react/24/outline";
 import type { SortingState } from "@tanstack/react-table";
 import {
   createColumnHelper,
@@ -11,6 +14,7 @@ import clsx from "clsx";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
+import CurrencyField from "src/components/currencyField";
 import Loader from "src/components/loader";
 import type { RouterOutputs } from "src/utils/api";
 import { api } from "src/utils/api";
@@ -55,7 +59,7 @@ const columns = [
     header: () => <GenericHeader>Date added</GenericHeader>,
   }),
   columnHelper.accessor("price", {
-    cell: (info) => <span>{info.getValue().toFixed(2)}$</span>,
+    cell: (info) => <CurrencyField value={info.getValue()} />,
     header: () => <GenericHeader>Price</GenericHeader>,
   }),
   columnHelper.accessor("quantity", {
@@ -63,7 +67,7 @@ const columns = [
     header: () => <GenericHeader>Qty.</GenericHeader>,
   }),
   columnHelper.accessor("worth", {
-    cell: (info) => <span>{info.getValue().toFixed(2)}$</span>,
+    cell: (info) => <CurrencyField value={info.getValue()} />,
     header: () => <GenericHeader>Worth</GenericHeader>,
   }),
   columnHelper.accessor("trend7d", {
@@ -107,6 +111,18 @@ const InventoryTable = () => {
     return <Loader />;
   }
 
+  if (!isLoading && data && data?.items.length === 0) {
+    return (
+      <div className="flex w-full flex-col items-center">
+        <ExclamationTriangleIcon className="h-20 w-20" />
+        <h1 className="text-3xl font-semibold">Your inventory is empty!</h1>
+        <span className="text-neutral-500">
+          Press the refresh button to fetch the items from your Steam inventory.
+        </span>
+      </div>
+    );
+  }
+
   return (
     <table className="w-full border-separate border-spacing-0">
       <thead>
@@ -126,7 +142,7 @@ const InventoryTable = () => {
                   className={clsx(
                     "flex items-center",
                     header.column.getCanSort() && !header.column.getIsSorted()
-                      ? "pr-4"
+                      ? ""
                       : "gap-1"
                   )}
                 >

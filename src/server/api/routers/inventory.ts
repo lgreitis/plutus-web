@@ -50,7 +50,7 @@ export const inventoryRouter = createTRPCRouter({
       worth += latestPrice * item.quantity;
     }
 
-    return { worth: worth.toFixed(2) };
+    return { worth };
   }),
 
   getOverviewGraph: protectedProcedure.query(async ({ ctx }) => {

@@ -26,7 +26,6 @@ export const serverSideRequireAuth: GetServerSideProps = async (
   });
 
   if (!steamAccount || !steamAccount.steamid) {
-    // console.log(session.user);
     return {
       redirect: {
         destination: "/link-steam-account",

@@ -1,6 +1,7 @@
 import { format } from "date-fns";
 import dynamic from "next/dynamic";
 import { useState } from "react";
+import CurrencyField from "src/components/currencyField";
 import InternalLayout from "src/components/layouts/internalLayout";
 import Loader from "src/components/loader";
 import HeaderText from "src/components/text/headerText";
@@ -27,17 +28,21 @@ const Overview = () => {
       <div className="flex rounded-md bg-zinc-100 p-5 dark:bg-zinc-900">
         <div className="flex flex-1 flex-col">
           <span className="text-sm">Invested</span>
-          <span className="text-2xl font-semibold">0.00$</span>
+          <CurrencyField className="text-2xl font-semibold" value={0} />
         </div>
         <div className="flex flex-1 flex-col border-l border-zinc-200 pl-2 dark:border-zinc-800">
           <span className="text-sm">Total value</span>
-          <span className="text-2xl font-semibold">
-            {worthResponse.data?.worth || 0.0}$
-          </span>
+          <CurrencyField
+            className="text-2xl font-semibold"
+            value={worthResponse.data?.worth || 0}
+          />
         </div>
         <div className="flex flex-1 flex-col border-l border-zinc-200 pl-2 dark:border-zinc-800">
-          <span className="text-sm">Profit</span>
-          <span className="text-2xl font-semibold text-green-400">0.00$</span>
+          <span className="text-sm">Difference</span>
+          <CurrencyField
+            className="text-2xl font-semibold text-green-400"
+            value={0}
+          />
         </div>
       </div>
       <div className="flex flex-col gap-4 rounded-md border border-neutral-200 p-4 dark:border-neutral-800">

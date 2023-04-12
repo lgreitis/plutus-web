@@ -41,6 +41,7 @@ model User {
   email         String?    @unique
   emailVerified DateTime?
   image         String?
+  currency      String     @default("USD")
   accounts      Account[]
   sessions      Session[]
   Inventory     Inventory?
@@ -157,6 +158,17 @@ model FetchTime {
   proxyPort         String
   fetchDate         DateTime          @default(now())
   category          FetchTimeCategory
+}
+
+model ExchangeRate {
+  id                 String @id @default(uuid())
+  timestamp          Float
+  baseCurrency       String
+  conversionCurrency String
+  rate               Float
+
+  @@index([conversionCurrency])
+  @@index([conversionCurrency, timestamp(sort: Desc)])
 }
 
 enum FetchTimeCategory {
