@@ -3,6 +3,7 @@ import { subDays, subYears } from "date-fns";
 import { fillEmptyDataPoints } from "src/server/api/routers/items";
 import { createTRPCRouter, protectedProcedure } from "src/server/api/trpc";
 import { getLatestPrice } from "src/utils/priceUtils";
+import { z } from "zod";
 
 export const inventoryRouter = createTRPCRouter({
   getInventoryWorth: protectedProcedure.query(async ({ ctx }) => {
@@ -27,6 +28,7 @@ export const inventoryRouter = createTRPCRouter({
     }
 
     let worth = 0;
+    let invested = 0;
 
     for (const item of items) {
       const apiPrice = item.Item.ApiItemPrice[0];
@@ -47,10 +49,11 @@ export const inventoryRouter = createTRPCRouter({
           : undefined
       );
 
+      invested += (item.buyPrice || 0) * item.quantity;
       worth += latestPrice * item.quantity;
     }
 
-    return { worth };
+    return { worth, invested, difference: worth - invested };
   }),
 
   getOverviewGraph: protectedProcedure.query(async ({ ctx }) => {
@@ -102,6 +105,31 @@ export const inventoryRouter = createTRPCRouter({
     return res.sort((a, b) => (a.date > b.date ? 1 : -1));
   }),
 
+  updateItemInfo: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        dateAdded: z.date().optional(),
+        buyPrice: z.number().optional(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const exists = await ctx.prisma.userItem.findUnique({
+        where: { id: input.id },
+      });
+
+      if (!exists) {
+        throw new TRPCError({ code: "BAD_REQUEST" });
+      }
+
+      const userItem = await ctx.prisma.userItem.update({
+        where: { id: input.id },
+        data: { buyPrice: input.buyPrice, dateAdded: input.dateAdded },
+      });
+
+      return userItem;
+    }),
+
   getTableData: protectedProcedure.query(async ({ ctx }) => {
     const items = await ctx.prisma.userItem.findMany({
       where: { Inventory: { userId: ctx.session.user.id } },
@@ -146,6 +174,7 @@ export const inventoryRouter = createTRPCRouter({
 
         if (!first || !last) {
           return {
+            id: el.id,
             marketHashName: el.marketHashName,
             price: latestPrice || 0,
             worth: latestPrice * el.quantity,
@@ -155,11 +184,13 @@ export const inventoryRouter = createTRPCRouter({
             icon: el.Item.icon,
             rarity: el.Item.rarity,
             dateAdded: el.dateAdded,
+            buyPrice: el.buyPrice,
           };
         }
 
         const trend7d = ((first.price - last.price) / last.price) * 100;
         return {
+          id: el.id,
           marketHashName: el.marketHashName,
           price: latestPrice || 0,
           worth: latestPrice * el.quantity,
@@ -169,6 +200,7 @@ export const inventoryRouter = createTRPCRouter({
           icon: el.Item.icon,
           rarity: el.Item.rarity,
           dateAdded: el.dateAdded,
+          buyPrice: el.buyPrice,
         };
       }),
     };

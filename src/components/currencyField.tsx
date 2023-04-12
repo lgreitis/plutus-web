@@ -4,6 +4,7 @@ import { api } from "src/utils/api";
 interface Props {
   value: number;
   className?: string;
+  noConvert?: boolean;
 }
 
 const CurrencyField = (props: Props) => {
@@ -22,7 +23,9 @@ const CurrencyField = (props: Props) => {
 
   return (
     <span className={props.className}>
-      {numberFormatter.format(props.value * (query.data?.rate || 1))}
+      {numberFormatter.format(
+        !props.noConvert ? props.value * (query.data?.rate || 1) : props.value
+      )}
     </span>
   );
 };

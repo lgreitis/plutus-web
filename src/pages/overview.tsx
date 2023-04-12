@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import { format } from "date-fns";
 import dynamic from "next/dynamic";
 import { useState } from "react";
@@ -26,24 +27,38 @@ const Overview = () => {
     <InternalLayout>
       <HeaderText>Overview</HeaderText>
       <div className="flex rounded-md bg-zinc-100 p-5 dark:bg-zinc-900">
-        <div className="flex flex-1 flex-col">
-          <span className="text-sm">Invested</span>
-          <CurrencyField className="text-2xl font-semibold" value={0} />
-        </div>
-        <div className="flex flex-1 flex-col border-l border-zinc-200 pl-2 dark:border-zinc-800">
-          <span className="text-sm">Total value</span>
-          <CurrencyField
-            className="text-2xl font-semibold"
-            value={worthResponse.data?.worth || 0}
-          />
-        </div>
-        <div className="flex flex-1 flex-col border-l border-zinc-200 pl-2 dark:border-zinc-800">
-          <span className="text-sm">Difference</span>
-          <CurrencyField
-            className="text-2xl font-semibold text-green-400"
-            value={0}
-          />
-        </div>
+        {worthResponse.data ? (
+          <>
+            <div className="flex flex-1 flex-col">
+              <span className="text-sm">Invested</span>
+              <CurrencyField
+                noConvert
+                className="text-2xl font-semibold"
+                value={worthResponse.data.invested || 0}
+              />
+            </div>
+            <div className="flex flex-1 flex-col border-l border-zinc-200 pl-2 dark:border-zinc-800">
+              <span className="text-sm">Total value</span>
+              <CurrencyField
+                className="text-2xl font-semibold"
+                value={worthResponse.data.worth || 0}
+              />
+            </div>
+            <div className="flex flex-1 flex-col border-l border-zinc-200 pl-2 dark:border-zinc-800">
+              <span className="text-sm">Difference</span>
+              <CurrencyField
+                className={clsx(
+                  "text-2xl font-semibold",
+                  worthResponse.data.difference > 0 && "text-green-400",
+                  worthResponse.data.difference < 0 && "text-red-400"
+                )}
+                value={worthResponse.data.difference || 0}
+              />
+            </div>
+          </>
+        ) : (
+          <Loader className="h-12 w-full" />
+        )}
       </div>
       <div className="flex flex-col gap-4 rounded-md border border-neutral-200 p-4 dark:border-neutral-800">
         <span className="text-sm font-semibold">Portfolio value</span>
