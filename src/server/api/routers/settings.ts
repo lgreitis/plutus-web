@@ -3,6 +3,18 @@ import { createTRPCRouter, protectedProcedure } from "src/server/api/trpc";
 import { z } from "zod";
 
 export const settingsRouter = createTRPCRouter({
+  isDiscordlinked: protectedProcedure.query(async ({ ctx }) => {
+    const discordAccount = await ctx.prisma.account.findFirst({
+      where: { provider: "discord", userId: ctx.session.user.id },
+    });
+
+    if (discordAccount) {
+      return { linked: true };
+    }
+
+    return { linked: false };
+  }),
+
   getCurrencies: protectedProcedure.query(async ({ ctx }) => {
     const currencies = await ctx.prisma.exchangeRate.findMany({
       distinct: ["conversionCurrency"],
