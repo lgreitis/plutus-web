@@ -42,6 +42,8 @@ export const settingsRouter = createTRPCRouter({
         where: { id: ctx.session.user.id },
         data: { public: input.public },
       });
+
+      return {};
     }),
 
   getCurrencies: protectedProcedure.query(async ({ ctx }) => {

@@ -13,6 +13,7 @@ const SubmitButton = (props: Props) => {
 
   return (
     <button
+      disabled={props.loading}
       onClick={() => {
         if (props.onClick) {
           props.onClick();

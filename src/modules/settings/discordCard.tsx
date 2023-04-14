@@ -35,7 +35,7 @@ const DiscordCard = () => {
         </span>
       )}
       {isLoading && <Loader />}
-      <div className="pb-2"></div>
+      <div></div>
     </CardContainer>
   );
 };
