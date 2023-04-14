@@ -6,6 +6,7 @@ import { Fragment, useEffect, useState } from "react";
 import { toast } from "sonner";
 import SubmitButton from "src/components/buttons/submitButton";
 import CardContainer from "src/components/card/cardContainer";
+import CardFooter from "src/components/card/cardFooter";
 import CardHeader from "src/components/card/cardHeader";
 import CardSubheader from "src/components/card/cardSubheader";
 import Loader from "src/components/loader";
@@ -28,7 +29,7 @@ const CurrencyCard = () => {
       <div className="px-4">
         <CurrencyDropdown />
       </div>
-      <div className="flex w-full items-center justify-end border-t border-neutral-200 bg-neutral-100 px-4 py-3  dark:border-neutral-800 dark:bg-neutral-900">
+      <CardFooter>
         <SubmitButton
           loading={isLoading}
           onClick={() => {
@@ -49,7 +50,7 @@ const CurrencyCard = () => {
         >
           Save
         </SubmitButton>
-      </div>
+      </CardFooter>
     </CardContainer>
   );
 };

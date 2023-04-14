@@ -15,6 +15,35 @@ export const settingsRouter = createTRPCRouter({
     return { linked: false };
   }),
 
+  profileVisibility: protectedProcedure.query(async ({ ctx }) => {
+    const user = await ctx.prisma.user.findUnique({
+      where: { id: ctx.session.user.id },
+    });
+
+    if (!user) {
+      throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+    }
+
+    return { public: user.public };
+  }),
+
+  toggleProfileVisibility: protectedProcedure
+    .input(z.object({ public: z.boolean() }))
+    .mutation(async ({ input, ctx }) => {
+      const user = await ctx.prisma.user.findUnique({
+        where: { id: ctx.session.user.id },
+      });
+
+      if (!user) {
+        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+      }
+
+      await ctx.prisma.user.update({
+        where: { id: ctx.session.user.id },
+        data: { public: input.public },
+      });
+    }),
+
   getCurrencies: protectedProcedure.query(async ({ ctx }) => {
     const currencies = await ctx.prisma.exchangeRate.findMany({
       distinct: ["conversionCurrency"],
