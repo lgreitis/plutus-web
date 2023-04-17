@@ -3,6 +3,7 @@ import {
   ArrowLeftOnRectangleIcon,
   ChevronDownIcon,
   Cog8ToothIcon,
+  RocketLaunchIcon,
   UserCircleIcon,
 } from "@heroicons/react/24/outline";
 import clsx from "clsx";
@@ -41,6 +42,21 @@ const UserSection = () => {
       </Menu.Button>
       <DefaultTransition>
         <Menu.Items className="absolute -top-2 left-0 w-32 origin-top-right -translate-y-full transform divide-y divide-gray-200 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none dark:divide-zinc-900 dark:bg-bg-dark">
+          <Menu.Item
+            as={Link}
+            href={`/user/${sessionData?.user.id || ""}`}
+            className={({ active }) =>
+              clsx(
+                active
+                  ? "bg-gray-900 text-white dark:bg-slate-200  dark:text-gray-900"
+                  : "text-gray-900 dark:text-white",
+                "flex cursor-default select-none gap-3 rounded-t p-2 text-sm"
+              )
+            }
+          >
+            <RocketLaunchIcon className="h-5 w-5" />
+            Your Profile
+          </Menu.Item>
           <Menu.Item
             as={Link}
             href="/settings"

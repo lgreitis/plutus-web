@@ -3,6 +3,7 @@ import { inventoryFetchRouter } from "src/server/api/routers/inventoryFetch";
 import { itemsRouter } from "src/server/api/routers/items";
 import { searchRouter } from "src/server/api/routers/search";
 import { settingsRouter } from "src/server/api/routers/settings";
+import { userRouter } from "src/server/api/routers/user";
 import { createTRPCRouter } from "src/server/api/trpc";
 
 /**
@@ -16,6 +17,7 @@ export const appRouter = createTRPCRouter({
   inventory: inventoryRouter,
   search: searchRouter,
   settings: settingsRouter,
+  user: userRouter,
 });
 
 // export type definition of API
