@@ -2,6 +2,7 @@ import { ArrowPathIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
 import HeaderButton from "src/components/buttons/headerButton";
 import HeaderText from "src/components/text/headerText";
+import InventoryVisibility from "src/modules/inventory/inventoryVisibility";
 import InventoryFetchModal from "src/modules/modals/inventoryFetchModal";
 
 const InventoryHeader = () => {
@@ -9,7 +10,10 @@ const InventoryHeader = () => {
 
   return (
     <div className="flex items-end">
-      <HeaderText className="flex-1">Inventory</HeaderText>
+      <HeaderText>Inventory</HeaderText>
+      <div className="flex-1 pl-2">
+        <InventoryVisibility />
+      </div>
       <HeaderButton onClick={() => setModalOpen(true)}>
         <ArrowPathIcon className="h-5 w-5" /> Refresh
       </HeaderButton>

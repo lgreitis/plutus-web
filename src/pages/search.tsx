@@ -1,55 +1,22 @@
-import Image from "next/image";
-import Link from "next/link";
-import { useEffect, useState } from "react";
 import InternalLayout from "src/components/layouts/internalLayout";
-import Loader from "src/components/loader";
 import HeaderText from "src/components/text/headerText";
-import useDebounce from "src/hooks/useDebounce";
-import { api } from "src/utils/api";
+import SearchTable from "src/modules/search/searchTable";
 import { serverSideRequireAuth } from "src/utils/serverSideRequireAuth";
 
 export const getServerSideProps = serverSideRequireAuth;
 
 const Search = () => {
-  const { data, mutateAsync, isLoading } = api.search.findItem.useMutation();
-  const [searchString, setSearchString] = useState("");
-  const debounce = useDebounce(searchString, 250);
-
-  useEffect(() => {
-    void mutateAsync({ searchString: debounce.trim() });
-  }, [debounce, mutateAsync]);
-
   return (
-    <InternalLayout>
-      <HeaderText>All items</HeaderText>
-      <input
-        className="block w-full rounded-md border-0 p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 focus-visible:outline-none dark:bg-bg-dark dark:text-white dark:ring-neutral-800 sm:text-sm sm:leading-6"
-        placeholder="Search..."
-        onChange={(e) => {
-          setSearchString(e.target.value);
-        }}
-      />
-      {isLoading && <Loader />}
+    <InternalLayout showFilterCategories>
+      <div className="flex items-center">
+        <HeaderText className="flex-1">All items</HeaderText>
+        <input
+          placeholder="Search..."
+          className="h-full rounded bg-neutral-200 px-2 ring-1 ring-inset placeholder:text-neutral-500 focus:outline-none dark:bg-bg-dark dark:ring-neutral-800"
+        />
+      </div>
       <div className="flex flex-col gap-2">
-        {data &&
-          data.items &&
-          data.items.map((el) => (
-            <Link
-              href={`/item/${el.marketHashName}`}
-              key={el.id}
-              className="flex w-full items-center gap-2 rounded-md border border-neutral-200 px-2 dark:border-neutral-800"
-            >
-              <Image
-                src={`https://community.akamai.steamstatic.com/economy/image/${el.icon}/360fx360f`}
-                width={48}
-                height={48}
-                alt={el.marketHashName}
-              />
-              <div className="flex-1">{el.marketHashName}</div>
-              {/* TODO: */}
-              {/* <span>{el.latestPrice.toFixed(2)}$</span> */}
-            </Link>
-          ))}
+        <SearchTable />
       </div>
     </InternalLayout>
   );

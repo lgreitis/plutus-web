@@ -6,6 +6,7 @@ module.exports = {
     extend: {
       colors: {
         "bg-dark": "#101214",
+        // "plutus-pink": "#d23174",
       },
       keyframes: {
         "loading-blink": {
@@ -19,5 +20,5 @@ module.exports = {
     },
   },
   darkMode: "class",
-  plugins: [require("@tailwindcss/typography")],
+  plugins: [require("@tailwindcss/forms"), require("@tailwindcss/typography")],
 };

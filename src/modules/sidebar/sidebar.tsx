@@ -13,6 +13,7 @@ import Logo from "src/components/logo";
 import ThemeSwitcher from "src/components/themeSwitcher";
 import useKeyPress from "src/hooks/useKeyPress";
 import CommandPalette from "src/modules/commandPalette/commandPalette";
+import SidebarFilter from "src/modules/sidebar/sidebarFilter";
 import UserSection from "src/modules/sidebar/userSection";
 
 const NavCategories = [
@@ -36,16 +37,6 @@ const NavCategories = [
     link: "/compare",
     icon: <Square2StackIcon className="h-5 w-5" />,
   },
-];
-
-const filterCategories = [
-  { name: "Agents", color: "bg-pink-500" },
-  { name: "Containers", color: "bg-sky-500" },
-  { name: "Patches", color: "bg-slate-400" },
-  { name: "Music kits", color: "bg-gray-600" },
-  { name: "Skins", color: "bg-teal-400" },
-  { name: "Stickers", color: "bg-orange-400" },
-  { name: "Tools", color: "bg-amber-700" },
 ];
 
 interface Props {
@@ -98,24 +89,7 @@ const Sidebar = (props: Props) => {
             </Link>
           ))}
 
-          {showFilterCategories && (
-            <>
-              <span className="pt-5 text-xs font-medium text-neutral-400">
-                Filter categories
-              </span>
-              {filterCategories.map((el) => (
-                <a
-                  key={el.name}
-                  className="flex items-center gap-3 text-xs font-medium text-neutral-500"
-                >
-                  <div
-                    className={clsx("mx-1.5 h-2 w-2 rounded-full", el.color)}
-                  />
-                  {el.name}
-                </a>
-              ))}
-            </>
-          )}
+          {showFilterCategories && <SidebarFilter />}
         </div>
         <div className="flex flex-1 flex-col gap-3"></div>
 

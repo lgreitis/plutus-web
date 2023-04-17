@@ -14,6 +14,11 @@ const InventoryValueChart = dynamic(
   { ssr: false }
 );
 
+const InventoryPieChart = dynamic(
+  () => import("src/modules/charts/inventoryPieChart"),
+  { ssr: false }
+);
+
 export const getServerSideProps = serverSideRequireAuth;
 
 const Overview = () => {
@@ -53,6 +58,7 @@ const Overview = () => {
                   worthResponse.data.difference < 0 && "text-red-400"
                 )}
                 value={worthResponse.data.difference || 0}
+                noConvert
               />
             </div>
           </>
@@ -79,6 +85,18 @@ const Overview = () => {
             <Loader />
           </div>
         )}
+      </div>
+      <div className="flex w-1/2 flex-col gap-4 rounded-md border border-neutral-200 p-4 dark:border-neutral-800">
+        <span className="text-sm font-semibold">Value by category</span>
+        <div className="h-72">
+          {worthResponse.data ? (
+            <InventoryPieChart data={worthResponse.data.pieData} />
+          ) : (
+            <div className="flex h-full justify-center">
+              <Loader />
+            </div>
+          )}
+        </div>
       </div>
     </InternalLayout>
   );

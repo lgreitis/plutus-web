@@ -1,8 +1,8 @@
+import type { ItemType } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
-import { subDays, subYears } from "date-fns";
+import { subYears } from "date-fns";
 import { fillEmptyDataPoints } from "src/server/api/routers/items";
 import { createTRPCRouter, protectedProcedure } from "src/server/api/trpc";
-import { getLatestPrice } from "src/utils/priceUtils";
 import { z } from "zod";
 
 export const inventoryRouter = createTRPCRouter({
@@ -12,18 +12,20 @@ export const inventoryRouter = createTRPCRouter({
         Inventory: { userId: ctx.session.user.id },
       },
       include: {
-        Item: {
-          include: {
-            ApiItemPrice: {
-              orderBy: { fetchTime: "desc" },
-              take: 1,
-            },
-          },
-        },
+        Item: true,
       },
     });
 
-    if (!items) {
+    const user = await ctx.prisma.user.findUnique({
+      where: { id: ctx.session.user.id },
+    });
+
+    const exchangeRate = await ctx.prisma.exchangeRate.findFirst({
+      orderBy: { timestamp: "desc" },
+      where: { conversionCurrency: user?.currency || "USD" },
+    });
+
+    if (!items || !user) {
       throw new TRPCError({ code: "NOT_FOUND" });
     }
 
@@ -31,29 +33,37 @@ export const inventoryRouter = createTRPCRouter({
     let invested = 0;
 
     for (const item of items) {
-      const apiPrice = item.Item.ApiItemPrice[0];
-      if (!apiPrice) {
-        continue;
-      }
-
-      const latestPrice = getLatestPrice(
-        {
-          date: item.Item.officialPricingHistoryUpdateTime || new Date(0),
-          price: item.Item.lastPrice || 0,
-        },
-        item.Item.ApiItemPrice[0]
-          ? {
-              date: item.Item.ApiItemPrice[0].fetchTime,
-              price: item.Item.ApiItemPrice[0].current,
-            }
-          : undefined
-      );
-
       invested += (item.buyPrice || 0) * item.quantity;
-      worth += latestPrice * item.quantity;
+      worth += (item.Item.lastPrice || 0) * item.quantity;
     }
 
-    return { worth, invested, difference: worth - invested };
+    const pieData: {
+      [key in ItemType]: { name: string; value: number; color: string };
+    } = {
+      Agent: { name: "Agents", value: 0, color: "#ec4899" },
+      Container: { name: "Containers", value: 0, color: "#0ea5e9" },
+      Collectible: { name: "Collectibles", value: 0, color: "#22c55e" },
+      Graffiti: { name: "Graffiti", value: 0, color: "#22c55e" },
+      Patch: { name: "Patches", value: 0, color: "#b45309" },
+      MusicKit: { name: "Music kits", value: 0, color: "#4b5563" },
+      Skin: { name: "Skins", value: 0, color: "#2dd4bf" },
+      Sticker: { name: "Stickers", value: 0, color: "#fb923c" },
+      Other: { name: "Other", value: 0, color: "#94a3b8" },
+    };
+
+    for (const item of items) {
+      if (item.Item.type) {
+        pieData[item.Item.type].value +=
+          (item.Item.lastPrice || 0) * item.quantity;
+      }
+    }
+
+    return {
+      worth,
+      invested,
+      difference: worth * (exchangeRate?.rate || 1) - invested,
+      pieData,
+    };
   }),
 
   getOverviewGraph: protectedProcedure.query(async ({ ctx }) => {
@@ -130,79 +140,41 @@ export const inventoryRouter = createTRPCRouter({
       return userItem;
     }),
 
-  getTableData: protectedProcedure.query(async ({ ctx }) => {
-    const items = await ctx.prisma.userItem.findMany({
-      where: { Inventory: { userId: ctx.session.user.id } },
-      include: {
-        Item: {
-          include: {
-            OfficialPricingHistoryOptimized: {
-              orderBy: { date: "desc" },
-              // TODO: this is wrong
-              where: { date: { gte: subDays(new Date(), 7) } },
-              select: { price: true, date: true },
-            },
-            ApiItemPrice: {
-              orderBy: { fetchTime: "desc" },
-              take: 1,
+  getTableData: protectedProcedure
+    .input(z.object({ filters: z.array(z.string()) }))
+    .query(async ({ input, ctx }) => {
+      const items = await ctx.prisma.userItem.findMany({
+        where: {
+          Inventory: { userId: ctx.session.user.id },
+          ...(input.filters.length && {
+            Item: { type: { in: input.filters as ItemType[] } },
+          }),
+        },
+        include: {
+          Item: {
+            include: {
+              ItemStatistics: true,
             },
           },
         },
-      },
-    });
+      });
 
-    return {
-      items: items.map((el) => {
-        const first = el.Item.OfficialPricingHistoryOptimized[0];
-        const last =
-          el.Item.OfficialPricingHistoryOptimized[
-            el.Item.OfficialPricingHistoryOptimized.length - 1
-          ];
-
-        const latestPrice = getLatestPrice(
-          {
-            date: el.Item.officialPricingHistoryUpdateTime || new Date(0),
-            price: el.Item.lastPrice || 0,
-          },
-          el.Item.ApiItemPrice[0]
-            ? {
-                date: el.Item.ApiItemPrice[0].fetchTime,
-                price: el.Item.ApiItemPrice[0].current,
-              }
-            : undefined
-        );
-
-        if (!first || !last) {
+      return {
+        items: items.map((el) => {
           return {
             id: el.id,
             marketHashName: el.marketHashName,
-            price: latestPrice || 0,
-            worth: latestPrice * el.quantity,
+            price: el.Item.lastPrice || 0,
+            worth: (el.Item.lastPrice || 0) * el.quantity,
             quantity: el.quantity,
             borderColor: el.Item.borderColor,
-            trend7d: 0,
+            trend7d: el.Item.ItemStatistics?.change7d || 0,
             icon: el.Item.icon,
             rarity: el.Item.rarity,
             dateAdded: el.dateAdded,
             buyPrice: el.buyPrice,
           };
-        }
-
-        const trend7d = ((first.price - last.price) / last.price) * 100;
-        return {
-          id: el.id,
-          marketHashName: el.marketHashName,
-          price: latestPrice || 0,
-          worth: latestPrice * el.quantity,
-          quantity: el.quantity,
-          borderColor: el.Item.borderColor,
-          trend7d,
-          icon: el.Item.icon,
-          rarity: el.Item.rarity,
-          dateAdded: el.dateAdded,
-          buyPrice: el.buyPrice,
-        };
-      }),
-    };
-  }),
+        }),
+      };
+    }),
 });

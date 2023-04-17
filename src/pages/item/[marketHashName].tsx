@@ -172,7 +172,13 @@ const ItemPage = ({
             <div className="flex flex-col justify-between ">
               <span>
                 Latest price:{" "}
-                <CurrencyField value={itemInfoQuery.data?.latestPrice || 0} />
+                <CurrencyField value={itemInfoQuery.data?.lastPrice || 0} />
+              </span>
+              <span>
+                volume24h:{" "}
+                <CurrencyField
+                  value={itemInfoQuery.data?.ItemStatistics?.volume24h || 0}
+                />
               </span>
             </div>
             {/* <div className="flex flex-col justify-between ">
@@ -186,12 +192,21 @@ const ItemPage = ({
               <span>Median price this month:</span>
               <span>Median price this year:</span>
             </div> */}
-            {/* <div className="flex flex-col justify-between">
-              <span>Change day:</span>
-              <span>Change week:</span>
-              <span>Change month:</span>
-              <span>Change year:</span>
-            </div> */}
+            <div className="flex flex-col justify-between">
+              <span>
+                Change day:{" "}
+                {itemInfoQuery.data?.ItemStatistics?.change24h.toFixed(2)}%
+              </span>
+              <span>
+                Change week:{" "}
+                {itemInfoQuery.data?.ItemStatistics?.change7d.toFixed(2)}%
+              </span>
+              <span>
+                Change month:{" "}
+                {itemInfoQuery.data?.ItemStatistics?.change30d.toFixed(2)}%
+              </span>
+              {/* <span>Change year:</span> */}
+            </div>
           </div>
         </div>
         <div className="flex w-full flex-1 flex-col gap-4 rounded-md border border-neutral-200 p-4 dark:border-neutral-800">

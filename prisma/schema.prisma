@@ -82,16 +82,30 @@ model Item {
   marketHashName                   String     @unique
   lastPrice                        Float?
   rarity                           ItemRarity
-  type                             ItemType
+  type                             ItemType?
   icon                             String
   icon_small                       String
   officialPricingHistoryUpdateTime DateTime?
   borderColor                      String?
 
+  ItemStatistics                  ItemStatistics?
   OfficialPricingHistory          OfficialPricingHistory[]
   ApiItemPrice                    ApiPricingHistory[]
   UserItem                        UserItem[]
   OfficialPricingHistoryOptimized OfficialPricingHistoryOptimized[]
+}
+
+model ItemStatistics {
+  id        String @id @default(uuid())
+  volume24h Float
+  volume7d  Float
+  change24h Float
+  change7d  Float
+  change30d Float
+  item      Item   @relation(fields: [itemId], references: [id])
+  itemId    String @unique
+
+  @@index([volume24h(sort: Desc)])
 }
 
 model OfficialPricingHistory {
@@ -145,6 +159,7 @@ model ApiPricingHistory {
   updateTime DateTime
   fetchTime  DateTime @default(now())
 
+  @@index([itemId, fetchTime(sort: Desc)])
   @@index([updateTime])
   @@index([current])
   @@index([itemId])
@@ -197,13 +212,15 @@ enum ItemRarity {
 }
 
 enum ItemType {
+  Skin
+  Sticker
   Container
+  Collectible
   Agent
   Patch
   MusicKit
-  Skin
-  Sticker
-  Tool
+  Graffiti
+  Other
 }
 
 enum ItemUnstableReason {
