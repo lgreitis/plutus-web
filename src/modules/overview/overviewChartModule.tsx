@@ -59,7 +59,7 @@ const OverviewChartModule = (props: Props) => {
       </div>
       {response.data ? (
         <>
-          <div className="h-64" key={response.dataUpdatedAt}>
+          <div className="h-64" key={`graph.${String(settings.useBuyDate)}`}>
             <InventoryValueChart
               data={response.data}
               onZoom={(dateMin, dateMax) => {
