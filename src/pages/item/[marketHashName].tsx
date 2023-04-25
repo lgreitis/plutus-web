@@ -1,6 +1,8 @@
 import { faSteam } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { BanknotesIcon } from "@heroicons/react/20/solid";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
+import type { ItemType } from "@prisma/client";
 import clsx from "clsx";
 import { format } from "date-fns";
 import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
@@ -12,6 +14,7 @@ import { useEffect, useState } from "react";
 import CurrencyField from "src/components/currencyField";
 import InternalLayout from "src/components/layouts/internalLayout";
 import Loader from "src/components/loader";
+import ColorCell from "src/components/table/colorCell";
 import HeaderText from "src/components/text/headerText";
 import { getServerAuthSession } from "src/server/auth";
 import { prisma } from "src/server/db";
@@ -39,6 +42,15 @@ const ranges = [
     title: "All",
   },
 ] as const;
+
+const multisellable: ItemType[] = [
+  "Collectible",
+  "Container",
+  "Graffiti",
+  "MusicKit",
+  "Patch",
+  "Sticker",
+];
 
 export const getServerSideProps: GetServerSideProps<{
   exists: boolean;
@@ -137,6 +149,18 @@ const ItemPage = ({
         >
           <FontAwesomeIcon icon={faSteam} className="h-5 w-5" />
         </Link>
+        {itemInfoQuery.data?.type &&
+          multisellable.includes(itemInfoQuery.data.type) && (
+            <Link
+              href={`https://steamcommunity.com/market/multisell?appid=730&contextid=2&items%5B%5D=${encodeURIComponent(
+                marketHashName?.toString() || ""
+              )}`}
+              target="_blank"
+              className="flex h-7 w-7 items-center gap-1 rounded-md px-1 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+            >
+              <BanknotesIcon className="h-5 w-5" />
+            </Link>
+          )}
         <div className="flex-1"></div>
         <div className="flex w-1/4 min-w-max justify-between divide-x divide-neutral-800 rounded border border-neutral-800">
           {ranges.map((el) => (
@@ -168,8 +192,35 @@ const ItemPage = ({
             alt=""
           />
           <div className="ml-4 flex gap-4 border-l border-neutral-200 pl-4 dark:border-neutral-800">
-            {/* TODO: */}
-            <div className="flex flex-col justify-between ">
+            <div className="hfull flex flex-col  gap-3">
+              <Field label="Latest price:">
+                <CurrencyField value={itemInfoQuery.data?.lastPrice || 0} />
+              </Field>
+            </div>
+            <div className="flex h-full flex-col  gap-3">
+              <Field label="Change day:">
+                <ColorCell
+                  value={itemInfoQuery.data?.ItemStatistics?.change24h || 0}
+                >
+                  %
+                </ColorCell>
+              </Field>
+              <Field label="Change week:">
+                <ColorCell
+                  value={itemInfoQuery.data?.ItemStatistics?.change7d || 0}
+                >
+                  %
+                </ColorCell>
+              </Field>
+              <Field label="Change month:">
+                <ColorCell
+                  value={itemInfoQuery.data?.ItemStatistics?.change30d || 0}
+                >
+                  %
+                </ColorCell>
+              </Field>
+            </div>
+            {/* <div className="flex flex-col justify-between ">
               <span>
                 Latest price:{" "}
                 <CurrencyField value={itemInfoQuery.data?.lastPrice || 0} />
@@ -180,7 +231,7 @@ const ItemPage = ({
                   value={itemInfoQuery.data?.ItemStatistics?.volume24h || 0}
                 />
               </span>
-            </div>
+            </div> */}
             {/* <div className="flex flex-col justify-between ">
               <span>Market volume:</span>
               <span>Sales this week:</span>
@@ -192,31 +243,17 @@ const ItemPage = ({
               <span>Median price this month:</span>
               <span>Median price this year:</span>
             </div> */}
-            <div className="flex flex-col justify-between">
-              <span>
-                Change day:{" "}
-                {itemInfoQuery.data?.ItemStatistics?.change24h.toFixed(2)}%
-              </span>
-              <span>
-                Change week:{" "}
-                {itemInfoQuery.data?.ItemStatistics?.change7d.toFixed(2)}%
-              </span>
-              <span>
-                Change month:{" "}
-                {itemInfoQuery.data?.ItemStatistics?.change30d.toFixed(2)}%
-              </span>
-              {/* <span>Change year:</span> */}
-            </div>
           </div>
         </div>
         <div className="flex w-full flex-1 flex-col gap-4 rounded-md border border-neutral-200 p-4 dark:border-neutral-800">
-          {query.data && !query.isFetching ? (
+          {query.data && itemInfoQuery.data && !query.isFetching ? (
             <>
               {query.data.length > 0 ? (
                 <>
                   <div className="h-64">
                     <ItemChart
                       data={query.data}
+                      buyPrice={itemInfoQuery.data.buyPrice || undefined}
                       onZoom={(dateMin, dateMax) => {
                         setAxisData({ dateMin, dateMax });
                       }}
@@ -242,6 +279,20 @@ const ItemPage = ({
         </div>
       </div>
     </InternalLayout>
+  );
+};
+
+interface FieldProps {
+  label?: string;
+  children?: React.ReactNode;
+}
+
+const Field = (props: FieldProps) => {
+  return (
+    <div className="flex flex-col">
+      <span className="text-sm text-neutral-400">{props.label}</span>
+      <span className="text-xl">{props.children}</span>
+    </div>
   );
 };
 

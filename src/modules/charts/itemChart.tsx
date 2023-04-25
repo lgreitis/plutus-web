@@ -6,15 +6,18 @@ import {
   ComposedChart,
   Line,
   ReferenceArea,
+  ReferenceLine,
   ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
 } from "recharts";
-import type { NameType } from "recharts/types/component/DefaultTooltipContent";
+import type {
+  NameType,
+  ValueType,
+} from "recharts/types/component/DefaultTooltipContent";
 import CurrencyField from "src/components/currencyField";
 import { getEpochs } from "src/utils/chartUtils";
-import type { ValueType } from "tailwindcss/types/config";
 
 interface DataType {
   name: number;
@@ -35,6 +38,7 @@ interface InitialState {
 
 interface Props {
   data: DataType[];
+  buyPrice?: number;
   onZoom?: (dateMin: Date, dateMax: Date) => void;
 }
 
@@ -163,7 +167,9 @@ const ItemChart = (props: Props) => {
         />
         <Tooltip
           wrapperStyle={{ outline: "none" }}
-          content={<TooltipComponent />}
+          content={(tooltipProps) => (
+            <TooltipComponent {...tooltipProps} buyPrice={props.buyPrice} />
+          )}
         />
         <YAxis hide allowDataOverflow domain={[bottom, top]} type="number" />
         <YAxis
@@ -174,6 +180,14 @@ const ItemChart = (props: Props) => {
           domain={[0, (dataMax: number) => dataMax * 2]}
           type="number"
         />
+        {props.buyPrice && (
+          <ReferenceLine
+            y={props.buyPrice}
+            strokeDasharray="6 6"
+            stroke="#a78bfa"
+            strokeWidth={3}
+          />
+        )}
         <Area
           stroke="#4f46e5"
           fill="#3730a3"
@@ -199,7 +213,9 @@ const ItemChart = (props: Props) => {
   );
 };
 
-const TooltipComponent = (props: TooltipProps<ValueType, NameType>) => {
+const TooltipComponent = (
+  props: TooltipProps<ValueType, NameType> & { buyPrice?: number }
+) => {
   if (!props.active || !props.payload || !props.payload.length) {
     return <></>;
   }
@@ -209,12 +225,21 @@ const TooltipComponent = (props: TooltipProps<ValueType, NameType>) => {
       <span className="text-sm font-semibold text-neutral-700 dark:text-neutral-500">
         {new Date(parseInt(String(props.label))).toLocaleString()}
       </span>
-      <div key={props.payload[0]?.value} className="flex flex-col gap-1">
+      <div key={String(props.label)} className="flex flex-col gap-1">
         <span>
           Price:{" "}
-          <CurrencyField value={parseFloat(props.payload[1]?.value || "0")} />
+          <CurrencyField
+            value={parseFloat(props.payload[1]?.value?.toString() || "0")}
+          />
         </span>
-        <span>Volume: {parseFloat(props.payload[0]?.value || "0")}</span>
+        <span>
+          Volume: {parseFloat(props.payload[0]?.value?.toString() || "0")}
+        </span>
+        {props.buyPrice && (
+          <span>
+            Buy price: <CurrencyField value={props.buyPrice} />
+          </span>
+        )}
       </div>
     </div>
   );

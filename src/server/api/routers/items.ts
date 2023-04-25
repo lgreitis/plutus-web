@@ -47,7 +47,14 @@ export const itemsRouter = createTRPCRouter({
         throw new TRPCError({ code: "NOT_FOUND" });
       }
 
-      return { ...item };
+      const userItem = await ctx.prisma.userItem.findFirst({
+        where: {
+          Inventory: { userId: ctx.session.user.id },
+          marketHashName: item.marketHashName,
+        },
+      });
+
+      return { ...item, buyPrice: userItem?.buyPrice || undefined };
     }),
 
   getItemStatistics: protectedProcedure

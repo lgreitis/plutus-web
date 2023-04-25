@@ -1,6 +1,6 @@
 import type { ItemType } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
-import axios from "axios";
+import axios, { isAxiosError } from "axios";
 import { subYears } from "date-fns";
 import { env } from "src/env.mjs";
 import { fillEmptyDataPoints } from "src/server/api/routers/items";
@@ -34,15 +34,26 @@ export const inventoryRouter = createTRPCRouter({
       }
 
       if (!user.friends.length) {
-        const friends = await axios.get<FriendsResponse>(
-          "http://api.steampowered.com/ISteamUser/GetFriendList/v0001",
-          {
-            params: {
-              key: env.STEAM_API_KEY,
-              steamid: steamAccount.providerAccountId,
-            },
-          }
-        );
+        const friends = await axios
+          .get<FriendsResponse>(
+            "http://api.steampowered.com/ISteamUser/GetFriendList/v0001",
+            {
+              params: {
+                key: env.STEAM_API_KEY,
+                steamid: steamAccount.providerAccountId,
+              },
+            }
+          )
+          .catch((err) => {
+            if (isAxiosError(err) && err.status === 401) {
+              // TODO:
+              throw new TRPCError({ code: "UNAUTHORIZED" });
+            }
+          });
+
+        if (!friends) {
+          return [];
+        }
 
         for (const friend of friends.data.friendslist.friends) {
           const friendAccount = await ctx.prisma.account.findFirst({
@@ -119,11 +130,6 @@ export const inventoryRouter = createTRPCRouter({
         throw new TRPCError({ code: "NOT_FOUND" });
       }
 
-      const exchangeRate = await ctx.prisma.exchangeRate.findFirst({
-        orderBy: { timestamp: "desc" },
-        where: { conversionCurrency: user?.currency || "USD" },
-      });
-
       if (!items || !user) {
         throw new TRPCError({ code: "NOT_FOUND" });
       }
@@ -163,7 +169,6 @@ export const inventoryRouter = createTRPCRouter({
         worth,
         invested,
         totalItems,
-        difference: worth * (exchangeRate?.rate || 1) - invested,
         pieData,
       };
     }),

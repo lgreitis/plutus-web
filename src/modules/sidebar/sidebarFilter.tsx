@@ -25,9 +25,20 @@ const SidebarFilter = () => {
 
   return (
     <div className="flex flex-col gap-3">
-      <span className="pt-5 text-xs font-medium text-neutral-400">
-        Filter categories
-      </span>
+      <div className="flex justify-between pt-5">
+        <span className="text-xs font-medium text-neutral-400">
+          Filter categories
+        </span>
+        {Object.keys(filters).length > 0 && (
+          <button
+            type="button"
+            className="hover text-xs font-medium text-neutral-400 transition hover:text-neutral-900 hover:dark:text-neutral-50"
+            onClick={() => setFilters({})}
+          >
+            Clear
+          </button>
+        )}
+      </div>
       {filterCategories.map((el) => {
         const active = filters[el.key] ?? false;
         return (

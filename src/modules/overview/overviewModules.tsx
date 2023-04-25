@@ -4,7 +4,7 @@ import { format } from "date-fns";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import CurrencyField from "src/components/currencyField";
 import Loader from "src/components/loader";
 import { api } from "src/utils/api";
@@ -34,9 +34,23 @@ const OverviewModules = (props: Props) => {
   const friendsResponse = api.inventory.getFriends.useQuery({
     userId: props.userId,
   });
+  const currencyResponse = api.settings.getCurrentCurrency.useQuery(undefined, {
+    staleTime: Infinity,
+  });
   const [axisData, setAxisData] = useState<
     { dateMin: Date; dateMax: Date } | undefined
   >();
+
+  const difference = useMemo(() => {
+    if (currencyResponse.data && worthResponse.data) {
+      return (
+        worthResponse.data.worth * currencyResponse.data.rate -
+        worthResponse.data.invested
+      );
+    }
+
+    return 0;
+  }, [currencyResponse.data, worthResponse.data]);
 
   return (
     <>
@@ -71,10 +85,11 @@ const OverviewModules = (props: Props) => {
               <CurrencyField
                 className={clsx(
                   "text-2xl font-semibold",
-                  worthResponse.data.difference > 0 && "text-green-400",
-                  worthResponse.data.difference < 0 && "text-red-400"
+                  difference > 0 && "text-green-400",
+                  difference < 0 && "text-red-400"
                 )}
-                value={worthResponse.data.difference || 0}
+                value={difference}
+                noConvert
               />
             </div>
           </>
