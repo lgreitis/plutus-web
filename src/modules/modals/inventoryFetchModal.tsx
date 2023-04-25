@@ -72,7 +72,11 @@ const InventoryFetchModal = (props: Props) => {
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <div className="flex w-full max-w-md transform flex-col items-center gap-3 overflow-hidden rounded-2xl bg-white p-6 text-center align-middle shadow-xl transition-all dark:bg-bg-dark">
+              <div className="relative flex w-full max-w-md transform flex-col items-center gap-3 overflow-hidden rounded-2xl bg-white p-6 text-center align-middle shadow-xl transition-all dark:bg-bg-dark">
+                <XMarkIcon
+                  onClick={onClose}
+                  className="absolute top-0 right-0 mr-4 mt-4 h-6 w-6 cursor-pointer text-neutral-400 transition hover:text-neutral-900 hover:dark:text-neutral-50"
+                />
                 {!done && (
                   <>
                     <span className="relative flex h-10 w-10">
@@ -86,8 +90,9 @@ const InventoryFetchModal = (props: Props) => {
                       Please wait while we&apos;re fetching your inventory
                     </Dialog.Title>
                     <span className="text-neutral-500">
-                      This may take anywhere from 30 seconds to a couple of
-                      minutes
+                      This may take a while so feel free to close this window.
+                      When it&apos;s finished we&apos;ll update your inventory
+                      automatically.
                     </span>
                   </>
                 )}

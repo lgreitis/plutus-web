@@ -1,21 +1,15 @@
-import { faSteam } from "@fortawesome/free-brands-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { BanknotesIcon } from "@heroicons/react/20/solid";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
-import type { ItemType } from "@prisma/client";
-import clsx from "clsx";
-import { format } from "date-fns";
 import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import CurrencyField from "src/components/currencyField";
 import InternalLayout from "src/components/layouts/internalLayout";
 import Loader from "src/components/loader";
 import ColorCell from "src/components/table/colorCell";
-import HeaderText from "src/components/text/headerText";
+import XAxis from "src/modules/charts/XAxis";
+import ItemHeader from "src/modules/item/itemHeader";
 import { getServerAuthSession } from "src/server/auth";
 import { prisma } from "src/server/db";
 import { api } from "src/utils/api";
@@ -23,34 +17,6 @@ import { api } from "src/utils/api";
 const ItemChart = dynamic(() => import("src/modules/charts/itemChart"), {
   ssr: false,
 });
-
-const ranges = [
-  {
-    key: "week",
-    title: "Week",
-  },
-  {
-    key: "month",
-    title: "Month",
-  },
-  {
-    key: "year",
-    title: "Year",
-  },
-  {
-    key: "all",
-    title: "All",
-  },
-] as const;
-
-const multisellable: ItemType[] = [
-  "Collectible",
-  "Container",
-  "Graffiti",
-  "MusicKit",
-  "Patch",
-  "Sticker",
-];
 
 export const getServerSideProps: GetServerSideProps<{
   exists: boolean;
@@ -138,48 +104,14 @@ const ItemPage = ({
 
   return (
     <InternalLayout>
-      <HeaderText className="flex flex-col items-center gap-2 md:flex-row">
-        <span>{marketHashName}</span>
-        <Link
-          href={`https://steamcommunity.com/market/listings/730/${encodeURIComponent(
-            marketHashName?.toString() || ""
-          )}`}
-          target="_blank"
-          className="flex h-7 w-7 items-center gap-1 rounded-md px-1 hover:bg-neutral-100 dark:hover:bg-neutral-800"
-        >
-          <FontAwesomeIcon icon={faSteam} className="h-5 w-5" />
-        </Link>
-        {itemInfoQuery.data?.type &&
-          multisellable.includes(itemInfoQuery.data.type) && (
-            <Link
-              href={`https://steamcommunity.com/market/multisell?appid=730&contextid=2&items%5B%5D=${encodeURIComponent(
-                marketHashName?.toString() || ""
-              )}`}
-              target="_blank"
-              className="flex h-7 w-7 items-center gap-1 rounded-md px-1 hover:bg-neutral-100 dark:hover:bg-neutral-800"
-            >
-              <BanknotesIcon className="h-5 w-5" />
-            </Link>
-          )}
-        <div className="flex-1"></div>
-        <div className="flex w-1/4 min-w-max justify-between divide-x divide-neutral-800 rounded border border-neutral-800">
-          {ranges.map((el) => (
-            <button
-              type="button"
-              key={el.key}
-              onClick={() => {
-                setRange(el.key);
-              }}
-              className={clsx(
-                range === el.key && "bg-neutral-200  dark:bg-neutral-800",
-                "w-full p-1 text-sm text-neutral-800 transition-all hover:bg-neutral-200  dark:text-neutral-200  dark:hover:bg-neutral-800"
-              )}
-            >
-              {el.title}
-            </button>
-          ))}
-        </div>
-      </HeaderText>
+      {itemInfoQuery.data && (
+        <ItemHeader
+          marketHashName={marketHashName?.toString() || ""}
+          itemType={itemInfoQuery.data.type}
+          onRangeChange={(key) => setRange(key)}
+          range={range}
+        />
+      )}
       <div className="flex flex-col gap-5">
         <div className="flex w-full flex-1 rounded-md border border-neutral-200 p-4 dark:border-neutral-800">
           <Image
@@ -292,32 +224,6 @@ const Field = (props: FieldProps) => {
     <div className="flex flex-col">
       <span className="text-sm text-neutral-400">{props.label}</span>
       <span className="text-xl">{props.children}</span>
-    </div>
-  );
-};
-
-interface XAxisProps {
-  data: { date: Date }[];
-  axisData?: { dateMin: Date; dateMax: Date };
-}
-
-const XAxis = (props: XAxisProps) => {
-  const { data, axisData } = props;
-  if (!data[0]) {
-    return null;
-  }
-
-  return (
-    <div className="-mt-4 flex justify-between">
-      <span className="pl-1 text-sm text-neutral-500">
-        {format(axisData?.dateMin || data[0].date, "dd LLL, yyyy")}
-      </span>
-      <span className="pr-1 text-sm text-neutral-500">
-        {format(
-          axisData?.dateMax || data[data.length - 1]?.date || new Date(),
-          "dd LLL, yyyy"
-        )}
-      </span>
     </div>
   );
 };

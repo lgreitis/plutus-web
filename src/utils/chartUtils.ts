@@ -40,7 +40,6 @@ export const getMonthEpochs = (fromDate: Date, toDate: Date): number[] => {
 export const getDayEpochs = (fromDate: Date, toDate: Date): number[] => {
   const dayEpochs: number[] = [];
   dayEpochs.push(getTime(fromDate));
-  console.log(dayEpochs);
   let startDay = startOfDay(addDays(fromDate, 1));
   const endDay = toDate;
 

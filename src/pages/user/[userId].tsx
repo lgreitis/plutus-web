@@ -61,7 +61,7 @@ const UserPage = () => {
           <HeaderText>{data.user.name}&apos;s profile</HeaderText>
         </div>
       </div>
-      <OverviewModules userId={userId?.toString() ?? ""} showItemCount={true} />
+      <OverviewModules userId={userId?.toString() ?? ""} />
     </InternalLayout>
   );
 };

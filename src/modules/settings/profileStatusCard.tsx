@@ -5,8 +5,8 @@ import CardContainer from "src/components/card/cardContainer";
 import CardFooter from "src/components/card/cardFooter";
 import CardHeader from "src/components/card/cardHeader";
 import CardSubheader from "src/components/card/cardSubheader";
+import Toggle from "src/components/input/toggle";
 import Loader from "src/components/loader";
-import Toggle from "src/components/toggle";
 import { api } from "src/utils/api";
 
 const ProfileStatusCard = () => {

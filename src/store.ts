@@ -7,3 +7,7 @@ export const visibilityAtom = atomWithStorage<Record<string, boolean>>(
 );
 
 export const filterAtom = atom<Record<string, boolean>>({});
+
+export const overviewChartSettingsAtom = atomWithStorage<{
+  useBuyDate: boolean;
+}>("overviewChartSettings", { useBuyDate: false });

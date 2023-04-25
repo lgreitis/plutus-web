@@ -72,7 +72,6 @@ export const SteamProvider = (req: NextApiRequest): Provider => ({
         });
         return { tokens: tokenset };
       } else {
-        console.log("here");
         return { tokens: new TokenSet({}) };
       }
     },

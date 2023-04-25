@@ -1,7 +1,7 @@
 import type { ItemType } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import axios, { isAxiosError } from "axios";
-import { subYears } from "date-fns";
+import { isBefore, subYears } from "date-fns";
 import { env } from "src/env.mjs";
 import { fillEmptyDataPoints } from "src/server/api/routers/items";
 import { createTRPCRouter, protectedProcedure } from "src/server/api/trpc";
@@ -174,7 +174,12 @@ export const inventoryRouter = createTRPCRouter({
     }),
 
   getOverviewGraph: protectedProcedure
-    .input(z.object({ userId: z.string().optional() }))
+    .input(
+      z.object({
+        userId: z.string().optional(),
+        useBuyDate: z.boolean().optional(),
+      })
+    )
     .query(async ({ input, ctx }) => {
       const user = await ctx.prisma.user.findUnique({
         where: { id: input.userId ?? ctx.session.user.id },
@@ -188,6 +193,7 @@ export const inventoryRouter = createTRPCRouter({
         where: { Inventory: { userId: input.userId ?? ctx.session.user.id } },
         select: {
           quantity: true,
+          dateAdded: true,
           Item: {
             include: {
               OfficialPricingHistoryOptimized: {
@@ -207,6 +213,11 @@ export const inventoryRouter = createTRPCRouter({
         );
         data.forEach((val) => {
           const el = chartData.get(val.date);
+
+          if (input.useBuyDate && isBefore(val.date, item.dateAdded)) {
+            return;
+          }
+
           if (el) {
             chartData.set(val.date, {
               price: el.price + val.price * item.quantity,
