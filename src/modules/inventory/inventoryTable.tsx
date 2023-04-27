@@ -16,8 +16,10 @@ import { useMemo, useState } from "react";
 import CurrencyField from "src/components/currencyField";
 import Loader from "src/components/loader";
 import ColorCell from "src/components/table/colorCell";
+import DifferenceCell from "src/components/table/differenceCell";
 import GenericHeader from "src/components/table/genericHeader";
 import ItemNameCell from "src/components/table/itemNameCell";
+import InventoryRowActions from "src/modules/inventory/inventoryRowActions";
 import { filterAtom, visibilityAtom } from "src/store";
 import type { RouterOutputs } from "src/utils/api";
 import { api } from "src/utils/api";
@@ -39,10 +41,10 @@ const columns = [
   }),
   columnHelper.accessor("dateAdded", {
     cell: (info) => <span>{info.getValue().toLocaleDateString()}</span>,
-    header: () => <GenericHeader>Date Added</GenericHeader>,
+    header: () => <GenericHeader>Buy Date</GenericHeader>,
   }),
   columnHelper.accessor("buyPrice", {
-    cell: (info) => <span>{info.getValue()}</span>,
+    cell: (info) => <CurrencyField value={info.getValue() || 0} noConvert />,
     header: () => <GenericHeader>Buy Price</GenericHeader>,
   }),
   columnHelper.accessor("price", {
@@ -57,9 +59,32 @@ const columns = [
     cell: (info) => <CurrencyField value={info.getValue()} />,
     header: () => <GenericHeader>Worth</GenericHeader>,
   }),
+  columnHelper.display({
+    id: "difference",
+    cell: (info) => (
+      <DifferenceCell
+        buyPrice={info.row.original.buyPrice ?? 0}
+        quantity={info.row.original.quantity}
+        price={info.row.original.price}
+      />
+    ),
+    header: () => <GenericHeader>Difference</GenericHeader>,
+  }),
   columnHelper.accessor("trend7d", {
     cell: (info) => <ColorCell value={info.getValue()}>%</ColorCell>,
     header: () => <GenericHeader>Trend 7d</GenericHeader>,
+  }),
+  columnHelper.display({
+    id: "actions",
+    cell: (props) => (
+      <InventoryRowActions
+        key={props.row.original.marketHashName}
+        favourite={props.row.original.favourite}
+        marketHashName={props.row.original.marketHashName}
+        buyDate={props.row.original.dateAdded}
+        buyPrice={props.row.original.buyPrice ?? undefined}
+      />
+    ),
   }),
 ];
 
@@ -122,8 +147,8 @@ const InventoryTable = () => {
           <tr key={headerGroup.id}>
             {headerGroup.headers.map((header) => (
               <th
-                scope="col"
                 key={header.id}
+                scope="col"
                 className={clsx(
                   "sticky top-0 z-10 h-14 border-b border-neutral-200 bg-white bg-opacity-75 text-base font-semibold backdrop-blur-sm backdrop-filter dark:border-neutral-800 dark:bg-bg-dark dark:bg-opacity-75",
                   header.column.getCanSort() && "cursor-pointer"

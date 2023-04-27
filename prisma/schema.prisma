@@ -50,8 +50,9 @@ model User {
   fetchJobId String?
   lastFetch  DateTime?
 
-  friendOf User[] @relation("UserFriends")
-  friends  User[] @relation("UserFriends")
+  friendOf          User[]              @relation("UserFriends")
+  friends           User[]              @relation("UserFriends")
+  UserFavouriteItem UserFavouriteItem[]
 }
 
 model Inventory {
@@ -79,6 +80,17 @@ model UserItem {
   @@index([marketHashName])
 }
 
+model UserFavouriteItem {
+  id             String @id @default(uuid())
+  Item           Item   @relation(fields: [marketHashName], references: [marketHashName])
+  User           User   @relation(fields: [userId], references: [id])
+  marketHashName String
+  userId         String
+
+  @@unique([marketHashName, userId])
+  @@index([userId])
+}
+
 model Item {
   id                               String     @id @default(uuid())
   marketName                       String
@@ -96,6 +108,7 @@ model Item {
   ApiItemPrice                    ApiPricingHistory[]
   UserItem                        UserItem[]
   OfficialPricingHistoryOptimized OfficialPricingHistoryOptimized[]
+  UserFavouriteItem               UserFavouriteItem[]
 }
 
 model ItemStatistics {

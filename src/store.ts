@@ -10,4 +10,10 @@ export const filterAtom = atom<Record<string, boolean>>({});
 
 export const overviewChartSettingsAtom = atomWithStorage<{
   useBuyDate: boolean;
-}>("overviewChartSettings", { useBuyDate: false });
+  onlyWithBuyPrice: boolean;
+  onlyFavourites: boolean;
+}>("overviewChartSettings", {
+  useBuyDate: false,
+  onlyWithBuyPrice: false,
+  onlyFavourites: false,
+});

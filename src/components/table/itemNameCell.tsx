@@ -11,7 +11,7 @@ const ItemNameCell = (props: Props) => {
   return (
     <Link
       href={`/item/${props.marketHashName}`}
-      className="transition hover:text-purple-400  hover:dark:text-pink-800"
+      className="transition hover:text-neutral-500"
     >
       <div className="flex items-center gap-1 md:gap-3">
         {

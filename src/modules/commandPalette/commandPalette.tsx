@@ -68,7 +68,7 @@ const CommandPalette = (props: Props) => {
                     aria-hidden="true"
                   />
                   <Combobox.Input
-                    className="h-12 w-full border-0 bg-transparent pl-11 pr-4 text-gray-900 placeholder:text-neutral-400 focus-visible:outline-none dark:text-white dark:placeholder:text-neutral-600 sm:text-sm"
+                    className="h-12 w-full border-0 bg-transparent pl-11 pr-4 text-gray-900 placeholder:text-neutral-400  focus:ring-0 dark:text-white dark:placeholder:text-neutral-600 sm:text-sm"
                     placeholder="Search..."
                     onChange={(event) => setSearchString(event.target.value)}
                   />

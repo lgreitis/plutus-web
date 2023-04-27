@@ -5,3 +5,7 @@
 body {
   @apply bg-white  dark:bg-bg-dark;
 }
+
+.rdp {
+  --rdp-cell-size: 32px !important;
+}

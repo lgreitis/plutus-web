@@ -1,4 +1,5 @@
-// Code taken from: https://github.com/wbkd/react-flow/blob/main/packages/core/src/hooks/useKeyPress.ts
+// This code is from wbkd/react-flow licensed under MIT License
+// Link to the file: https://github.com/wbkd/react-flow/blob/main/packages/core/src/hooks/useKeyPress.ts
 import type { KeyboardEvent as ReactKeyboardEvent } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 

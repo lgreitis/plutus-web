@@ -1,16 +1,7 @@
-import type {
-  OfficialPricingHistory,
-  OfficialPricingHistoryOptimized,
-} from "@prisma/client";
 import { TRPCError } from "@trpc/server";
-import {
-  eachDayOfInterval,
-  startOfDay,
-  subMonths,
-  subWeeks,
-  subYears,
-} from "date-fns";
+import { subMonths, subWeeks, subYears } from "date-fns";
 import { createTRPCRouter, protectedProcedure } from "src/server/api/trpc";
+import { normalizeData } from "src/utils/itemProcessingUtils";
 import { z } from "zod";
 
 interface StatisticsDataPoint {
@@ -18,13 +9,6 @@ interface StatisticsDataPoint {
   volume: number;
   date: Date;
   name: number;
-}
-
-interface DataGroup {
-  volume: number;
-  itemCount: number;
-  sumPrice: number;
-  price: number;
 }
 
 export const itemsRouter = createTRPCRouter({
@@ -130,73 +114,75 @@ export const itemsRouter = createTRPCRouter({
         };
       });
     }),
-});
 
-export const normalizeData = (
-  items: (OfficialPricingHistory | OfficialPricingHistoryOptimized)[]
-): Map<number, DataGroup> => {
-  const groupedData = new Map<number, DataGroup>();
-
-  items.forEach((item) => {
-    const start = startOfDay(item.date).getTime();
-    if (groupedData.has(start)) {
-      const dataGroup = groupedData.get(start);
-
-      if (dataGroup) {
-        const combinedItemCount = dataGroup.itemCount + 1;
-        const combinedPrice = dataGroup.sumPrice + item.price;
-        const combinedVolume = dataGroup.volume + item.volume;
-        groupedData.set(start, {
-          itemCount: combinedItemCount,
-          sumPrice: combinedPrice,
-          volume: combinedVolume,
-          price: combinedPrice / combinedItemCount,
-        });
-      }
-    } else {
-      groupedData.set(start, {
-        itemCount: 1,
-        price: item.price,
-        sumPrice: item.price,
-        volume: item.volume,
+  toggleItemToFavourite: protectedProcedure
+    .input(
+      z.object({
+        marketHashName: z.string(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const existingFavourite = await ctx.prisma.userFavouriteItem.findUnique({
+        where: {
+          marketHashName_userId: {
+            marketHashName: input.marketHashName,
+            userId: ctx.session.user.id,
+          },
+        },
       });
-    }
-  });
 
-  return groupedData;
-};
+      let mutatedValue = false;
 
-export const fillEmptyDataPoints = (
-  items: OfficialPricingHistoryOptimized[]
-) => {
-  const intervals = eachDayOfInterval({
-    start: items[0]?.date || new Date(),
-    end: new Date(),
-  }).map((el) => ({ price: 0, date: startOfDay(el).getTime() }));
+      if (existingFavourite) {
+        await ctx.prisma.userFavouriteItem.delete({
+          where: {
+            marketHashName_userId: {
+              marketHashName: input.marketHashName,
+              userId: ctx.session.user.id,
+            },
+          },
+        });
+        mutatedValue = false;
+      } else {
+        await ctx.prisma.userFavouriteItem.create({
+          data: {
+            marketHashName: input.marketHashName,
+            userId: ctx.session.user.id,
+          },
+        });
+        mutatedValue = true;
+      }
 
-  let last: number | undefined;
+      return { mutatedValue };
+    }),
 
-  const itemMap = new Map<number, DataGroup>();
+  updateUserItem: protectedProcedure
+    .input(
+      z.object({
+        buyDate: z.date(),
+        buyPrice: z.number().or(z.null()),
+        marketHashName: z.string(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const inventory = await ctx.prisma.inventory.findUnique({
+        where: { userId: ctx.session.user.id },
+      });
 
-  for (const item of items) {
-    itemMap.set(startOfDay(item.date).getTime(), {
-      itemCount: 1,
-      price: item.price,
-      sumPrice: item.price,
-      volume: item.volume,
-    });
-  }
+      if (!inventory) {
+        throw new TRPCError({ code: "NOT_FOUND" });
+      }
 
-  const result = intervals.map((el) => {
-    const item = itemMap.get(el.date);
-    if (item) {
-      last = item.price;
-      return { ...el, price: item.price };
-    } else if (last) {
-      return { ...el, price: last };
-    }
-    return { ...el };
-  });
+      await ctx.prisma.userItem.update({
+        where: {
+          inventoryId_marketHashName: {
+            marketHashName: input.marketHashName,
+            inventoryId: inventory.id,
+          },
+        },
+        data: { buyPrice: input.buyPrice, dateAdded: input.buyDate },
+      });
 
-  return result;
-};
+      return;
+    }),
+});

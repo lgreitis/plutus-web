@@ -3,8 +3,8 @@ import { TRPCError } from "@trpc/server";
 import axios, { isAxiosError } from "axios";
 import { isBefore, subYears } from "date-fns";
 import { env } from "src/env.mjs";
-import { fillEmptyDataPoints } from "src/server/api/routers/items";
 import { createTRPCRouter, protectedProcedure } from "src/server/api/trpc";
+import { fillEmptyDataPoints } from "src/utils/itemProcessingUtils";
 import { z } from "zod";
 
 interface FriendsResponse {
@@ -282,6 +282,7 @@ export const inventoryRouter = createTRPCRouter({
           Item: {
             include: {
               ItemStatistics: true,
+              UserFavouriteItem: { where: { userId: ctx.session.user.id } },
             },
           },
         },
@@ -301,6 +302,7 @@ export const inventoryRouter = createTRPCRouter({
             rarity: el.Item.rarity,
             dateAdded: el.dateAdded,
             buyPrice: el.buyPrice,
+            favourite: el.Item.UserFavouriteItem[0] ? true : false,
           };
         }),
       };

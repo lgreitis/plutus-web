@@ -5,12 +5,14 @@ import ListPopover from "src/components/listPopover";
 import { visibilityAtom } from "src/store";
 
 const columns = [
-  { key: "dateAdded", label: "Date Added" },
+  { key: "dateAdded", label: "Buy Date" },
   { key: "buyPrice", label: "Buy Price" },
   { key: "price", label: "Price" },
   { key: "quantity", label: "Quantity" },
   { key: "worth", label: "Worth" },
+  { key: "difference", label: "Difference" },
   { key: "trend7d", label: "Trend 7d" },
+  { key: "actions", label: "Actions" },
 ];
 
 const InventoryVisibility = () => {

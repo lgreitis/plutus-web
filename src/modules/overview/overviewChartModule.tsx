@@ -53,8 +53,44 @@ const OverviewChartModule = (props: Props) => {
                 return;
               }}
             />
-            Include date added values to calculations
+            Include buy date values to calculations
           </div>
+          {/* <div
+            className="flex w-40 select-none items-center gap-2 px-2 py-1 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+            onClick={() => {
+              setSettings((prev) => ({
+                ...prev,
+                onlyWithBuyPrice: !prev.onlyWithBuyPrice,
+                onlyFavourites: false,
+              }));
+            }}
+          >
+            <Checkbox
+              checked={settings.onlyWithBuyPrice}
+              onClick={() => {
+                return;
+              }}
+            />
+            Only display items with buy price
+          </div>
+          <div
+            className="flex w-40 select-none items-center gap-2 px-2 py-1 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+            onClick={() => {
+              setSettings((prev) => ({
+                ...prev,
+                onlyFavourites: !prev.onlyFavourites,
+                onlyWithBuyPrice: false,
+              }));
+            }}
+          >
+            <Checkbox
+              checked={settings.onlyFavourites}
+              onClick={() => {
+                return;
+              }}
+            />
+            Only display favourite items
+          </div> */}
         </ListPopover>
       </div>
       {response.data ? (

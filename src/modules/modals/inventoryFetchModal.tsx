@@ -1,6 +1,9 @@
-import { Dialog, Transition } from "@headlessui/react";
+import { Dialog } from "@headlessui/react";
 import { CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
-import { Fragment, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import DefaultModal from "src/components/modal/defaultModal";
+import ModalButton from "src/components/modal/modalButton";
+import ModalCloseButton from "src/components/modal/modalCloseButton";
 import { api } from "src/utils/api";
 
 interface Props {
@@ -48,66 +51,34 @@ const InventoryFetchModal = (props: Props) => {
   }, [started, mutate, done]);
 
   return (
-    <Transition appear show={open} as={Fragment}>
-      <Dialog as="div" className="relative z-10" onClose={onClose}>
-        <Transition.Child
-          as={Fragment}
-          enter="ease-out duration-300"
-          enterFrom="opacity-0"
-          enterTo="opacity-100"
-          leave="ease-in duration-200"
-          leaveFrom="opacity-100"
-          leaveTo="opacity-0"
-        >
-          <div className="fixed inset-0 bg-black bg-opacity-75" />
-        </Transition.Child>
-        <div className="fixed inset-0 overflow-y-auto">
-          <div className="flex min-h-full items-center justify-center p-4 text-center">
-            <Transition.Child
-              as={Fragment}
-              enter="ease-out duration-300"
-              enterFrom="opacity-0 scale-95"
-              enterTo="opacity-100 scale-100"
-              leave="ease-in duration-200"
-              leaveFrom="opacity-100 scale-100"
-              leaveTo="opacity-0 scale-95"
-            >
-              <div className="relative flex w-full max-w-md transform flex-col items-center gap-3 overflow-hidden rounded-2xl bg-white p-6 text-center align-middle shadow-xl transition-all dark:bg-bg-dark">
-                <XMarkIcon
-                  onClick={onClose}
-                  className="absolute top-0 right-0 mr-4 mt-4 h-6 w-6 cursor-pointer text-neutral-400 transition hover:text-neutral-900 hover:dark:text-neutral-50"
-                />
-                {!done && (
-                  <>
-                    <span className="relative flex h-10 w-10">
-                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-black opacity-75 dark:bg-white"></span>
-                      <span className="relative inline-flex h-10 w-10 rounded-full bg-black dark:bg-white"></span>
-                    </span>
-                    <Dialog.Title
-                      as="h3"
-                      className="pt-1 text-lg font-medium leading-6"
-                    >
-                      Please wait while we&apos;re fetching your inventory
-                    </Dialog.Title>
-                    <span className="text-neutral-500">
-                      This may take a while so feel free to close this window.
-                      When it&apos;s finished we&apos;ll update your inventory
-                      automatically.
-                    </span>
-                  </>
-                )}
-                {done &&
-                  (isError ? (
-                    <ErrorContent onClick={onClose} />
-                  ) : (
-                    <SuccessContent onClick={onClose} />
-                  ))}
-              </div>
-            </Transition.Child>
-          </div>
-        </div>
-      </Dialog>
-    </Transition>
+    <DefaultModal onClose={onClose} open={open}>
+      <ModalCloseButton onClick={onClose} />
+      {!done && <ProcessingContent />}
+      {done &&
+        (isError ? (
+          <ErrorContent onClick={onClose} />
+        ) : (
+          <SuccessContent onClick={onClose} />
+        ))}
+    </DefaultModal>
+  );
+};
+
+const ProcessingContent = () => {
+  return (
+    <>
+      <span className="relative flex h-10 w-10">
+        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-black opacity-75 dark:bg-white"></span>
+        <span className="relative inline-flex h-10 w-10 rounded-full bg-black dark:bg-white"></span>
+      </span>
+      <Dialog.Title as="h3" className="pt-1 text-lg font-medium leading-6">
+        Please wait while we&apos;re fetching your inventory
+      </Dialog.Title>
+      <span className="text-neutral-500">
+        This may take a while so feel free to close this window. When it&apos;s
+        finished we&apos;ll update your inventory automatically.
+      </span>
+    </>
   );
 };
 
@@ -154,13 +125,7 @@ const ErrorContent = (props: DoneProps) => {
       <span className="text-neutral-500">
         Failed to fetch your inventory, please try again later.
       </span>
-      <button
-        type="button"
-        className="h-10 w-full rounded border border-black bg-black px-3 text-sm text-white transition-all duration-150 hover:bg-white hover:text-black dark:border-white  dark:bg-white dark:text-black hover:dark:bg-bg-dark hover:dark:text-white"
-        onClick={onClick}
-      >
-        Close
-      </button>
+      <ModalButton onClick={onClick}>Close</ModalButton>
     </>
   );
 };
