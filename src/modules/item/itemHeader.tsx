@@ -69,7 +69,7 @@ const ItemHeader = (props: Props) => {
           </Link>
         )}
       </div>
-      <div className="flex w-full min-w-max justify-between divide-x divide-neutral-800 rounded border border-neutral-800 md:w-1/4">
+      <div className="flex w-full min-w-max justify-between divide-x divide-neutral-200 rounded border border-neutral-200 dark:divide-neutral-800 dark:border-neutral-800 md:w-1/4">
         {ranges.map((el) => (
           <button
             type="button"
@@ -77,7 +77,7 @@ const ItemHeader = (props: Props) => {
             onClick={() => onRangeChange(el.key)}
             className={clsx(
               range === el.key && "bg-neutral-200  dark:bg-neutral-800",
-              "w-full p-1 text-sm font-semibold text-neutral-800 transition-all hover:bg-neutral-200 dark:text-neutral-200  dark:hover:bg-neutral-800"
+              "w-full p-1 text-sm font-semibold text-neutral-800 transition-all hover:bg-neutral-200 dark:text-neutral-200 dark:hover:bg-neutral-800"
             )}
           >
             {el.title}
