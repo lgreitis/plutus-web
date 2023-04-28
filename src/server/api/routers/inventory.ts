@@ -195,10 +195,15 @@ export const inventoryRouter = createTRPCRouter({
           quantity: true,
           dateAdded: true,
           Item: {
-            include: {
+            select: {
               OfficialPricingHistoryOptimized: {
                 orderBy: { date: "asc" },
                 where: { date: { gt: subYears(new Date(), 1) } },
+                select: {
+                  date: true,
+                  price: true,
+                  volume: true,
+                },
               },
             },
           },

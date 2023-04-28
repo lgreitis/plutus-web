@@ -1,4 +1,3 @@
-import type { OfficialPricingHistoryOptimized } from "@prisma/client";
 import { eachDayOfInterval, startOfDay } from "date-fns";
 
 interface DataGroup {
@@ -43,7 +42,7 @@ export const normalizeData = (
 };
 
 export const fillEmptyDataPoints = (
-  items: OfficialPricingHistoryOptimized[]
+  items: { date: Date; price: number; volume: number }[]
 ) => {
   const intervals = eachDayOfInterval({
     start: items[0]?.date || new Date(),
