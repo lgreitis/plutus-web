@@ -91,7 +91,7 @@ export const settingsRouter = createTRPCRouter({
     });
 
     if (!exchangeRate) {
-      throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+      return { conversionCurrency: "USD", rate: 1 };
     }
 
     return { conversionCurrency: user.currency, rate: exchangeRate.rate };

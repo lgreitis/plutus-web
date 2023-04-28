@@ -34,7 +34,7 @@ export const itemsRouter = createTRPCRouter({
       const userItem = await ctx.prisma.userItem.findFirst({
         where: {
           Inventory: { userId: ctx.session.user.id },
-          marketHashName: item.marketHashName,
+          itemId: item.id,
         },
       });
 
@@ -161,7 +161,7 @@ export const itemsRouter = createTRPCRouter({
       z.object({
         buyDate: z.date(),
         buyPrice: z.number().or(z.null()),
-        marketHashName: z.string(),
+        itemId: z.string(),
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -175,8 +175,8 @@ export const itemsRouter = createTRPCRouter({
 
       await ctx.prisma.userItem.update({
         where: {
-          inventoryId_marketHashName: {
-            marketHashName: input.marketHashName,
+          inventoryId_itemId: {
+            itemId: input.itemId,
             inventoryId: inventory.id,
           },
         },

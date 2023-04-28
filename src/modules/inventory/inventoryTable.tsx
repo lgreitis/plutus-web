@@ -81,6 +81,7 @@ const columns = [
         key={props.row.original.marketHashName}
         favourite={props.row.original.favourite}
         marketHashName={props.row.original.marketHashName}
+        itemId={props.row.original.itemId}
         buyDate={props.row.original.dateAdded}
         buyPrice={props.row.original.buyPrice ?? undefined}
       />

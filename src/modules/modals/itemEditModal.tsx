@@ -16,6 +16,7 @@ interface Props {
   open: boolean;
   onClose: () => void;
   marketHashName: string;
+  itemId: string;
   buyDate: Date;
   buyPrice?: number;
 }
@@ -95,7 +96,7 @@ const ItemEditModal = (props: Props) => {
                 mutateItem.mutate({
                   buyDate: date,
                   buyPrice: parseFloat(buyPrice ?? "") ?? null,
-                  marketHashName: props.marketHashName,
+                  itemId: props.itemId,
                 });
               }}
             >

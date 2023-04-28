@@ -12,6 +12,7 @@ import { api } from "src/utils/api";
 interface Props {
   favourite?: boolean;
   marketHashName: string;
+  itemId: string;
   buyDate: Date;
   buyPrice?: number;
 }
@@ -36,6 +37,7 @@ const InventoryRowActions = (props: Props) => {
     <>
       <ItemEditModal
         marketHashName={props.marketHashName}
+        itemId={props.itemId}
         open={modalOpen}
         onClose={() => setModalOpen(false)}
         buyDate={props.buyDate}

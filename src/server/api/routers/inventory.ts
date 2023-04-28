@@ -292,7 +292,8 @@ export const inventoryRouter = createTRPCRouter({
         items: items.map((el) => {
           return {
             id: el.id,
-            marketHashName: el.marketHashName,
+            marketHashName: el.Item.marketHashName,
+            itemId: el.Item.id,
             price: el.Item.lastPrice || 0,
             worth: (el.Item.lastPrice || 0) * el.quantity,
             quantity: el.quantity,
