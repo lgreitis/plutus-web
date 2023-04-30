@@ -1,3 +1,4 @@
+import SidebarExpandButton from "src/components/buttons/sidebarExpandButton";
 import InternalLayout from "src/components/layouts/internalLayout";
 import HeaderText from "src/components/text/headerText";
 import SearchTable from "src/modules/search/searchTable";
@@ -9,6 +10,7 @@ const Search = () => {
   return (
     <InternalLayout showFilterCategories>
       <div className="flex items-center">
+        <SidebarExpandButton />
         <HeaderText className="flex-1">All items</HeaderText>
         <input
           placeholder="Search..."

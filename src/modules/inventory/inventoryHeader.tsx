@@ -1,6 +1,7 @@
 import { ArrowPathIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
 import HeaderButton from "src/components/buttons/headerButton";
+import SidebarExpandButton from "src/components/buttons/sidebarExpandButton";
 import HeaderText from "src/components/text/headerText";
 import InventoryVisibility from "src/modules/inventory/inventoryVisibility";
 import InventoryFetchModal from "src/modules/modals/inventoryFetchModal";
@@ -10,6 +11,7 @@ const InventoryHeader = () => {
 
   return (
     <div className="flex items-end">
+      <SidebarExpandButton />
       <HeaderText>Inventory</HeaderText>
       <div className="flex-1 pl-2">
         <InventoryVisibility />

@@ -4,6 +4,7 @@ import { BanknotesIcon } from "@heroicons/react/20/solid";
 import type { ItemType } from "@prisma/client";
 import clsx from "clsx";
 import Link from "next/link";
+import SidebarExpandButton from "src/components/buttons/sidebarExpandButton";
 import HeaderText from "src/components/text/headerText";
 
 const ranges = [
@@ -45,8 +46,9 @@ const ItemHeader = (props: Props) => {
   const { marketHashName, itemType, onRangeChange, range } = props;
 
   return (
-    <div className="flex flex-col items-center md:flex-row">
-      <div className="flex flex-1 items-center gap-2">
+    <div className="flex flex-col items-center gap-2 md:flex-row">
+      <div className="justify- flex w-full flex-1 items-center gap-2">
+        <SidebarExpandButton />
         <HeaderText>{marketHashName}</HeaderText>
         <Link
           href={`https://steamcommunity.com/market/listings/730/${encodeURIComponent(

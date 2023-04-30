@@ -6,13 +6,6 @@ import Logo from "src/components/logo";
 import ThemeSwitcher from "src/components/themeSwitcher";
 import NavbarMobile from "src/modules/navbar/navbarMobile";
 
-const navigation = [
-  { name: "Nav1", href: "#" },
-  { name: "Nav2", href: "#" },
-  { name: "Nav3", href: "#" },
-  { name: "Nav4", href: "#" },
-];
-
 const Navbar = () => {
   const { data: sessionData } = useSession();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -35,7 +28,7 @@ const Navbar = () => {
           </button>
         </div>
         <div className="hidden lg:flex lg:gap-x-12">
-          {navigation.map((item) => (
+          {/* {navigation.map((item) => (
             <a
               key={item.name}
               href={item.href}
@@ -43,7 +36,7 @@ const Navbar = () => {
             >
               {item.name}
             </a>
-          ))}
+          ))} */}
         </div>
         <div className="hidden lg:flex lg:flex-1 lg:content-center lg:justify-end lg:gap-4">
           <ThemeSwitcher sizing="sm" />

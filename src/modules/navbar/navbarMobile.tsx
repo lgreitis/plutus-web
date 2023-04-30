@@ -9,14 +9,6 @@ interface Props {
   setMobileMenuOpen: (open: boolean) => void;
 }
 
-// TODO: remove these
-const navigation = [
-  { name: "Nav1", href: "#" },
-  { name: "Nav2", href: "#" },
-  { name: "Nav3", href: "#" },
-  { name: "Nav4", href: "#" },
-];
-
 const NavbarMobile = (props: Props) => {
   const { data: sessionData } = useSession();
   const { mobileMenuOpen, setMobileMenuOpen } = props;
@@ -43,7 +35,7 @@ const NavbarMobile = (props: Props) => {
         <div className="mt-6 flow-root">
           <div className="-my-6 divide-y divide-gray-500/10">
             <div className="space-y-2 py-6">
-              {navigation.map((item) => (
+              {/* {navigation.map((item) => (
                 <a
                   key={item.name}
                   href={item.href}
@@ -51,7 +43,7 @@ const NavbarMobile = (props: Props) => {
                 >
                   {item.name}
                 </a>
-              ))}
+              ))} */}
             </div>
             <div className="py-6">
               {sessionData ? (

@@ -42,7 +42,7 @@ const OverviewModules = (props: Props) => {
 
   return (
     <>
-      <div className="flex rounded-md bg-zinc-100 p-5 dark:bg-zinc-900">
+      <div className="grid grid-cols-2 divide-neutral-200 rounded-md bg-neutral-100 p-5 dark:divide-neutral-800 dark:bg-neutral-900 md:grid-cols-4 md:flex-row md:divide-x">
         {worthResponse.data ? (
           <>
             <div className="flex flex-1 flex-col">
@@ -51,7 +51,7 @@ const OverviewModules = (props: Props) => {
                 {worthResponse.data.totalItems}
               </span>
             </div>
-            <div className="flex flex-1 flex-col">
+            <div className="flex flex-1 flex-col md:pl-2 ">
               <span className="text-sm">Invested</span>
               <CurrencyField
                 noConvert
@@ -59,14 +59,14 @@ const OverviewModules = (props: Props) => {
                 value={worthResponse.data.invested || 0}
               />
             </div>
-            <div className="flex flex-1 flex-col border-l border-zinc-200 pl-2 dark:border-zinc-800">
+            <div className="flex flex-1 flex-col md:pl-2 ">
               <span className="text-sm">Total value</span>
               <CurrencyField
                 className="text-2xl font-semibold"
                 value={worthResponse.data.worth || 0}
               />
             </div>
-            <div className="flex flex-1 flex-col border-l border-zinc-200 pl-2 dark:border-zinc-800">
+            <div className="flex flex-1 flex-col md:pl-2 ">
               <span className="text-sm">Difference</span>
               <CurrencyField
                 className={clsx(

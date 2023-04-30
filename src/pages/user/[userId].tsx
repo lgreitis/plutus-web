@@ -4,6 +4,7 @@ import {
 } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import { useRouter } from "next/router";
+import SidebarExpandButton from "src/components/buttons/sidebarExpandButton";
 import InternalLayout from "src/components/layouts/internalLayout";
 import Loader from "src/components/loader";
 import HeaderText from "src/components/text/headerText";
@@ -46,6 +47,7 @@ const UserPage = () => {
   return (
     <InternalLayout>
       <div className="flex items-center">
+        <SidebarExpandButton />
         {data.user.image ? (
           <Image
             className="inline-block h-16 w-16 rounded-full"

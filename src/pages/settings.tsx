@@ -1,3 +1,4 @@
+import SidebarExpandButton from "src/components/buttons/sidebarExpandButton";
 import InternalLayout from "src/components/layouts/internalLayout";
 import HeaderText from "src/components/text/headerText";
 import CurrencyCard from "src/modules/settings/currencyCard";
@@ -10,7 +11,10 @@ export const getServerSideProps = serverSideRequireAuth;
 const SettingsPage = () => {
   return (
     <InternalLayout>
-      <HeaderText>Settings</HeaderText>
+      <div className="flex items-center">
+        <SidebarExpandButton />
+        <HeaderText>Settings</HeaderText>
+      </div>
       <DiscordCard />
       <CurrencyCard />
       <ProfileStatusCard />

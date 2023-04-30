@@ -17,3 +17,5 @@ export const overviewChartSettingsAtom = atomWithStorage<{
   onlyWithBuyPrice: false,
   onlyFavourites: false,
 });
+
+export const mobileSidebar = atom<boolean>(false);

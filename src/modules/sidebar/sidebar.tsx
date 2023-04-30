@@ -14,6 +14,7 @@ import ThemeSwitcher from "src/components/themeSwitcher";
 import useKeyPress from "src/hooks/useKeyPress";
 import CommandPalette from "src/modules/commandPalette/commandPalette";
 import SidebarFilter from "src/modules/sidebar/sidebarFilter";
+import SidebarMobile from "src/modules/sidebar/sidebarMobile";
 import UserSection from "src/modules/sidebar/userSection";
 
 const NavCategories = [
@@ -57,54 +58,59 @@ const Sidebar = (props: Props) => {
   }, [keyPress]);
 
   return (
-    <div className="hidden border-r border-neutral-200 dark:border-neutral-800 md:fixed md:inset-y-0 md:flex md:w-64 md:flex-col">
-      <CommandPalette
-        open={commandOpen}
-        onClose={() => setCommandOpen(false)}
+    <>
+      <SidebarMobile
+        navCategories={NavCategories}
+        showFilterCategories={showFilterCategories}
+        onCommandOpen={() => setCommandOpen(true)}
       />
-      <div className="flex flex-1 flex-col p-6">
-        <div className="flex items-center">
-          <div className="flex-1 font-semibold">
-            <Logo href="/overview" />
-          </div>
-          <MagnifyingGlassIcon
-            className="h-5 w-5 cursor-pointer"
-            onClick={() => setCommandOpen(true)}
-          />
-        </div>
-        <div className="flex flex-1 flex-col gap-3 pt-5">
-          {NavCategories.map((el) => (
-            <Link
-              href={el.link}
-              key={el.name}
-              className={clsx(
-                "flex items-center gap-3 text-xs font-medium ",
-                router.pathname === el.link
-                  ? "dark:text-neutral-200"
-                  : "text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-200"
-              )}
-            >
-              {el.icon}
-              {el.name}
-            </Link>
-          ))}
-
-          {showFilterCategories && <SidebarFilter />}
-        </div>
-        <div className="flex flex-1 flex-col gap-3"></div>
-
-        <div className="flex flex-shrink-0 items-center">
-          <div className="flex-1">
-            <div className="w-fit">
-              <UserSection />
+      <div className="hidden border-r border-neutral-200 dark:border-neutral-800 md:fixed md:inset-y-0 md:flex md:w-64 md:flex-col">
+        <CommandPalette
+          open={commandOpen}
+          onClose={() => setCommandOpen(false)}
+        />
+        <div className="flex flex-1 flex-col p-6">
+          <div className="flex items-center">
+            <div className="flex-1 font-semibold">
+              <Logo href="/overview" />
             </div>
+            <MagnifyingGlassIcon
+              className="h-5 w-5 cursor-pointer"
+              onClick={() => setCommandOpen(true)}
+            />
           </div>
-          <div className="flex items-center gap-2">
-            <ThemeSwitcher placement="top-end" color="text-neutral-400" />
+          <div className="flex flex-1 flex-col gap-3 pt-5">
+            {NavCategories.map((el) => (
+              <Link
+                href={el.link}
+                key={el.name}
+                className={clsx(
+                  "flex items-center gap-3 text-xs font-medium ",
+                  router.pathname === el.link
+                    ? "dark:text-neutral-200"
+                    : "text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-200"
+                )}
+              >
+                {el.icon}
+                {el.name}
+              </Link>
+            ))}
+            {showFilterCategories && <SidebarFilter />}
+          </div>
+          <div className="flex flex-1 flex-col gap-3"></div>
+          <div className="flex flex-shrink-0 items-center">
+            <div className="flex-1">
+              <div className="w-fit">
+                <UserSection />
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <ThemeSwitcher placement="top-end" color="text-neutral-400" />
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
