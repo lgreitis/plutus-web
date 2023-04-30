@@ -100,6 +100,7 @@ const SidebarMobile = (props: Props) => {
                               ? "dark:text-neutral-200"
                               : "text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-200"
                           )}
+                          onClick={() => setOpen(false)}
                         >
                           {el.icon}
                           {el.name}
