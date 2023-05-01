@@ -19,7 +19,8 @@ import Loader from "src/components/loader";
 import ColorCell from "src/components/table/colorCell";
 import GenericHeader from "src/components/table/genericHeader";
 import ItemNameCell from "src/components/table/itemNameCell";
-import { filterAtom } from "src/store";
+import SearchRowActions from "src/modules/search/searchRowActions";
+import { filterAtom, searchVisibilityAtom } from "src/store";
 import type { RouterOutputs } from "src/utils/api";
 import { api } from "src/utils/api";
 
@@ -80,12 +81,28 @@ const columns = [
     cell: (info) => <ColorCell value={info.getValue()}>%</ColorCell>,
     header: () => <GenericHeader>Trend 30d</GenericHeader>,
   }),
+  columnHelper.display({
+    id: "actions",
+    cell: (props) => (
+      <SearchRowActions
+        key={props.row.original.marketHashName}
+        favourite={props.row.original.favourite}
+        marketHashName={props.row.original.marketHashName}
+      />
+    ),
+  }),
 ];
 
-const SearchTable = () => {
+interface Props {
+  searchString?: string;
+}
+
+const SearchTable = (props: Props) => {
   const [sorting, setSorting] = useState<SortingState>([
     { desc: true, id: "volume24h" },
   ]);
+
+  const [visibility, setVisibility] = useAtom(searchVisibilityAtom);
 
   const [{ pageIndex, pageSize }, setPagination] = useState<PaginationState>({
     pageIndex: 0,
@@ -106,6 +123,7 @@ const SearchTable = () => {
       pageIndex,
       pageSize,
       filters: toFilter,
+      searchString: props.searchString,
     },
     { keepPreviousData: true }
   );
@@ -126,10 +144,12 @@ const SearchTable = () => {
     state: {
       sorting,
       pagination,
+      columnVisibility: visibility,
     },
     onSortingChange: setSorting,
     onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
+    onColumnVisibilityChange: setVisibility,
     manualSorting: true,
     manualPagination: true,
   });
@@ -199,7 +219,10 @@ const SearchTable = () => {
         </span>
         <div className="flex gap-2">
           {isFetching && <Loader />}
-          <PaginationButton onClick={() => table.previousPage()}>
+          <PaginationButton
+            onClick={() => table.previousPage()}
+            disabled={pageIndex === 0}
+          >
             <ChevronLeftIcon className="h-4 w-4 text-black dark:text-white" />
           </PaginationButton>
           <PaginationButton

@@ -180,14 +180,6 @@ const ItemChart = (props: Props) => {
           domain={[0, (dataMax: number) => dataMax * 2]}
           type="number"
         />
-        {props.buyPrice && (
-          <ReferenceLine
-            y={props.buyPrice}
-            strokeDasharray="6 6"
-            stroke="#a78bfa"
-            strokeWidth={3}
-          />
-        )}
         <Area
           stroke="#4f46e5"
           fill="#3730a3"
@@ -197,6 +189,14 @@ const ItemChart = (props: Props) => {
           opacity="80%"
           dataKey="volume"
         />
+        {props.buyPrice && (
+          <ReferenceLine
+            y={props.buyPrice}
+            strokeDasharray="6 6"
+            stroke="#a78bfa"
+            strokeWidth={3}
+          />
+        )}
         <Line
           stroke="#db2777"
           strokeWidth={3}

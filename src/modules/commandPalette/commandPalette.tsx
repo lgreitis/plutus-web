@@ -7,10 +7,12 @@ import { Fragment, useEffect, useState } from "react";
 import Loader from "src/components/loader";
 import useDebounce from "src/hooks/useDebounce";
 import { api } from "src/utils/api";
+
 interface Props {
   open?: boolean;
   onClose: () => void;
 }
+
 const CommandPalette = (props: Props) => {
   const { data, mutateAsync, isLoading } = api.search.findItem.useMutation();
   const [searchString, setSearchString] = useState("");
@@ -83,7 +85,7 @@ const CommandPalette = (props: Props) => {
                   >
                     {data.items.map((item) => (
                       <Combobox.Option
-                        key={item.id}
+                        key={item.marketHashName}
                         value={item.marketHashName}
                         className={({ active }) =>
                           clsx(

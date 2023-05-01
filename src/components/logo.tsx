@@ -7,7 +7,7 @@ interface LogoProps {
 const Logo = (props: LogoProps) => (
   <Link className="flex gap-2 align-middle" {...props}>
     <LogoIcon className="-mt-2 h-8 w-8 dark:fill-white" />
-    <span className="font-semibold leading-6  text-gray-900 dark:text-white">
+    <span className="font-semibold leading-6 text-gray-900 dark:text-white">
       Plutus
     </span>
   </Link>

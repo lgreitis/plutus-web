@@ -6,6 +6,11 @@ export const visibilityAtom = atomWithStorage<Record<string, boolean>>(
   {}
 );
 
+export const searchVisibilityAtom = atomWithStorage<Record<string, boolean>>(
+  "searchTableVisiblity",
+  {}
+);
+
 export const filterAtom = atom<Record<string, boolean>>({});
 
 export const overviewChartSettingsAtom = atomWithStorage<{

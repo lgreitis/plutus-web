@@ -2,21 +2,15 @@ import { AdjustmentsHorizontalIcon } from "@heroicons/react/24/outline";
 import { useAtom } from "jotai";
 import Checkbox from "src/components/input/checkbox";
 import ListPopover from "src/components/listPopover";
-import { visibilityAtom } from "src/store";
+import type { visibilityAtom } from "src/store";
 
-const columns = [
-  { key: "dateAdded", label: "Buy Date" },
-  { key: "buyPrice", label: "Buy Price" },
-  { key: "price", label: "Price" },
-  { key: "quantity", label: "Quantity" },
-  { key: "worth", label: "Worth" },
-  { key: "difference", label: "Difference" },
-  { key: "trend7d", label: "Trend 7d" },
-  { key: "actions", label: "Actions" },
-];
+interface Props {
+  atom: typeof visibilityAtom;
+  columns: { key: string; label: string }[];
+}
 
-const InventoryVisibility = () => {
-  const [visibility, setVisibility] = useAtom(visibilityAtom);
+const VisibilityPopover = (props: Props) => {
+  const [visibility, setVisibility] = useAtom(props.atom);
   const handleChange = (id: string, value: boolean) => {
     setVisibility((old) => ({
       ...old,
@@ -29,7 +23,7 @@ const InventoryVisibility = () => {
       placement="bottom-start"
       button={<AdjustmentsHorizontalIcon className="h-5 w-5" />}
     >
-      {columns.map((el) => (
+      {props.columns.map((el) => (
         <div
           key={el.key}
           className="flex select-none items-center gap-2 px-2 py-1 hover:bg-neutral-100 dark:hover:bg-neutral-800"
@@ -50,4 +44,4 @@ const InventoryVisibility = () => {
   );
 };
 
-export default InventoryVisibility;
+export default VisibilityPopover;

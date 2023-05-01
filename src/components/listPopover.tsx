@@ -30,7 +30,7 @@ const ListPopover = (props: Props) => {
         </Popover.Button>
         <Popover.Panel
           ref={setPopperElement}
-          className="z-50 flex flex-col divide-y divide-neutral-200 overflow-hidden rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 dark:divide-neutral-900 dark:bg-bg-dark"
+          className="z-50 flex flex-col divide-y divide-neutral-200 overflow-hidden rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 dark:divide-neutral-900 dark:bg-bg-dark dark:ring-neutral-900"
           {...attributes.popper}
           style={styles.popper}
         >

@@ -95,7 +95,7 @@ const ItemEditModal = (props: Props) => {
               onClick={() => {
                 mutateItem.mutate({
                   buyDate: date,
-                  buyPrice: parseFloat(buyPrice ?? "") ?? null,
+                  buyPrice: parseFloat(buyPrice || "0") ?? null,
                   itemId: props.itemId,
                 });
               }}

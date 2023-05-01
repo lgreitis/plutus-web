@@ -1,4 +1,3 @@
-import type { Item } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import axios from "axios";
 import { env } from "src/env.mjs";
@@ -10,18 +9,7 @@ export const searchRouter = createTRPCRouter({
   findItem: protectedProcedure
     .input(z.object({ searchString: z.string() }))
     .mutation(async ({ input }) => {
-      const response = await axios.get<{ result: Item[]; success: boolean }>(
-        `${env.WORKER_API_URL}/search`,
-        {
-          params: {
-            returnMatchData: false,
-            searchString: input.searchString,
-          },
-          headers: {
-            Authorization: env.WORKER_SECRET_KEY,
-          },
-        }
-      );
+      const response = await requestSearch(input.searchString, false);
 
       if (!response.data.success || response.status !== 200) {
         throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
@@ -48,16 +36,23 @@ export const searchRouter = createTRPCRouter({
         pageIndex: z.number(),
         pageSize: z.number(),
         filters: z.array(z.string()),
+        searchString: z.string().optional(),
       })
     )
     .query(async ({ input, ctx }) => {
       const filters = organizeFilters(input.filters);
       const sortBy = organizeSorts(input.sortBy, input.desc);
+      const searchIds = input.searchString
+        ? await getSearchIds(input.searchString)
+        : undefined;
 
       const items = await ctx.prisma.itemStatistics.findMany({
         ...(filters.itemFilters.length && {
           where: {
-            Item: { type: { in: filters.itemFilters } },
+            Item: {
+              type: { in: filters.itemFilters },
+              ...(searchIds && { id: { in: searchIds } }),
+            },
           },
         }),
         ...(filters.favourites && {
@@ -67,9 +62,15 @@ export const searchRouter = createTRPCRouter({
               ...(filters.itemFilters.length && {
                 type: { in: filters.itemFilters },
               }),
+              ...(searchIds && { id: { in: searchIds } }),
             },
           },
         }),
+        ...(searchIds &&
+          !filters.favourites &&
+          !filters.itemFilters.length && {
+            where: { Item: { id: { in: searchIds } } },
+          }),
         ...(sortBy.itemStatisticsOrderBy && {
           orderBy: sortBy.itemStatisticsOrderBy,
         }),
@@ -92,7 +93,10 @@ export const searchRouter = createTRPCRouter({
       const count = await ctx.prisma.itemStatistics.count({
         ...(filters.itemFilters.length && {
           where: {
-            Item: { type: { in: filters.itemFilters } },
+            Item: {
+              type: { in: filters.itemFilters },
+              ...(searchIds && { id: { in: searchIds } }),
+            },
           },
         }),
         ...(filters.favourites && {
@@ -102,9 +106,15 @@ export const searchRouter = createTRPCRouter({
               ...(filters.itemFilters.length && {
                 type: { in: filters.itemFilters },
               }),
+              ...(searchIds && { id: { in: searchIds } }),
             },
           },
         }),
+        ...(searchIds &&
+          !filters.favourites &&
+          !filters.itemFilters.length && {
+            where: { Item: { id: { in: searchIds } } },
+          }),
       });
 
       return {
@@ -119,7 +129,36 @@ export const searchRouter = createTRPCRouter({
           change24h: el.change24h,
           change7d: el.change7d,
           change30d: el.change30d,
+          favourite: el.Item.UserFavouriteItem[0] ? true : false,
         })),
       };
     }),
 });
+
+const requestSearch = async (searchString: string, returnIds: boolean) => {
+  const response = await axios.get<{
+    result: {
+      marketHashName: string;
+      icon: string;
+      id: string;
+    }[];
+    success: boolean;
+  }>(`${env.WORKER_API_URL}/search`, {
+    params: {
+      returnMatchData: false,
+      searchString: searchString,
+      returnId: returnIds,
+    },
+    headers: {
+      Authorization: env.WORKER_SECRET_KEY,
+    },
+  });
+
+  return response;
+};
+
+const getSearchIds = async (searchString: string) => {
+  const response = await requestSearch(searchString, true);
+
+  return response.data.result.map((el) => el.id);
+};
