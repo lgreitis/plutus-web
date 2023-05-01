@@ -1,15 +1,13 @@
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import dynamic from "next/dynamic";
-import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import CurrencyField from "src/components/currencyField";
 import InternalLayout from "src/components/layouts/internalLayout";
 import Loader from "src/components/loader";
-import ColorCell from "src/components/table/colorCell";
 import XAxis from "src/modules/charts/XAxis";
 import ItemHeader from "src/modules/item/itemHeader";
+import ItemStatisticsGrid from "src/modules/item/itemStatisticsGrid";
 import { getServerAuthSession } from "src/server/auth";
 import { prisma } from "src/server/db";
 import { api } from "src/utils/api";
@@ -113,70 +111,7 @@ const ItemPage = ({
         />
       )}
       <div className="flex flex-col gap-5">
-        <div className="flex w-full flex-1 rounded-md border border-neutral-200 p-4 dark:border-neutral-800">
-          <Image
-            src={`https://community.akamai.steamstatic.com/economy/image/${
-              itemInfoQuery.data?.icon || ""
-            }/360fx360f`}
-            width={176}
-            height={176}
-            className="h-44 w-44"
-            alt=""
-          />
-          <div className="ml-4 flex gap-4 border-l border-neutral-200 pl-4 dark:border-neutral-800">
-            <div className="hfull flex flex-col  gap-3">
-              <Field label="Latest price:">
-                <CurrencyField value={itemInfoQuery.data?.lastPrice || 0} />
-              </Field>
-            </div>
-            <div className="flex h-full flex-col  gap-3">
-              <Field label="Change day:">
-                <ColorCell
-                  value={itemInfoQuery.data?.ItemStatistics?.change24h || 0}
-                >
-                  %
-                </ColorCell>
-              </Field>
-              <Field label="Change week:">
-                <ColorCell
-                  value={itemInfoQuery.data?.ItemStatistics?.change7d || 0}
-                >
-                  %
-                </ColorCell>
-              </Field>
-              <Field label="Change month:">
-                <ColorCell
-                  value={itemInfoQuery.data?.ItemStatistics?.change30d || 0}
-                >
-                  %
-                </ColorCell>
-              </Field>
-            </div>
-            {/* <div className="flex flex-col justify-between ">
-              <span>
-                Latest price:{" "}
-                <CurrencyField value={itemInfoQuery.data?.lastPrice || 0} />
-              </span>
-              <span>
-                volume24h:{" "}
-                <CurrencyField
-                  value={itemInfoQuery.data?.ItemStatistics?.volume24h || 0}
-                />
-              </span>
-            </div> */}
-            {/* <div className="flex flex-col justify-between ">
-              <span>Market volume:</span>
-              <span>Sales this week:</span>
-              <span>Sales this month:</span>
-              <span>Sales this year:</span>
-            </div> */}
-            {/* <div className="flex flex-col justify-between">
-              <span>Median price this week:</span>
-              <span>Median price this month:</span>
-              <span>Median price this year:</span>
-            </div> */}
-          </div>
-        </div>
+        {itemInfoQuery.data && <ItemStatisticsGrid data={itemInfoQuery.data} />}
         <div className="flex w-full flex-1 flex-col gap-4 rounded-md border border-neutral-200 p-4 dark:border-neutral-800">
           {query.data && itemInfoQuery.data && !query.isFetching ? (
             <>
@@ -211,20 +146,6 @@ const ItemPage = ({
         </div>
       </div>
     </InternalLayout>
-  );
-};
-
-interface FieldProps {
-  label?: string;
-  children?: React.ReactNode;
-}
-
-const Field = (props: FieldProps) => {
-  return (
-    <div className="flex flex-col">
-      <span className="text-sm text-neutral-400">{props.label}</span>
-      <span className="text-xl">{props.children}</span>
-    </div>
   );
 };
 

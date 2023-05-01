@@ -17,13 +17,17 @@ export const itemsRouter = createTRPCRouter({
     .query(async ({ input, ctx }) => {
       const item = await ctx.prisma.item.findUnique({
         where: { marketHashName: input.marketHashName },
-        include: {
+        select: {
           OfficialPricingHistoryOptimized: {
             orderBy: { date: "desc" },
             take: 1,
             select: { price: true, date: true },
           },
           ItemStatistics: true,
+          id: true,
+          type: true,
+          lastPrice: true,
+          icon: true,
         },
       });
 
