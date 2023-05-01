@@ -17,20 +17,22 @@ const Search = () => {
 
   return (
     <InternalLayout showFilterCategories>
-      <div className="flex items-center">
-        <SidebarExpandButton />
-        <HeaderText>All items</HeaderText>
-        <div className="flex-1 pl-2">
-          <VisibilityPopover
-            atom={searchVisibilityAtom}
-            columns={searchVisibilityColumns}
-          />
+      <div className="flex flex-col gap-2 md:flex-row md:items-center">
+        <div className="flex flex-1 items-center">
+          <SidebarExpandButton />
+          <HeaderText>All items</HeaderText>
+          <div className="pl-2">
+            <VisibilityPopover
+              atom={searchVisibilityAtom}
+              columns={searchVisibilityColumns}
+            />
+          </div>
         </div>
         <input
           value={searchString}
           onChange={(e) => setSearchString(e.target.value)}
           placeholder="Search..."
-          className="h-full rounded bg-neutral-50 px-2 ring-1 ring-inset ring-neutral-200 placeholder:text-neutral-500 focus:outline-none dark:bg-bg-dark dark:ring-neutral-800"
+          className="h-full rounded bg-neutral-50 py-2 px-2 ring-1 ring-inset ring-neutral-200 placeholder:text-neutral-500 focus:outline-none dark:bg-bg-dark dark:ring-neutral-800 md:py-0"
         />
       </div>
       <div className="flex flex-col gap-2">
