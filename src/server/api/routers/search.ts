@@ -1,8 +1,9 @@
-import type { Item, ItemType } from "@prisma/client";
+import type { Item } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import axios from "axios";
 import { env } from "src/env.mjs";
 import { createTRPCRouter, protectedProcedure } from "src/server/api/trpc";
+import { organizeFilters, organizeSorts } from "src/utils/tableFetchingUtils";
 import { z } from "zod";
 
 export const searchRouter = createTRPCRouter({
@@ -50,42 +51,58 @@ export const searchRouter = createTRPCRouter({
       })
     )
     .query(async ({ input, ctx }) => {
-      const canBeSorted = [
-        "volume24h",
-        "volume7d",
-        "change24h",
-        "change7d",
-        "change30d",
-      ].includes(input.sortBy);
+      const filters = organizeFilters(input.filters);
+      const sortBy = organizeSorts(input.sortBy, input.desc);
 
       const items = await ctx.prisma.itemStatistics.findMany({
-        ...(input.filters.length && {
+        ...(filters.itemFilters.length && {
           where: {
-            item: { type: { in: input.filters as ItemType[] } },
+            Item: { type: { in: filters.itemFilters } },
           },
         }),
-        ...(canBeSorted && {
-          orderBy: { [input.sortBy]: input.desc ? "desc" : "asc" },
-        }),
-        ...(!canBeSorted && {
-          orderBy: {
-            item: {
-              [input.sortBy]: {
-                sort: input.desc ? "desc" : "asc",
-                nulls: "last",
-              },
+        ...(filters.favourites && {
+          where: {
+            Item: {
+              UserFavouriteItem: { some: { userId: ctx.session.user.id } },
+              ...(filters.itemFilters.length && {
+                type: { in: filters.itemFilters },
+              }),
             },
+          },
+        }),
+        ...(sortBy.itemStatisticsOrderBy && {
+          orderBy: sortBy.itemStatisticsOrderBy,
+        }),
+        ...(sortBy.itemOrderBy && {
+          orderBy: {
+            Item: sortBy.itemOrderBy,
           },
         }),
         take: input.pageSize,
         skip: input.pageIndex * input.pageSize,
-        include: { item: true },
+        include: {
+          Item: {
+            include: {
+              UserFavouriteItem: { where: { userId: ctx.session.user.id } },
+            },
+          },
+        },
       });
 
       const count = await ctx.prisma.itemStatistics.count({
-        ...(input.filters.length && {
+        ...(filters.itemFilters.length && {
           where: {
-            item: { type: { in: input.filters as ItemType[] } },
+            Item: { type: { in: filters.itemFilters } },
+          },
+        }),
+        ...(filters.favourites && {
+          where: {
+            Item: {
+              UserFavouriteItem: { some: { userId: ctx.session.user.id } },
+              ...(filters.itemFilters.length && {
+                type: { in: filters.itemFilters },
+              }),
+            },
           },
         }),
       });
@@ -93,10 +110,10 @@ export const searchRouter = createTRPCRouter({
       return {
         count: count,
         items: items.map((el) => ({
-          icon: el.item.icon,
-          marketHashName: el.item.marketHashName,
-          borderColor: el.item.borderColor,
-          lastPrice: el.item.lastPrice || 0,
+          icon: el.Item.icon,
+          marketHashName: el.Item.marketHashName,
+          borderColor: el.Item.borderColor,
+          lastPrice: el.Item.lastPrice || 0,
           volume24h: el.volume24h,
           volume7d: el.volume7d,
           change24h: el.change24h,

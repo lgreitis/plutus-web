@@ -3,6 +3,7 @@ import { useAtom } from "jotai";
 import { filterAtom } from "src/store";
 
 const filterCategories = [
+  { name: "Favourites", key: "Favourites", color: "bg-yellow-400" },
   { name: "Skins", key: "Skin", color: "bg-teal-400" },
   { name: "Containers", key: "Container", color: "bg-sky-500" },
   { name: "Stickers", key: "Sticker", color: "bg-orange-400" },

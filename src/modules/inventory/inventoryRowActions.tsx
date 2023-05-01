@@ -18,12 +18,12 @@ interface Props {
 }
 
 const InventoryRowActions = (props: Props) => {
-  const queries = api.useContext();
+  const apiContext = api.useContext();
   const [modalOpen, setModalOpen] = useState(false);
 
   const favouriteMutation = api.items.toggleItemToFavourite.useMutation({
     onSuccess: async (data) => {
-      await queries.inventory.getTableData.invalidate();
+      await apiContext.inventory.getTableData.invalidate();
 
       if (data.mutatedValue) {
         toast.success("Item added to favourites.");

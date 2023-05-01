@@ -1,12 +1,11 @@
 import { UserCircleIcon } from "@heroicons/react/24/outline";
-import clsx from "clsx";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
-import { useMemo } from "react";
 import CurrencyField from "src/components/currencyField";
 import Loader from "src/components/loader";
 import OverviewChartModule from "src/modules/overview/overviewChartModule";
+import OverviewStatistics from "src/modules/overview/overviewStatistics";
 import { api } from "src/utils/api";
 
 const InventoryPieChart = dynamic(
@@ -25,64 +24,10 @@ const OverviewModules = (props: Props) => {
   const friendsResponse = api.inventory.getFriends.useQuery({
     userId: props.userId,
   });
-  const currencyResponse = api.settings.getCurrentCurrency.useQuery(undefined, {
-    staleTime: Infinity,
-  });
-
-  const difference = useMemo(() => {
-    if (currencyResponse.data && worthResponse.data) {
-      return (
-        worthResponse.data.worth * currencyResponse.data.rate -
-        worthResponse.data.invested
-      );
-    }
-
-    return 0;
-  }, [currencyResponse.data, worthResponse.data]);
 
   return (
     <>
-      <div className="grid grid-cols-2 divide-neutral-200 rounded-md bg-neutral-100 p-5 dark:divide-neutral-800 dark:bg-neutral-900 md:grid-cols-4 md:flex-row md:divide-x">
-        {worthResponse.data ? (
-          <>
-            <div className="flex flex-1 flex-col">
-              <span className="text-sm">Items in inventory</span>
-              <span className="text-2xl font-semibold">
-                {worthResponse.data.totalItems}
-              </span>
-            </div>
-            <div className="flex flex-1 flex-col md:pl-2 ">
-              <span className="text-sm">Invested</span>
-              <CurrencyField
-                noConvert
-                className="text-2xl font-semibold"
-                value={worthResponse.data.invested || 0}
-              />
-            </div>
-            <div className="flex flex-1 flex-col md:pl-2 ">
-              <span className="text-sm">Total value</span>
-              <CurrencyField
-                className="text-2xl font-semibold"
-                value={worthResponse.data.worth || 0}
-              />
-            </div>
-            <div className="flex flex-1 flex-col md:pl-2 ">
-              <span className="text-sm">Difference</span>
-              <CurrencyField
-                className={clsx(
-                  "text-2xl font-semibold",
-                  difference > 0 && "text-green-400",
-                  difference < 0 && "text-red-400"
-                )}
-                value={difference}
-                noConvert
-              />
-            </div>
-          </>
-        ) : (
-          <Loader className="h-12 w-full" />
-        )}
-      </div>
+      <OverviewStatistics data={worthResponse.data} />
       <OverviewChartModule userId={props.userId} />
       <div className="flex flex-col gap-6 lg:flex-row">
         <div className="flex w-full flex-col gap-4 rounded-md border border-neutral-200 p-4 dark:border-neutral-800 lg:w-1/2">

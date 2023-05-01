@@ -5,6 +5,7 @@ import { isBefore, subYears } from "date-fns";
 import { env } from "src/env.mjs";
 import { createTRPCRouter, protectedProcedure } from "src/server/api/trpc";
 import { fillEmptyDataPoints } from "src/utils/itemProcessingUtils";
+import { organizeFilters } from "src/utils/tableFetchingUtils";
 import { z } from "zod";
 
 interface FriendsResponse {
@@ -276,11 +277,21 @@ export const inventoryRouter = createTRPCRouter({
   getTableData: protectedProcedure
     .input(z.object({ filters: z.array(z.string()) }))
     .query(async ({ input, ctx }) => {
+      const filters = organizeFilters(input.filters);
+
       const items = await ctx.prisma.userItem.findMany({
         where: {
           Inventory: { userId: ctx.session.user.id },
-          ...(input.filters.length && {
-            Item: { type: { in: input.filters as ItemType[] } },
+          ...(filters.itemFilters.length && {
+            Item: { type: { in: filters.itemFilters } },
+          }),
+          ...(filters.favourites && {
+            Item: {
+              UserFavouriteItem: { some: { userId: ctx.session.user.id } },
+              ...(filters.itemFilters.length && {
+                type: { in: filters.itemFilters },
+              }),
+            },
           }),
         },
         include: {
@@ -294,23 +305,21 @@ export const inventoryRouter = createTRPCRouter({
       });
 
       return {
-        items: items.map((el) => {
-          return {
-            id: el.id,
-            marketHashName: el.Item.marketHashName,
-            itemId: el.Item.id,
-            price: el.Item.lastPrice || 0,
-            worth: (el.Item.lastPrice || 0) * el.quantity,
-            quantity: el.quantity,
-            borderColor: el.Item.borderColor,
-            trend7d: el.Item.ItemStatistics?.change7d || 0,
-            icon: el.Item.icon,
-            rarity: el.Item.rarity,
-            dateAdded: el.dateAdded,
-            buyPrice: el.buyPrice,
-            favourite: el.Item.UserFavouriteItem[0] ? true : false,
-          };
-        }),
+        items: items.map((el) => ({
+          id: el.id,
+          marketHashName: el.Item.marketHashName,
+          itemId: el.Item.id,
+          price: el.Item.lastPrice || 0,
+          worth: (el.Item.lastPrice || 0) * el.quantity,
+          quantity: el.quantity,
+          borderColor: el.Item.borderColor,
+          trend7d: el.Item.ItemStatistics?.change7d || 0,
+          icon: el.Item.icon,
+          rarity: el.Item.rarity,
+          dateAdded: el.dateAdded,
+          buyPrice: el.buyPrice,
+          favourite: el.Item.UserFavouriteItem[0] ? true : false,
+        })),
       };
     }),
 });
