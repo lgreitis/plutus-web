@@ -26,7 +26,7 @@ const VisibilityPopover = (props: Props) => {
       {props.columns.map((el) => (
         <div
           key={el.key}
-          className="flex select-none items-center gap-2 px-2 py-1 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+          className="flex select-none items-center gap-2 whitespace-nowrap px-2 py-1 hover:bg-neutral-100 dark:hover:bg-neutral-800"
           onClick={() => {
             handleChange(el.key, visibility[el.key] ?? true);
           }}
