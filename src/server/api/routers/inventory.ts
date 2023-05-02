@@ -279,7 +279,7 @@ export const inventoryRouter = createTRPCRouter({
         `${user.id}/overviewGraph/${input.useBuyDate ? "true" : "false"}`,
         JSON.stringify(sorted),
         {
-          ex: 60 * 60,
+          ex: 60 * 60 * 6,
         }
       );
 
