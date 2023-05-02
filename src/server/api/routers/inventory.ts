@@ -1,5 +1,6 @@
 import type { ItemType } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
+import { Redis } from "@upstash/redis";
 import axios, { isAxiosError } from "axios";
 import { isBefore, subYears } from "date-fns";
 import { env } from "src/env.mjs";
@@ -7,6 +8,11 @@ import { createTRPCRouter, protectedProcedure } from "src/server/api/trpc";
 import { fillEmptyDataPoints } from "src/utils/itemProcessingUtils";
 import { organizeFilters } from "src/utils/tableFetchingUtils";
 import { z } from "zod";
+
+const redis = new Redis({
+  url: env.REDIS_URL,
+  token: env.REDIS_TOKEN,
+});
 
 interface FriendsResponse {
   friendslist: {
@@ -190,6 +196,27 @@ export const inventoryRouter = createTRPCRouter({
         throw new TRPCError({ code: "NOT_FOUND" });
       }
 
+      const cache = await redis.get(
+        `${user.id}/overviewGraph/${input.useBuyDate ? "true" : "false"}`
+      );
+      if (cache) {
+        const cacheSchema = z.array(
+          z.object({
+            price: z.number(),
+            date: z.preprocess(
+              (arg) => (typeof arg == "string" ? new Date(arg) : undefined),
+              z.date()
+            ),
+            name: z.number(),
+          })
+        );
+
+        const parsedCache = cacheSchema.safeParse(cache);
+        if (parsedCache.success) {
+          return parsedCache.data;
+        }
+      }
+
       const items = await ctx.prisma.userItem.findMany({
         where: { Inventory: { userId: input.userId ?? ctx.session.user.id } },
         select: {
@@ -246,7 +273,17 @@ export const inventoryRouter = createTRPCRouter({
         });
       }
 
-      return res.sort((a, b) => (a.date > b.date ? 1 : -1));
+      const sorted = res.sort((a, b) => (a.date > b.date ? 1 : -1));
+
+      await redis.set(
+        `${user.id}/overviewGraph/${input.useBuyDate ? "true" : "false"}`,
+        JSON.stringify(sorted),
+        {
+          ex: 60 * 60,
+        }
+      );
+
+      return sorted;
     }),
 
   updateItemInfo: protectedProcedure
