@@ -56,6 +56,24 @@ export const authOptions: NextAuthOptions = {
       clientSecret: env.DISCORD_CLIENT_SECRET,
     }),
   ],
+  events: {
+    signIn: async (message) => {
+      if (!message.user.email && message.profile) {
+        await prisma.user.update({
+          where: { id: message.user.id },
+          data: { email: message.profile.email },
+        });
+      }
+    },
+    linkAccount: async (message) => {
+      if (!message.user.email) {
+        await prisma.user.update({
+          where: { id: message.user.id },
+          data: { email: message.profile.email },
+        });
+      }
+    },
+  },
 };
 
 /**

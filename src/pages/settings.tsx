@@ -3,6 +3,7 @@ import InternalLayout from "src/components/layouts/internalLayout";
 import HeaderText from "src/components/text/headerText";
 import CurrencyCard from "src/modules/settings/currencyCard";
 import DiscordCard from "src/modules/settings/discordCard";
+import EmailSendCard from "src/modules/settings/emailSendCard";
 import ProfileStatusCard from "src/modules/settings/profileStatusCard";
 import { serverSideRequireAuth } from "src/utils/serverSideRequireAuth";
 
@@ -18,6 +19,7 @@ const SettingsPage = () => {
       <DiscordCard />
       <CurrencyCard />
       <ProfileStatusCard />
+      <EmailSendCard />
     </InternalLayout>
   );
 };

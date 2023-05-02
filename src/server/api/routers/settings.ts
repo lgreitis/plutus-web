@@ -46,6 +46,40 @@ export const settingsRouter = createTRPCRouter({
       return {};
     }),
 
+  sendEmails: protectedProcedure.query(async ({ ctx }) => {
+    const user = await ctx.prisma.user.findUnique({
+      where: { id: ctx.session.user.id },
+    });
+
+    if (!user) {
+      throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+    }
+
+    return {
+      sendEmails: user.sendEmails,
+      emailLinked: user.email ? true : false,
+    };
+  }),
+
+  toggleEmailSending: protectedProcedure
+    .input(z.object({ sendMails: z.boolean() }))
+    .mutation(async ({ input, ctx }) => {
+      const user = await ctx.prisma.user.findUnique({
+        where: { id: ctx.session.user.id },
+      });
+
+      if (!user) {
+        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+      }
+
+      await ctx.prisma.user.update({
+        where: { id: ctx.session.user.id },
+        data: { sendEmails: input.sendMails },
+      });
+
+      return {};
+    }),
+
   getCurrencies: protectedProcedure.query(async ({ ctx }) => {
     const currencies = await ctx.prisma.exchangeRate.findMany({
       distinct: ["conversionCurrency"],
