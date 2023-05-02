@@ -2,29 +2,10 @@ import { faSteam } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { BanknotesIcon } from "@heroicons/react/20/solid";
 import type { ItemType } from "@prisma/client";
-import clsx from "clsx";
 import Link from "next/link";
 import SidebarExpandButton from "src/components/buttons/sidebarExpandButton";
+import RangeSelelect from "src/components/rangeSelect";
 import HeaderText from "src/components/text/headerText";
-
-const ranges = [
-  {
-    key: "week",
-    title: "Week",
-  },
-  {
-    key: "month",
-    title: "Month",
-  },
-  {
-    key: "year",
-    title: "Year",
-  },
-  {
-    key: "all",
-    title: "All",
-  },
-] as const;
 
 const multisellable: ItemType[] = [
   "Collectible",
@@ -47,7 +28,7 @@ const ItemHeader = (props: Props) => {
 
   return (
     <div className="flex flex-col items-center gap-2 md:flex-row">
-      <div className="justify- flex w-full flex-1 items-center gap-2">
+      <div className="flex w-full flex-1 items-center gap-2">
         <SidebarExpandButton />
         <HeaderText>{marketHashName}</HeaderText>
         <Link
@@ -71,21 +52,7 @@ const ItemHeader = (props: Props) => {
           </Link>
         )}
       </div>
-      <div className="flex w-full min-w-max justify-between divide-x divide-neutral-200 rounded border border-neutral-200 dark:divide-neutral-800 dark:border-neutral-800 md:w-1/4">
-        {ranges.map((el) => (
-          <button
-            type="button"
-            key={el.key}
-            onClick={() => onRangeChange(el.key)}
-            className={clsx(
-              range === el.key && "bg-neutral-200  dark:bg-neutral-800",
-              "w-full p-1 text-sm font-semibold text-neutral-800 transition-all hover:bg-neutral-200 dark:text-neutral-200 dark:hover:bg-neutral-800"
-            )}
-          >
-            {el.title}
-          </button>
-        ))}
-      </div>
+      <RangeSelelect onChange={(key) => onRangeChange(key)} selected={range} />
     </div>
   );
 };

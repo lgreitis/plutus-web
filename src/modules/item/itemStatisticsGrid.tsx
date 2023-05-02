@@ -58,10 +58,10 @@ const ItemStatisticsGrid = (props: Props) => {
         </Field>
       </div>
       <div className="col-span-2 flex h-full justify-between rounded-md border border-neutral-200 p-3 dark:border-neutral-800">
-        <Field label="Volume day:">
+        <Field label="Volume this day:">
           <CurrencyField value={data.ItemStatistics?.volume24h || 0} />
         </Field>
-        <Field label="Volume week:">
+        <Field label="Volume this week:">
           <CurrencyField value={data.ItemStatistics?.volume7d || 0} />
         </Field>
       </div>

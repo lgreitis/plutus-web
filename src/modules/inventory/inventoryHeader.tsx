@@ -28,11 +28,13 @@ const InventoryHeader = () => {
           atom={visibilityAtom}
           columns={inventoryVisibilityColumns}
         />
-        <SaveInventoryPopover />
       </div>
-      <HeaderButton onClick={() => setModalOpen(true)}>
-        <ArrowPathIcon className="h-5 w-5" /> Refresh
-      </HeaderButton>
+      <div className="flex gap-2">
+        <SaveInventoryPopover />
+        <HeaderButton onClick={() => setModalOpen(true)}>
+          <ArrowPathIcon className="h-5 w-5" /> Refresh
+        </HeaderButton>
+      </div>
       {modalOpen && (
         <InventoryFetchModal
           open={modalOpen}

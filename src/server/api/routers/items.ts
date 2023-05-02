@@ -1,7 +1,10 @@
 import { TRPCError } from "@trpc/server";
 import { subMonths, subWeeks, subYears } from "date-fns";
 import { createTRPCRouter, protectedProcedure } from "src/server/api/trpc";
-import { normalizeData } from "src/utils/itemProcessingUtils";
+import {
+  fillEmptyDataPoints,
+  normalizeData,
+} from "src/utils/itemProcessingUtils";
 import { z } from "zod";
 
 interface StatisticsDataPoint {
@@ -45,11 +48,71 @@ export const itemsRouter = createTRPCRouter({
       return { ...item, buyPrice: userItem?.buyPrice || undefined };
     }),
 
+  getItemCompare: protectedProcedure
+    .input(
+      z.object({ marketHashName1: z.string(), marketHashName2: z.string() })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const item1 = await ctx.prisma.item.findUnique({
+        where: { marketHashName: input.marketHashName1 },
+        select: {
+          OfficialPricingHistoryOptimized: {
+            orderBy: { date: "desc" },
+            take: 1,
+            select: { price: true, date: true },
+          },
+          ItemStatistics: true,
+          id: true,
+          type: true,
+          lastPrice: true,
+          icon: true,
+        },
+      });
+      const item2 = await ctx.prisma.item.findUnique({
+        where: { marketHashName: input.marketHashName2 },
+        select: {
+          OfficialPricingHistoryOptimized: {
+            orderBy: { date: "desc" },
+            take: 1,
+            select: { price: true, date: true },
+          },
+          ItemStatistics: true,
+          id: true,
+          type: true,
+          lastPrice: true,
+          icon: true,
+        },
+      });
+
+      if (!item1 || !item2) {
+        throw new TRPCError({ code: "NOT_FOUND" });
+      }
+
+      const userItem1 = await ctx.prisma.userItem.findFirst({
+        where: {
+          Inventory: { userId: ctx.session.user.id },
+          itemId: item1.id,
+        },
+      });
+      const userItem2 = await ctx.prisma.userItem.findFirst({
+        where: {
+          Inventory: { userId: ctx.session.user.id },
+          itemId: item2.id,
+        },
+      });
+
+      return {
+        item1: { ...item1, buyPrice: userItem1?.buyPrice || undefined },
+        item2: { ...item2, buyPrice: userItem2?.buyPrice || undefined },
+      };
+    }),
+
   getItemStatistics: protectedProcedure
     .input(
       z.object({
         marketHashName: z.string(),
         range: z.enum(["week", "month", "year", "all"]),
+        fillEmptyDataPoints: z.boolean().optional(),
       })
     )
     .query(async ({ input, ctx }) => {
@@ -93,8 +156,30 @@ export const itemsRouter = createTRPCRouter({
         orderBy: { date: "asc" },
       });
 
-      if (needToNormalizeData) {
+      if (needToNormalizeData || input.fillEmptyDataPoints) {
         const normalized = normalizeData(data);
+
+        if (input.fillEmptyDataPoints) {
+          const arr: { date: Date; price: number; volume: number }[] = [];
+
+          normalized.forEach((value, key) => {
+            arr.push({
+              price: value.price,
+              volume: value.volume,
+              date: new Date(key),
+            });
+          });
+
+          const filled = fillEmptyDataPoints(arr, date);
+
+          return filled.map((el) => ({
+            price: el.price,
+            volume: el.volume,
+            date: new Date(el.date),
+            name: el.date,
+          }));
+        }
+
         const result: StatisticsDataPoint[] = [];
 
         normalized.forEach((value, key) => {

@@ -42,14 +42,16 @@ export const normalizeData = (
 };
 
 export const fillEmptyDataPoints = (
-  items: { date: Date; price: number; volume: number }[]
+  items: { date: Date; price: number; volume: number }[],
+  backfill?: Date
 ) => {
   const intervals = eachDayOfInterval({
-    start: items[0]?.date || new Date(),
+    start: backfill || items[0]?.date || new Date(),
     end: new Date(),
-  }).map((el) => ({ price: 0, date: startOfDay(el).getTime() }));
+  }).map((el) => ({ price: 0, date: startOfDay(el).getTime(), volume: 0 }));
 
   let last: number | undefined;
+  let lastVolume: number | undefined;
 
   const itemMap = new Map<number, DataGroup>();
 
@@ -66,9 +68,10 @@ export const fillEmptyDataPoints = (
     const item = itemMap.get(el.date);
     if (item) {
       last = item.price;
-      return { ...el, price: item.price };
+      lastVolume = item.volume;
+      return { ...el, price: item.price, volume: item.volume };
     } else if (last) {
-      return { ...el, price: last };
+      return { ...el, price: last, volume: lastVolume ?? 0 };
     }
     return { ...el };
   });

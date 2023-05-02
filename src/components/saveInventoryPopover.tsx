@@ -228,7 +228,11 @@ const SaveInventoryPopover = () => {
   return (
     <ListPopover
       placement="bottom-start"
-      button={<ArrowDownTrayIcon className="h-5 w-5" />}
+      button={
+        <div className="flex items-center gap-1">
+          <ArrowDownTrayIcon className="h-5 w-5" /> Export
+        </div>
+      }
     >
       <button
         type="button"

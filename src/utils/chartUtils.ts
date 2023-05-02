@@ -57,12 +57,12 @@ export const getEpochs = (fromDate?: Date, toDate?: Date): number[] => {
   }
 
   const diff = toDate.getTime() - fromDate.getTime();
-  // month
-  if (diff < 30 * 24 * 60 * 60 * 1000) {
+  // 2 months
+  if (diff < 30 * 24 * 60 * 60 * 1000 * 2) {
     return getDayEpochs(fromDate, toDate);
   }
-  // year
-  if (diff < 365 * 24 * 60 * 60 * 1000) {
+  // 2 years
+  if (diff < 365 * 24 * 60 * 60 * 1000 * 2) {
     return getMonthEpochs(fromDate, toDate);
   }
 
