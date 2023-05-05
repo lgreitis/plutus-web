@@ -42,7 +42,11 @@ export const inventoryFetchRouter = createTRPCRouter({
           `${env.WORKER_API_URL}/inventoryFetchStatus`,
           {
             jobId: user.fetchJobId,
-            secret: env.WORKER_SECRET_KEY,
+          },
+          {
+            headers: {
+              Authorization: env.WORKER_SECRET_KEY,
+            },
           }
         )
         .catch(async (error) => {
@@ -74,7 +78,11 @@ export const inventoryFetchRouter = createTRPCRouter({
         {
           steamId: userAccount.steamid,
           userId,
-          secret: env.WORKER_SECRET_KEY,
+        },
+        {
+          headers: {
+            Authorization: env.WORKER_SECRET_KEY,
+          },
         }
       );
 
