@@ -237,7 +237,7 @@ const TooltipComponent = (
         </span>
         {props.buyPrice && (
           <span>
-            Buy price: <CurrencyField value={props.buyPrice} />
+            Buy price: <CurrencyField value={props.buyPrice} noConvert />
           </span>
         )}
       </div>

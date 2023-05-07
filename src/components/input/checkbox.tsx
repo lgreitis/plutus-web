@@ -6,21 +6,22 @@ interface Props {
 }
 
 const Checkbox = (props: Props) => {
+  const { onClick, checked } = props;
+
   return (
     <span
       className={clsx(
-        props.checked &&
-          "border-black bg-black dark:border-white dark:bg-white",
-        !props.checked && "border-black dark:border-white",
+        checked && "border-black bg-black dark:border-white dark:bg-white",
+        !checked && "border-black dark:border-white",
         "relative h-4 w-4 min-w-[1rem] rounded-sm border"
       )}
-      onClick={props.onClick}
+      onClick={onClick}
     >
       <input
         type="checkbox"
         className="sr-only"
-        checked={props.checked}
-        onChange={props.onClick}
+        checked={checked}
+        onChange={onClick}
       />
       {props.checked && <CheckSVG />}
     </span>

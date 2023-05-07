@@ -43,7 +43,11 @@ const ItemStatisticsGrid = (props: Props) => {
       </div>
       <div className="flex h-full justify-between rounded-md border border-neutral-200 p-3 dark:border-neutral-800">
         <Field label="Buy price:">
-          {data.buyPrice ? <CurrencyField value={data.buyPrice || 0} /> : "---"}
+          {data.buyPrice ? (
+            <CurrencyField value={data.buyPrice || 0} noConvert />
+          ) : (
+            "---"
+          )}
         </Field>
       </div>
       <div className="col-span-full flex h-full justify-between rounded-md border border-neutral-200 p-3 dark:border-neutral-800 lg:col-span-3">

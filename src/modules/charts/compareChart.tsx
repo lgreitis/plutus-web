@@ -285,7 +285,7 @@ const TooltipComponent = (
           <div className="flex items-center gap-2">
             <div className="h-2 w-2 rounded-full bg-violet-400"></div>
             First item&apos;s Buy price:{" "}
-            <CurrencyField value={props.buyPrice1} />
+            <CurrencyField value={props.buyPrice1} noConvert />
           </div>
         )}
         <div className="flex items-center gap-2">
@@ -304,7 +304,7 @@ const TooltipComponent = (
           <div className="flex items-center gap-2">
             <div className="h-2 w-2 rounded-full bg-lime-400"></div>
             Second item&apos;s Buy price:{" "}
-            <CurrencyField value={props.buyPrice2} />
+            <CurrencyField value={props.buyPrice2} noConvert />
           </div>
         )}
       </div>
