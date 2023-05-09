@@ -123,8 +123,6 @@ test("user changes currency", async ({ page }) => {
 
   await page.waitForURL("**/overview");
 
-  await page.pause();
-
   await page.getByRole("img", { name: "skitmos" }).click();
   await page.getByRole("menuitem", { name: "Settings" }).click();
   await page.getByRole("button", { name: "USD" }).click();
