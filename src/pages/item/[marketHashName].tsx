@@ -5,7 +5,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import InternalLayout from "src/components/layouts/internalLayout";
 import Loader from "src/components/loader";
-import XAxis from "src/modules/charts/XAxis";
+import XAxis from "src/modules/charts/xAxis";
 import ItemHeader from "src/modules/item/itemHeader";
 import ItemStatisticsGrid from "src/modules/item/itemStatisticsGrid";
 import { getServerAuthSession } from "src/server/auth";

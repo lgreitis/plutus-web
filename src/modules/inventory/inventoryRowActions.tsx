@@ -45,6 +45,7 @@ const InventoryRowActions = (props: Props) => {
       />
       <div className="flex gap-2">
         <HeaderButton
+          name={`Favourite ${props.marketHashName}`}
           onClick={() =>
             favouriteMutation.mutate({
               marketHashName: props.marketHashName,
@@ -57,7 +58,10 @@ const InventoryRowActions = (props: Props) => {
             <StarIconOutline className="h-5 w-5" />
           )}
         </HeaderButton>
-        <HeaderButton onClick={() => setModalOpen(true)}>
+        <HeaderButton
+          name={`Edit ${props.marketHashName}`}
+          onClick={() => setModalOpen(true)}
+        >
           <PencilSquareIcon className="h-5 w-5" />
         </HeaderButton>
       </div>

@@ -4,7 +4,7 @@ import SidebarExpandButton from "src/components/buttons/sidebarExpandButton";
 import InternalLayout from "src/components/layouts/internalLayout";
 import RangeSelelect from "src/components/rangeSelect";
 import HeaderText from "src/components/text/headerText";
-import XAxis from "src/modules/charts/XAxis";
+import XAxis from "src/modules/charts/xAxis";
 import CompareInformationGrid from "src/modules/compare/compareInformationGrid";
 import CompareSearchBox from "src/modules/compare/compareSearchBox";
 import { api } from "src/utils/api";

@@ -185,6 +185,7 @@ export const inventoryRouter = createTRPCRouter({
       z.object({
         userId: z.string().optional(),
         useBuyDate: z.boolean().optional(),
+        useCache: z.boolean().default(true),
       })
     )
     .query(async ({ input, ctx }) => {
@@ -196,9 +197,11 @@ export const inventoryRouter = createTRPCRouter({
         throw new TRPCError({ code: "NOT_FOUND" });
       }
 
-      const cache = await redis.get(
-        `${user.id}/overviewGraph/${input.useBuyDate ? "true" : "false"}`
-      );
+      const cache =
+        input.useCache &&
+        (await redis.get(
+          `${user.id}/overviewGraph/${input.useBuyDate ? "true" : "false"}`
+        ));
       if (cache) {
         const cacheSchema = z.array(
           z.object({
@@ -275,40 +278,16 @@ export const inventoryRouter = createTRPCRouter({
 
       const sorted = res.sort((a, b) => (a.date > b.date ? 1 : -1));
 
-      await redis.set(
-        `${user.id}/overviewGraph/${input.useBuyDate ? "true" : "false"}`,
-        JSON.stringify(sorted),
-        {
-          ex: 60 * 60 * 6,
-        }
-      );
+      input.useCache &&
+        (await redis.set(
+          `${user.id}/overviewGraph/${input.useBuyDate ? "true" : "false"}`,
+          JSON.stringify(sorted),
+          {
+            ex: 60 * 60 * 6,
+          }
+        ));
 
       return sorted;
-    }),
-
-  updateItemInfo: protectedProcedure
-    .input(
-      z.object({
-        id: z.string(),
-        dateAdded: z.date().optional(),
-        buyPrice: z.number().optional(),
-      })
-    )
-    .mutation(async ({ ctx, input }) => {
-      const exists = await ctx.prisma.userItem.findUnique({
-        where: { id: input.id },
-      });
-
-      if (!exists) {
-        throw new TRPCError({ code: "BAD_REQUEST" });
-      }
-
-      const userItem = await ctx.prisma.userItem.update({
-        where: { id: input.id },
-        data: { buyPrice: input.buyPrice, dateAdded: input.dateAdded },
-      });
-
-      return userItem;
     }),
 
   getTableData: protectedProcedure

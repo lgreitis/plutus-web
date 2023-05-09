@@ -68,6 +68,7 @@ const ItemEditModal = (props: Props) => {
             </span>
             <div className="flex h-10 w-full overflow-hidden rounded-md ring-1 ring-neutral-200 dark:ring-neutral-600">
               <input
+                name="Input buy price"
                 value={buyPrice}
                 onChange={(e) => {
                   let value = e.target.value;
@@ -129,6 +130,7 @@ const BuyDate = (props: BuyDateProps) => {
     <Popover className="relative w-full">
       <>
         <Popover.Button
+          name="Edit buy date"
           as={ModalButton}
           ref={setReferenceElement}
           intent="secondary"

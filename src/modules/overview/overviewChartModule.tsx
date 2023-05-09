@@ -5,7 +5,7 @@ import { useState } from "react";
 import Checkbox from "src/components/input/checkbox";
 import ListPopover from "src/components/listPopover";
 import Loader from "src/components/loader";
-import XAxis from "src/modules/charts/XAxis";
+import XAxis from "src/modules/charts/xAxis";
 import { overviewChartSettingsAtom } from "src/store";
 import { api } from "src/utils/api";
 

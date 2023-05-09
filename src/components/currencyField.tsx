@@ -5,6 +5,7 @@ interface Props {
   value: number;
   className?: string;
   noConvert?: boolean;
+  title?: string;
 }
 
 const CurrencyField = (props: Props) => {
@@ -22,7 +23,7 @@ const CurrencyField = (props: Props) => {
   );
 
   return (
-    <span className={props.className}>
+    <span className={props.className} title={props.title}>
       {numberFormatter.format(
         !props.noConvert ? props.value * (query.data?.rate || 1) : props.value
       )}

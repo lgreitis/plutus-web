@@ -36,11 +36,14 @@ const OverviewStatistics = (props: Props) => {
         <>
           <div className="flex flex-1 flex-col">
             <span className="text-sm">Items in inventory</span>
-            <span className="text-2xl font-semibold">{data.totalItems}</span>
+            <span title="Items in inventory" className="text-2xl font-semibold">
+              {data.totalItems}
+            </span>
           </div>
           <div className="flex flex-1 flex-col md:pl-2 ">
             <span className="text-sm">Invested</span>
             <CurrencyField
+              title="Invested"
               noConvert
               className="text-2xl font-semibold"
               value={data.invested}
@@ -49,6 +52,7 @@ const OverviewStatistics = (props: Props) => {
           <div className="flex flex-1 flex-col md:pl-2 ">
             <span className="text-sm">Total value</span>
             <CurrencyField
+              title="Total value"
               className="text-2xl font-semibold"
               value={data.worth}
             />
@@ -56,6 +60,7 @@ const OverviewStatistics = (props: Props) => {
           <div className="flex flex-1 flex-col md:pl-2 ">
             <span className="text-sm">Difference</span>
             <CurrencyField
+              title="Difference"
               className={clsx(
                 "text-2xl font-semibold",
                 difference > 0 && "text-green-400",
