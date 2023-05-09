@@ -22,7 +22,10 @@ const UserPage = () => {
     { retry: false }
   );
 
-  if (isError && error && error.data && error.data?.code === "NOT_FOUND") {
+  if (
+    (isError && error && error.data && error.data?.code === "NOT_FOUND") ||
+    (!isLoading && !data?.user)
+  ) {
     return (
       <InternalLayout>
         <div className="flex w-full flex-col items-center justify-center pt-10">

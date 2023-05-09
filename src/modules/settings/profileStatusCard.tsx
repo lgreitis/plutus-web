@@ -51,6 +51,9 @@ const ProfileStatusCard = () => {
                 onSuccess: () => {
                   toast.success("Your preferences have been saved.");
                 },
+                onError: () => {
+                  toast.error("Failed to update your preferences.");
+                },
               }
             );
           }}

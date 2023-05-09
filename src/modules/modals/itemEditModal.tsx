@@ -32,6 +32,9 @@ const ItemEditModal = (props: Props) => {
       await apiContext.inventory.getTableData.invalidate();
       toast.success("Item updated.");
     },
+    onError: () => {
+      toast.error("Failed to update your item.");
+    },
   });
 
   const [date, setDate] = useState<Date>(props.buyDate);

@@ -22,6 +22,9 @@ const SearchRowActions = (props: Props) => {
         toast.success("Item removed from favourites.");
       }
     },
+    onError: () => {
+      toast.error("Failed update favourite status.");
+    },
   });
 
   return (

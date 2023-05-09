@@ -44,6 +44,9 @@ const CurrencyCard = () => {
                   void apiUtils.settings.getCurrentCurrency.invalidate();
                   toast.success("Your preferences have been saved.");
                 },
+                onError: () => {
+                  toast.error("Failed to update your preferences.");
+                },
               }
             );
           }}
