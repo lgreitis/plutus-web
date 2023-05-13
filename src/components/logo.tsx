@@ -17,7 +17,7 @@ interface IconProps {
   className?: string;
 }
 
-const LogoIcon = (props: IconProps) => (
+export const LogoIcon = (props: IconProps) => (
   <svg
     id="Layer_1"
     data-name="Layer 1"

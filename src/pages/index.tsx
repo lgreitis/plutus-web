@@ -2,6 +2,7 @@ import type { GetServerSideProps } from "next";
 import { type NextPage } from "next";
 import LandingLayout from "src/components/layouts/landingLayout";
 import Footer from "src/modules/footer/footer";
+import DiscordSection from "src/modules/hero/discordSecrion";
 import Hero from "src/modules/hero/hero";
 import Navbar from "src/modules/navbar/navbar";
 import { getServerAuthSession } from "src/server/auth";
@@ -36,7 +37,7 @@ const Home: NextPage = () => {
     <LandingLayout>
       <Navbar />
       <Hero />
-
+      <DiscordSection />
       <Footer />
     </LandingLayout>
   );
