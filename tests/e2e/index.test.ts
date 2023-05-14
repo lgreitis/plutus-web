@@ -239,3 +239,44 @@ test("test column visibility", async ({ page }) => {
     page.getByRole("columnheader", { name: "Buy Date" }).getByText("Buy Date")
   ).toBeVisible();
 });
+
+test("test compare page", async ({ page }) => {
+  const items = await prisma.item.findMany({
+    select: { marketHashName: true, icon: true, id: true },
+  });
+
+  await page.route(
+    `http://localhost:3000/api/trpc/search.findItem?batch=1`,
+    async (route) => {
+      const json = [{ result: { data: { json: { items: items } } } }];
+      await route.fulfill({ json });
+    }
+  );
+
+  await page.goto("/");
+
+  await page.waitForURL("**/overview");
+
+  await page.getByRole("link", { name: "Compare items" }).click();
+
+  await page.getByTitle("Enter first item search value").click();
+  await page
+    .getByTitle("Enter first item search value")
+    .fill("Butterfly Knife | Night (Field-Tested)");
+  await page
+    .getByRole("option", { name: "Butterfly Knife | Night (Field-Tested)" })
+    .click();
+
+  await page.getByTitle("Enter second item search value").click();
+  await page
+    .getByTitle("Enter second item search value")
+    .fill("StatTrak™ M4A1-S | Hyper Beast (Minimal Wear)");
+  await page
+    .getByRole("option", {
+      name: "StatTrak™ M4A1-S | Hyper Beast (Minimal Wear)",
+    })
+    .click();
+
+  await expect(page.locator("img").nth(1)).toBeVisible();
+  await expect(page.locator("img").nth(2)).toBeVisible();
+});

@@ -9,6 +9,7 @@ import { api } from "src/utils/api";
 interface Props {
   selected?: string;
   onChange: (value: string) => void;
+  title?: string;
 }
 
 const CompareSearchBox = (props: Props) => {
@@ -27,6 +28,7 @@ const CompareSearchBox = (props: Props) => {
     <Combobox value={props.selected} onChange={props.onChange}>
       <div className="relative w-full">
         <Combobox.Input
+          title={props.title}
           onChange={(e) => setSearchString(e.target.value)}
           className={({ open }) =>
             clsx(

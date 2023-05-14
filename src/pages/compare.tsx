@@ -70,6 +70,7 @@ const Compare = () => {
         <div className="flex w-full flex-col justify-between gap-10 md:flex-row">
           <div className="flex w-full flex-col gap-2 md:gap-4">
             <CompareSearchBox
+              title="Enter first item search value"
               onChange={(val) =>
                 setSelected((prev) => ({ ...prev, first: val }))
               }
@@ -79,6 +80,7 @@ const Compare = () => {
           </div>
           <div className="flex w-full flex-col gap-2 md:gap-4">
             <CompareSearchBox
+              title="Enter second item search value"
               onChange={(val) =>
                 setSelected((prev) => ({ ...prev, second: val }))
               }
