@@ -12,6 +12,16 @@ export const integrationUtils = {
 
   createItemWith30dHistory: async (name: string) => {
     const item = await integrationUtils.addUserNonExistantItem(name, 30);
+    await prisma.itemStatistics.create({
+      data: {
+        itemId: item.id,
+        change24h: 0,
+        change30d: 0,
+        change7d: 0,
+        volume24h: 0,
+        volume7d: 0,
+      },
+    });
     const interval = eachDayOfInterval({
       end: new Date(),
       start: sub(new Date(), { days: 30 }),
@@ -36,6 +46,31 @@ export const integrationUtils = {
 
     for await (const item of items) {
       const dbItem = await integrationUtils.createItemWith30dHistory(item);
+      await prisma.userItem.create({
+        data: {
+          inventoryId: inventory.id,
+          itemId: dbItem.id,
+          quantity: 1,
+          buyPrice: 100,
+        },
+      });
+    }
+
+    return user;
+  },
+
+  createUserWithExistingItems: async (name: string, items: string[]) => {
+    const { user, inventory } = await integrationUtils.createUserWithInventory(
+      name
+    );
+
+    for await (const item of items) {
+      const dbItem = await prisma.item.findFirst({
+        where: { marketHashName: item },
+      });
+      if (!dbItem) {
+        throw new Error("item should exist if using this function");
+      }
       await prisma.userItem.create({
         data: {
           inventoryId: inventory.id,

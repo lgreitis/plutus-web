@@ -1,6 +1,6 @@
 import react from "@vitejs/plugin-react";
 import { resolve } from "path";
-import { defineConfig } from "vitest/config";
+import { configDefaults, defineConfig } from "vitest/config";
 
 export default defineConfig({
   plugins: [react()],
@@ -12,6 +12,7 @@ export default defineConfig({
       include: ["src"],
     },
     threads: false,
+    exclude: [...configDefaults.exclude, "tests/e2e"],
   },
   resolve: {
     alias: [{ find: "src", replacement: resolve(__dirname, "./src") }],

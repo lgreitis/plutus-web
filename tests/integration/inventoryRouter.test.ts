@@ -203,4 +203,44 @@ describe("Inventory Router", () => {
     expect(result1.items.length).toBe(0);
     expect(result2.items.length).toBe(3);
   });
+
+  test("gets friends", async () => {
+    const user = await integrationUtils.createUserWithItems("testUser", [
+      "item1",
+      "item2",
+    ]);
+    const user2 = await integrationUtils.createUserWithExistingItems(
+      "testUser2",
+      ["item1", "item2"]
+    );
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { friends: { connect: { id: user2.id } } },
+    });
+
+    await prisma.account.create({
+      data: {
+        provider: "steam",
+        providerAccountId: "test",
+        type: "Oauth",
+        userId: user.id,
+      },
+    });
+
+    const ctx = createInnerTRPCContext({
+      session: { expires: "-10", user: user },
+    });
+
+    const caller = appRouter.createCaller(ctx);
+    type Input = inferProcedureInput<AppRouter["inventory"]["getFriends"]>;
+    const input: Input = {};
+
+    const result = await caller.inventory.getFriends(input);
+
+    console.log(result);
+
+    expect(result[0]?.name).toBe("testUser2");
+    expect(result[0]?.worth).toBe(60);
+  });
 });
