@@ -7,6 +7,7 @@ import type { visibilityAtom } from "src/store";
 interface Props {
   atom: typeof visibilityAtom;
   columns: { key: string; label: string }[];
+  title?: string;
 }
 
 const VisibilityPopover = (props: Props) => {
@@ -20,11 +21,13 @@ const VisibilityPopover = (props: Props) => {
 
   return (
     <ListPopover
+      title={props.title}
       placement="bottom-start"
       button={<AdjustmentsHorizontalIcon className="h-5 w-5" />}
     >
       {props.columns.map((el) => (
         <div
+          title={`Change ${el.label}`}
           key={el.key}
           className="flex select-none items-center gap-2 whitespace-nowrap px-2 py-1 hover:bg-neutral-100 dark:hover:bg-neutral-800"
           onClick={() => {

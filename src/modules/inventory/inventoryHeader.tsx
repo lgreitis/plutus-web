@@ -25,6 +25,7 @@ const InventoryHeader = () => {
       <HeaderText>Inventory</HeaderText>
       <div className="flex flex-1 items-center gap-2 pl-2">
         <VisibilityPopover
+          title="Change column visibility"
           atom={visibilityAtom}
           columns={inventoryVisibilityColumns}
         />

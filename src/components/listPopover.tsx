@@ -7,6 +7,7 @@ interface Props {
   button: React.ReactNode;
   children?: React.ReactNode;
   placement?: Placement;
+  title?: string;
 }
 
 const ListPopover = (props: Props) => {
@@ -23,6 +24,7 @@ const ListPopover = (props: Props) => {
     <Popover className="relative">
       <>
         <Popover.Button
+          title={props.title}
           ref={setReferenceElement}
           className="flex h-7 items-center gap-1 rounded-md px-1 hover:bg-neutral-100 focus:outline-none dark:hover:bg-neutral-800"
         >

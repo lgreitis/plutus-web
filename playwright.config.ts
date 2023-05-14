@@ -12,8 +12,18 @@ const outputDir = path.join(__dirname, "test-results");
 const config: PlaywrightTestConfig = {
   testDir: "./tests/e2e",
   globalSetup: "./tests/utils/global.ts",
+  projects: [
+    {
+      name: "chromium",
+      use: { ...devices["Desktop Chrome"] },
+    },
+    {
+      name: "firefox",
+      use: { ...devices["Desktop Firefox"] },
+    },
+  ],
+  workers: 1,
   use: {
-    ...devices["Desktop Chrome"],
     storageState: "./tests/utils/storage-state.json",
     baseURL: baseUrl,
     headless: options.headless,

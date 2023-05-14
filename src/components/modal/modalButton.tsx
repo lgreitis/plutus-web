@@ -62,6 +62,9 @@ const ModalButton = forwardRef<HTMLButtonElement, ModalButtonProps>(
         onMouseDown={(e) => {
           e.button === 0 && setClick(true);
         }}
+        onMouseLeave={(e) => {
+          e.button === 0 && setClick(false);
+        }}
         onMouseUp={() => setClick(false)}
         ref={ref}
       />

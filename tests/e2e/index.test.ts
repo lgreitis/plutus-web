@@ -155,3 +155,87 @@ test("user changes currency", async ({ page }) => {
   await expect(page.getByTitle("Total value")).toHaveText("$60.00");
   await expect(page.getByTitle("Difference")).toHaveText("-$140.00");
 });
+
+test("test favourite filter", async ({ page }) => {
+  await page.goto("/");
+
+  await page.waitForURL("**/overview");
+
+  await page.getByRole("link", { name: "Inventory" }).click();
+
+  await expect(
+    page.getByText(" Butterfly Knife | Night (Field-Tested)")
+  ).toBeVisible();
+
+  await expect(
+    page.getByText("StatTrak™ M4A1-S | Hyper Beast (Minimal Wear)")
+  ).toBeVisible();
+
+  await page
+    .locator(
+      'button[name="Favourite ★ Butterfly Knife \\| Night \\(Field-Tested\\)"]'
+    )
+    .click();
+
+  await page.waitForLoadState("networkidle");
+
+  await expect(
+    page.getByRole("status").filter({ hasText: "Item added to favourites." })
+  ).toBeVisible();
+
+  await page.getByRole("button", { name: "Favourites" }).click();
+
+  await expect(
+    page.getByText("Butterfly Knife | Night (Field-Tested)")
+  ).toBeVisible();
+
+  await expect(
+    page.getByText("StatTrak™ M4A1-S | Hyper Beast (Minimal Wear)")
+  ).toBeHidden();
+
+  await page
+    .locator(
+      'button[name="Favourite ★ Butterfly Knife \\| Night \\(Field-Tested\\)"]'
+    )
+    .click();
+
+  await expect(
+    page.getByText("Butterfly Knife | Night (Field-Tested)")
+  ).toBeHidden();
+});
+
+test("test column visibility", async ({ page }) => {
+  await page.goto("/");
+
+  await page.waitForURL("**/overview");
+
+  await page.getByRole("link", { name: "Inventory" }).click();
+
+  await expect(
+    page.getByRole("columnheader", { name: "Buy Price" }).getByText("Buy Price")
+  ).toBeVisible();
+  await expect(
+    page.getByRole("columnheader", { name: "Buy Date" }).getByText("Buy Date")
+  ).toBeVisible();
+
+  await page.getByRole("button", { name: "Change column visibility" }).click();
+  await page.getByTitle("Change Buy Date").click();
+  await page.getByTitle("Change Buy Price").click();
+
+  await expect(
+    page.getByRole("columnheader", { name: "Buy Price" }).getByText("Buy Price")
+  ).toBeHidden();
+  await expect(
+    page.getByRole("columnheader", { name: "Buy Date" }).getByText("Buy Date")
+  ).toBeHidden();
+
+  await page.getByTitle("Change Buy Date").click();
+  await page.getByTitle("Change Buy Price").click();
+
+  await expect(
+    page.getByRole("columnheader", { name: "Buy Price" }).getByText("Buy Price")
+  ).toBeVisible();
+  await expect(
+    page.getByRole("columnheader", { name: "Buy Date" }).getByText("Buy Date")
+  ).toBeVisible();
+});
