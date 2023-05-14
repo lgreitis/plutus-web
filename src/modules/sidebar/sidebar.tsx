@@ -75,6 +75,7 @@ const Sidebar = (props: Props) => {
               <Logo href="/overview" />
             </div>
             <MagnifyingGlassIcon
+              title="Search for item"
               className="h-5 w-5 cursor-pointer"
               onClick={() => setCommandOpen(true)}
             />

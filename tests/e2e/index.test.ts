@@ -254,7 +254,6 @@ test("test compare page", async ({ page }) => {
   );
 
   await page.goto("/");
-
   await page.waitForURL("**/overview");
 
   await page.getByRole("link", { name: "Compare items" }).click();
@@ -279,4 +278,43 @@ test("test compare page", async ({ page }) => {
 
   await expect(page.locator("img").nth(1)).toBeVisible();
   await expect(page.locator("img").nth(2)).toBeVisible();
+});
+
+test("test command palette", async ({ page }) => {
+  const items = await prisma.item.findMany({
+    select: { marketHashName: true, icon: true, id: true },
+  });
+
+  await page.route(
+    `http://localhost:3000/api/trpc/search.findItem?batch=1`,
+    async (route) => {
+      const json = [{ result: { data: { json: { items: items } } } }];
+      await route.fulfill({ json });
+    }
+  );
+
+  await page.goto("/");
+  await page.waitForURL("**/overview");
+
+  await page.waitForLoadState("networkidle");
+
+  await page
+    .locator("div")
+    .filter({ hasText: /^PlutusSearch for item$/ })
+    .locator("svg")
+    .nth(1)
+    .click();
+  await page.getByPlaceholder("Search...").click();
+  await page
+    .getByPlaceholder("Search...")
+    .fill("Butterfly Knife | Night (Field-Tested)");
+  await page
+    .getByRole("option", { name: "Butterfly Knife | Night (Field-Tested)" })
+    .click();
+
+  await expect(
+    page.getByRole("heading", {
+      name: "Butterfly Knife | Night (Field-Tested)",
+    })
+  ).toBeVisible();
 });
