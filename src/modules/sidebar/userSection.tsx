@@ -1,3 +1,5 @@
+import { faDiscord } from "@fortawesome/free-brands-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Menu } from "@headlessui/react";
 import {
   ArrowLeftOnRectangleIcon,
@@ -42,6 +44,27 @@ const UserSection = () => {
       </Menu.Button>
       <DefaultTransition>
         <Menu.Items className="absolute -top-2 left-0 w-32 origin-top-right -translate-y-full transform divide-y divide-gray-200 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none dark:divide-zinc-900 dark:bg-bg-dark">
+          <Menu.Item
+            as="button"
+            onClick={() => {
+              window.open(
+                "https://discord.com/api/oauth2/authorize?client_id=1076127754375933992&permissions=2048&scope=bot",
+                "_blank",
+                "noreferrer"
+              );
+            }}
+            className={({ active }) =>
+              clsx(
+                active
+                  ? "bg-gray-900 text-white dark:bg-slate-200  dark:text-gray-900"
+                  : "text-gray-900 dark:text-white",
+                "flex cursor-default select-none gap-3 rounded-t p-2 text-sm"
+              )
+            }
+          >
+            <FontAwesomeIcon icon={faDiscord} className="h-5 w-5" />
+            Discord Bot
+          </Menu.Item>
           <Menu.Item
             as={Link}
             href={`/user/${sessionData?.user.id || ""}`}
