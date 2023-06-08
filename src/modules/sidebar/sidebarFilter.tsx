@@ -47,9 +47,7 @@ const SidebarFilter = () => {
             type="button"
             key={el.name}
             className={clsx(
-              active
-                ? "text-neutral-700 dark:text-neutral-200"
-                : "text-neutral-500",
+              active ? "text-black dark:text-neutral-200" : "text-neutral-500",
               "flex cursor-pointer items-center gap-3 text-xs font-medium hover:text-neutral-700 dark:hover:text-neutral-200"
             )}
             onClick={() => handleClick(el.key, active)}

@@ -97,7 +97,7 @@ const SidebarMobile = (props: Props) => {
                           className={clsx(
                             "flex items-center gap-3 text-xs font-medium ",
                             router.pathname === el.link
-                              ? "dark:text-neutral-200"
+                              ? "text-black dark:text-neutral-200"
                               : "text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-200"
                           )}
                           onClick={() => setOpen(false)}
