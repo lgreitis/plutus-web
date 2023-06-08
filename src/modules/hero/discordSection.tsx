@@ -5,7 +5,7 @@ import ModalButton from "src/components/modal/modalButton";
 
 const DiscordSection = () => {
   return (
-    <div className="-mt-12 flex h-[50vh] w-full flex-col items-center justify-center gap-6 p-8 py-24">
+    <div className="-mt-12 flex  w-full flex-col items-center justify-center gap-6 p-8 py-24">
       <div className="flex h-24 items-center gap-2 text-7xl">
         <FontAwesomeIcon icon={faDiscord} className="h-24 w-24" />
         {"+"}

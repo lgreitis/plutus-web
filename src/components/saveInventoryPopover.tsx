@@ -4,10 +4,9 @@ import jsPDF from "jspdf";
 import type { RowInput } from "jspdf-autotable";
 import autoTable from "jspdf-autotable";
 import { useSession } from "next-auth/react";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo } from "react";
 import { toast } from "sonner";
 import ListPopover from "src/components/listPopover";
-import Loader from "src/components/loader";
 import { filterAtom, visibilityAtom } from "src/store";
 import { api } from "src/utils/api";
 import { inventoryVisibilityColumns } from "src/utils/visibilityColumns";
@@ -58,15 +57,11 @@ const SaveInventoryPopover = () => {
     return res;
   }, [visibility]);
 
-  const [loading, setLoading] = useState({ excel: false, pdf: false });
-
   const saveExcel = useCallback(() => {
     if (!data?.items || !currencyQuery.data) {
       toast.error("Failed to fetch your inventory, please try again later");
       return;
     }
-
-    setLoading((p) => ({ ...p, excel: true }));
 
     const formatter = new Intl.NumberFormat(undefined, {
       style: "currency",
@@ -111,14 +106,10 @@ const SaveInventoryPopover = () => {
         session.data?.user.name ?? "user"
       }'s_inventory_${new Date().toLocaleDateString()}.xlsx`
     );
-
-    setLoading((p) => ({ ...p, excel: false }));
   }, [session.data?.user.name, data?.items, visibility, currencyQuery.data]);
 
   const savePdf = useCallback(() => {
     try {
-      setLoading((p) => ({ ...p, pdf: true }));
-
       const doc = new jsPDF();
 
       doc.addFont("Inter-Semibold.ttf", "Inter", "bold");
@@ -226,8 +217,6 @@ const SaveInventoryPopover = () => {
       console.error(error);
       toast.error("Failed to generate PDF, please try again later");
     }
-
-    setLoading((p) => ({ ...p, pdf: false }));
   }, [
     session.data?.user.name,
     data?.items,
@@ -253,7 +242,7 @@ const SaveInventoryPopover = () => {
         }}
       >
         <DocumentIcon className="h-5 w-5" />
-        {loading.pdf ? <Loader /> : "Export as PDF"}
+        Export as PDF
       </button>
       <button
         type="button"
@@ -263,7 +252,7 @@ const SaveInventoryPopover = () => {
         }}
       >
         <DocumentIcon className="h-5 w-5" />
-        {loading.excel ? <Loader /> : "Export as EXCEL"}
+        Export as EXCEL
       </button>
     </ListPopover>
   );
